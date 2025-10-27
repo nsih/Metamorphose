@@ -41,6 +41,13 @@
       "dependencies": {},
       "hash": "a7c6b49a0141a5bff9b1983e38137522ef61977d"
     },
+    "com.gustavopsantos.reflex": {
+      "version": "https://github.com/gustavopsantos/reflex.git?path=/Assets/Reflex/#13.0.3",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "3d382e6e1d479380685887ef0c7a7a5492911b99"
+    },
     "com.kybernetik.animancer": {
       "version": "file:com.kybernetik.animancer",
       "depth": 0,
