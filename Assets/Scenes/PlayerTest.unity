@@ -128,10 +128,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 115713933}
+  - component: {fileID: 115713937}
   - component: {fileID: 115713932}
   - component: {fileID: 115713935}
   - component: {fileID: 115713936}
-  - component: {fileID: 115713937}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -291,10 +291,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 115713931}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98d8f2a22a204fb4088aaa45f6134841, type: 3}
+  m_Script: {fileID: 11500000, guid: 66310895d551abd4fabac0e6f80fa76f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 20
 --- !u!1 &396982765
 GameObject:
   m_ObjectHideFlags: 0

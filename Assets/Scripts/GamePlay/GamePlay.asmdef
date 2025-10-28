@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "Core",
-        "Package"
+        "Package",
+        "Reflex"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
