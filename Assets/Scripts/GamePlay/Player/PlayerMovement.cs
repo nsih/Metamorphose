@@ -4,14 +4,14 @@ using Reflex.Attributes;
 public class PlayerMovement : MonoBehaviour
 {
     [Inject]
-    private IInputService input;
+    private IInputService iInputService;
 
     [Inject]
     private PlayerStat playerStat;
 
     void Start()
     {
-        if (input == null)
+        if (iInputService == null)
         {
             Debug.LogError("IInputService error");
         }
@@ -24,9 +24,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (input != null && playerStat != null)
+        if (iInputService != null && playerStat != null)
         {
-            Vector2 direction = input.MoveDirection;
+            Vector2 direction = iInputService.MoveDirection;
             transform.Translate(direction * playerStat.MoveSpeed * Time.deltaTime);
         }
     }
