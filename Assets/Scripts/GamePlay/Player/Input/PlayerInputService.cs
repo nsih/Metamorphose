@@ -1,25 +1,32 @@
 using UnityEngine;
-//using Core;
+using UnityEngine.InputSystem;
+using System;
 
-public class PlayerInputService : IInputService
+public class PlayerInputService : IInputService, IDisposable
 {
-    public Vector2 MoveDirection
+    private readonly PlayerControls _controls;
+
+    public Vector2 MoveDirection => _controls.Player.Move.ReadValue<Vector2>();
+
+    public event Action OnJumpPressed;
+
+    public PlayerInputService()
     {
-        get
-        {
-            float horizontal = Input.GetAxis("Horizontal");
-            float vertical = Input.GetAxis("Vertical");
-            return new Vector2(horizontal, vertical);
-        }
+        _controls = new PlayerControls();
+        _controls.Enable();
+
+        
+        _controls.Player.Jump.performed += OnJump;
     }
 
-    // public bool IsJumpPressed
-    // {
-    //     get { return Input.GetButtonDown("Jump"); }
-    // }
-
-    // public bool IsAttackPressed
-    // {
-    //     get { return Input.GetButtonDown("Fire1"); }
-    // }
+    public void Dispose()
+    {
+        _controls.Player.Jump.performed -= OnJump;
+        _controls.Disable();
+    }
+    
+    private void OnJump(InputAction.CallbackContext context)
+    {
+        OnJumpPressed?.Invoke();
+    }
 }

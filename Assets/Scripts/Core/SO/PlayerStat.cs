@@ -8,4 +8,7 @@ public class PlayerStat : ScriptableObject
 
     [Header("Movement")]
     public float MoveSpeed = 5f;
+
+    [Header("JumpForce")]
+    public float JumpForce = 10f;
 }

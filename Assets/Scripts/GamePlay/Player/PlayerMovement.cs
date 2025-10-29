@@ -1,6 +1,7 @@
 using UnityEngine;
 using Reflex.Attributes;
 
+
 public class PlayerMovement : MonoBehaviour
 {
     [Inject]
@@ -8,6 +9,13 @@ public class PlayerMovement : MonoBehaviour
 
     [Inject]
     private PlayerStat playerStat;
+
+    private Rigidbody2D _rb;
+
+    void Awake()
+    {
+        _rb = GetComponent<Rigidbody2D>();
+    }
 
     void Start()
     {
@@ -22,12 +30,17 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (iInputService != null && playerStat != null)
         {
-            Vector2 direction = iInputService.MoveDirection;
-            transform.Translate(direction * playerStat.MoveSpeed * Time.deltaTime);
+            float horizontalInput = iInputService.MoveDirection.x;
+            
+            _rb.linearVelocity = new Vector2
+            (
+                horizontalInput * playerStat.MoveSpeed,
+                _rb.linearVelocity.y 
+            );
         }
     }
 }

@@ -4,7 +4,8 @@
     "references": [
         "Core",
         "Package",
-        "Reflex"
+        "Reflex",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

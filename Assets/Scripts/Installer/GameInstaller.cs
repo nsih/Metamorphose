@@ -10,13 +10,16 @@ public class GameInstaller : MonoBehaviour, IInstaller
 
     public void InstallBindings(ContainerBuilder builder)
     {
-        Debug.Log("시작");
+        Debug.Log("scene install start");
 
         //data
         builder.AddSingleton(_playerStatAsset, typeof(PlayerStat));
 
         //interface
         builder.AddSingleton(typeof(PlayerInputService), typeof(IInputService));
-        Debug.Log("완료");
+
+
+        
+        Debug.Log("scene install done");
     }
 }

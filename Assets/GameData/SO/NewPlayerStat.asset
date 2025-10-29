@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: NewPlayerStat
   m_EditorClassIdentifier: 
   MaxHealth: 10
-  MoveSpeed: 5
+  MoveSpeed: 50
+  JumpForce: 50
