@@ -7,4 +7,6 @@ public interface IInputService
 
     event Action OnJumpPressed;
     //bool IsAttackPressed { get; }
+
+    event Action OnDashPressed;
 }

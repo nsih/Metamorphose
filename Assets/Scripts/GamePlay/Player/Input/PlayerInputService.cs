@@ -10,23 +10,32 @@ public class PlayerInputService : IInputService, IDisposable
 
     public event Action OnJumpPressed;
 
+    public event Action OnDashPressed;
+
     public PlayerInputService()
     {
         _controls = new PlayerControls();
         _controls.Enable();
 
-        
+
         _controls.Player.Jump.performed += OnJump;
+        _controls.Player.Dash.performed += OnDash;
     }
 
     public void Dispose()
     {
-        _controls.Player.Jump.performed -= OnJump;
         _controls.Disable();
+        _controls.Player.Jump.performed -= OnJump;
+        _controls.Player.Dash.performed -= OnDash;
     }
-    
+
     private void OnJump(InputAction.CallbackContext context)
     {
         OnJumpPressed?.Invoke();
+    }
+
+    private void OnDash(InputAction.CallbackContext context)
+    {
+        OnDashPressed?.Invoke();
     }
 }
