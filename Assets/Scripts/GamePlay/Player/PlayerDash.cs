@@ -9,11 +9,14 @@ public class PlayerDash : MonoBehaviour
 {
     [Inject] private IInputService _input;
     [Inject] private PlayerStat _playerStat;
+    
 
 
 
     private Rigidbody2D _rb;
     private bool _isDashing = false;
+    
+    public bool IsDashing => _isDashing;
 
     private int _currentDashCharges;   // 현재 충전 횟수
     private float _chargeRegenTimer;   // 충전 타이머

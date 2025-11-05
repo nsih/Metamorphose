@@ -12,9 +12,12 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D _rb;
 
+    private PlayerDash _playerDash;
+
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _playerDash = GetComponent<PlayerDash>();
     }
 
     void Start()
@@ -32,6 +35,11 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (_playerDash != null && _playerDash.IsDashing)
+        {
+            return;
+        }
+        
         if (iInputService != null && playerStat != null)
         {
             float horizontalInput = iInputService.MoveDirection.x;
