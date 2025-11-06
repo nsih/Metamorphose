@@ -44,8 +44,10 @@ public class PlayerDash : MonoBehaviour
         if (_input != null) _input.OnDashPressed -= HandleDash;
     }
 
-
-
+    void Update()
+    {
+        DashCoolDown();
+    }
 
 
 
@@ -54,31 +56,46 @@ public class PlayerDash : MonoBehaviour
         if (_currentDashCharges <= 0 || _isDashing) return;
 
         _currentDashCharges--;
-        Debug.Log($"대시 사용! 남은 횟수: {_currentDashCharges}");
+        Debug.Log($"DashStack: {_currentDashCharges}");
 
         DashAsync().Forget();
     }
-    
+
     private async UniTaskVoid DashAsync()
     {
         _isDashing = true;
-        
+
         float dashDirection = transform.localScale.x > 0 ? 1 : -1;
-        
+
         float originalGravity = _rb.gravityScale;
         _rb.gravityScale = 0f;
         _rb.linearVelocity = new Vector2(dashDirection * _playerStat.DashSpeed, 0);
 
         // 대시 지속 시간만큼 대기
         await UniTask.Delay(
-            TimeSpan.FromSeconds(_playerStat.DashDuration), 
+            TimeSpan.FromSeconds(_playerStat.DashDuration),
             cancellationToken: this.GetCancellationTokenOnDestroy()
         );
 
-        if (this == null) return; 
+        if (this == null) return;
 
         _rb.gravityScale = originalGravity;
         _rb.linearVelocity = Vector2.zero;
         _isDashing = false;
+    }
+    
+    void DashCoolDown()
+    {
+        if (_playerStat != null && _currentDashCharges < _playerStat.MaxDashChargeStack)
+        {
+            _chargeRegenTimer += Time.deltaTime;
+
+            if (_chargeRegenTimer >= _playerStat.DashChargeTime)
+            {
+                _currentDashCharges++;
+                _chargeRegenTimer = 0f;
+                Debug.Log($"DashStack: {_currentDashCharges}");
+            }
+        }
     }
 }

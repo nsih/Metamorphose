@@ -13,5 +13,9 @@ MonoBehaviour:
   m_Name: NewPlayerStat
   m_EditorClassIdentifier: 
   MaxHealth: 10
-  MoveSpeed: 50
+  MoveSpeed: 40
   JumpForce: 50
+  DashSpeed: 120
+  DashDuration: 0.15
+  MaxDashChargeStack: 3
+  DashChargeTime: 2
