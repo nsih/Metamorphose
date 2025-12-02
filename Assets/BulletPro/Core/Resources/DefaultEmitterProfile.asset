@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Name: Bullet
   m_EditorClassIdentifier: 
   parameterType: 0
-  uniqueIndex: 11148967
+  uniqueIndex: 6354962
   profile: {fileID: 11400000}
   parent: {fileID: 114201774248674550}
   children: []
@@ -1036,6 +1036,7 @@ MonoBehaviour:
         atime6: 0
         atime7: 0
         m_Mode: 0
+        m_ColorSpace: -1
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
     - settings:
@@ -1128,6 +1129,7 @@ MonoBehaviour:
         atime6: 0
         atime7: 0
         m_Mode: 0
+        m_ColorSpace: -1
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
   evolutionBlendWithBaseColor:
@@ -1321,6 +1323,7 @@ MonoBehaviour:
         atime6: 0
         atime7: 0
         m_Mode: 0
+        m_ColorSpace: -1
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
     - settings:
@@ -1412,6 +1415,7 @@ MonoBehaviour:
         atime6: 0
         atime7: 0
         m_Mode: 0
+        m_ColorSpace: -1
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
   vfxParams:
@@ -7926,6 +7930,7 @@ MonoBehaviour:
           atime6: 0
           atime7: 0
           m_Mode: 0
+          m_ColorSpace: -1
           m_NumColorKeys: 2
           m_NumAlphaKeys: 2
       - settings:
@@ -8018,6 +8023,7 @@ MonoBehaviour:
           atime6: 0
           atime7: 0
           m_Mode: 0
+          m_ColorSpace: -1
           m_NumColorKeys: 2
           m_NumAlphaKeys: 2
     gradientValue:
@@ -8093,6 +8099,7 @@ MonoBehaviour:
           atime6: 0
           atime7: 0
           m_Mode: 0
+          m_ColorSpace: -1
           m_NumColorKeys: 2
           m_NumAlphaKeys: 2
       - settings:
@@ -8184,6 +8191,7 @@ MonoBehaviour:
           atime6: 0
           atime7: 0
           m_Mode: 0
+          m_ColorSpace: -1
           m_NumColorKeys: 2
           m_NumAlphaKeys: 2
     animationCurveValue:
@@ -8224,7 +8232,7 @@ MonoBehaviour:
   m_Name: Shot
   m_EditorClassIdentifier: 
   parameterType: 1
-  uniqueIndex: 16191618
+  uniqueIndex: 7407343
   profile: {fileID: 11400000}
   parent: {fileID: 114917193883442684}
   children:
@@ -10658,7 +10666,7 @@ MonoBehaviour:
   m_Name: Root Emitter
   m_EditorClassIdentifier: 
   parameterType: 0
-  uniqueIndex: 7995596
+  uniqueIndex: 14577037
   profile: {fileID: 11400000}
   parent: {fileID: 0}
   children:
@@ -11651,6 +11659,7 @@ MonoBehaviour:
         atime6: 0
         atime7: 0
         m_Mode: 0
+        m_ColorSpace: -1
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
     - settings:
@@ -11743,6 +11752,7 @@ MonoBehaviour:
         atime6: 0
         atime7: 0
         m_Mode: 0
+        m_ColorSpace: -1
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
   evolutionBlendWithBaseColor:
@@ -11936,6 +11946,7 @@ MonoBehaviour:
         atime6: 0
         atime7: 0
         m_Mode: 0
+        m_ColorSpace: -1
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
     - settings:
@@ -12027,6 +12038,7 @@ MonoBehaviour:
         atime6: 0
         atime7: 0
         m_Mode: 0
+        m_ColorSpace: -1
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
   vfxParams:
@@ -18464,7 +18476,7 @@ MonoBehaviour:
   m_Name: Pattern
   m_EditorClassIdentifier: 
   parameterType: 2
-  uniqueIndex: 11129291
+  uniqueIndex: 2826833
   profile: {fileID: 11400000}
   parent: {fileID: 114671512830859702}
   children:
@@ -21183,6 +21195,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -21275,6 +21288,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       alpha:
@@ -21460,6 +21474,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -21551,6 +21566,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       curveAffected: 0
@@ -22552,6 +22568,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -22644,6 +22661,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customGradient:
@@ -22719,6 +22737,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -22810,6 +22829,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customBool:
@@ -26001,6 +26021,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -26093,6 +26114,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       alpha:
@@ -26278,6 +26300,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -26369,6 +26392,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       curveAffected: 0
@@ -27370,6 +27394,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -27462,6 +27487,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customGradient:
@@ -27537,6 +27563,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -27628,6 +27655,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customBool:
@@ -30819,6 +30847,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -30911,6 +30940,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       alpha:
@@ -31096,6 +31126,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -31187,6 +31218,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       curveAffected: 0
@@ -32188,6 +32220,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -32280,6 +32313,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customGradient:
@@ -32355,6 +32389,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -32446,6 +32481,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customBool:
@@ -35637,6 +35673,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -35729,6 +35766,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       alpha:
@@ -35914,6 +35952,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -36005,6 +36044,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       curveAffected: 0
@@ -37006,6 +37046,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -37098,6 +37139,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customGradient:
@@ -37173,6 +37215,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -37264,6 +37307,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customBool:
@@ -40455,6 +40499,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -40547,6 +40592,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       alpha:
@@ -40732,6 +40778,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -40823,6 +40870,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       curveAffected: 0
@@ -41824,6 +41872,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -41916,6 +41965,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customGradient:
@@ -41991,6 +42041,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
         - settings:
@@ -42082,6 +42133,7 @@ MonoBehaviour:
             atime6: 0
             atime7: 0
             m_Mode: 0
+            m_ColorSpace: -1
             m_NumColorKeys: 2
             m_NumAlphaKeys: 2
       customBool:

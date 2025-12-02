@@ -7,6 +7,7 @@ public class PlayerInputService : IInputService, IDisposable
     private readonly PlayerControls _controls;
 
     public Vector2 MoveDirection => _controls.Player.Move.ReadValue<Vector2>();
+    public bool IsAttackPressed => _controls.Player.Attack.IsPressed();
 
     public event Action OnJumpPressed;
 

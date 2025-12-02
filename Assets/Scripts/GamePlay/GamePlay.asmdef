@@ -6,7 +6,8 @@
         "Package",
         "Reflex",
         "Unity.InputSystem",
-        "UniTask"
+        "UniTask",
+        "BulletPro.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
