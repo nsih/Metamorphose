@@ -1,4 +1,3 @@
-// GamePlay/PlayerJump.cs
 using UnityEngine;
 using Reflex.Attributes;
 

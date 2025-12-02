@@ -5,7 +5,8 @@
         "Core",
         "Package",
         "Reflex",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
