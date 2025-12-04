@@ -27,7 +27,7 @@ public class PlayerAttack : MonoBehaviour
                 _mainEmitter.Play();
                 _isShooting = true;
 
-                Debug.Log("S");
+                //Debug.Log("S");
             }
         }
         else
@@ -37,7 +37,7 @@ public class PlayerAttack : MonoBehaviour
                 _mainEmitter.Stop();
                 _isShooting = false;
 
-                Debug.Log("E");
+                //Debug.Log("E");
             }
         }
     }
