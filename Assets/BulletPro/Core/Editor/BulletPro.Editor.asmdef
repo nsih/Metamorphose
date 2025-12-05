@@ -1,0 +1,16 @@
+{
+    "name": "BulletPro.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:c0969fe44383f38479a1dc0ad6f116fd"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

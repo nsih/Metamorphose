@@ -6,7 +6,10 @@ public interface IInputService
     Vector2 MoveDirection { get; }
 
     event Action OnJumpPressed;
-    //bool IsAttackPressed { get; }
+    
+    bool IsAttackPressed { get; }
 
     event Action OnDashPressed;
+
+    
 }
