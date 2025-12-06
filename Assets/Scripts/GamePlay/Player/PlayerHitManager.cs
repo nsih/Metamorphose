@@ -11,13 +11,21 @@ public class PlayerHitManager : MonoBehaviour
 
     [SerializeField] private BulletReceiver _receiver;
 
+    private PlayerDash _playerDash;
+
     // 내부 상태 변수
     private float _currentHp;
     private bool _isDead = false;
     
     // [내일 구현 예정] 무적 상태 플래그
     // private bool _isInvincible = false; 
+    public bool IsInvincible => (_playerDash != null && _playerDash.IsDashing);
 
+    void Awake()
+    {
+        _receiver = GetComponent<BulletReceiver>();
+        _playerDash = GetComponent<PlayerDash>();
+    }
 
     void Start()
     {
@@ -30,7 +38,15 @@ public class PlayerHitManager : MonoBehaviour
 
         InitializeHealth();
 
-        //if (_receiver == null) _receiver = GetComponent<BulletReceiver>();
+
+        /*
+        if (_receiver == null) 
+        {
+            _receiver = GetComponent<BulletReceiver>();
+        }
+        */
+
+        _receiver = GetComponent<BulletReceiver>();
         _receiver.OnHitByBullet.AddListener(TakeDamage);
     }
 
@@ -40,22 +56,28 @@ public class PlayerHitManager : MonoBehaviour
         Debug.Log($"InitializeHealth : {_currentHp}/{_playerStat.MaxHealth}");
     }
 
-
     public void TakeDamage(Bullet bullet, Vector3 hitPoint)
     {
-        Debug.Log("taking damage");
         if (_isDead) return;
         
-        // if (_isInvincible) return; // 내일 무적 로직 추가
+        if (IsInvincible)
+        {
+            Debug.Log("Bullet Collision : Grazed");
+            return;
+        }
 
-        float damage = 0; 
+        float damage = 0;
         if (bullet.dynamicSolver != null)
         {
             damage = bullet.moduleParameters.GetFloat("_Damage");
         }
 
+        Debug.Log($"Bullet Collision : HIT");
         _currentHp -= damage;
         Debug.Log(_currentHp);
+
+
+        bullet.Die();//맞으면 없어짐
 
         // 사망 체크
         if (_currentHp <= 0)
