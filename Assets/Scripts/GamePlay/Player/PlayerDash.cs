@@ -13,8 +13,6 @@ public class PlayerDash : MonoBehaviour
     [Inject] private PlayerStat _playerStat;
 
 
-
-
     private Rigidbody2D _rb;
 
     private float _defaultGravity;
@@ -75,7 +73,7 @@ public class PlayerDash : MonoBehaviour
         }
 
         _currentDashCharges--;
-        Debug.Log($"DashStack: {_currentDashCharges}");
+        //Debug.Log($"DashStack: {_currentDashCharges}");
 
         // [변경 5] 새 대시를 위한 새 리모컨(토큰) 발급
         _dashCts = new CancellationTokenSource();

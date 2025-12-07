@@ -4,11 +4,14 @@ using BulletPro;
 
 public class EnemyTest : MonoBehaviour
 {
-     [SerializeField] private BulletReceiver _receiver;
+    [SerializeField] private BulletReceiver _receiver;
 
     void Start()
     {
-        if (_receiver == null) _receiver = GetComponent<BulletReceiver>();
+        if (_receiver == null) 
+        {
+            _receiver = GetComponent<BulletReceiver>();
+        }
 
         _receiver.OnHitByBullet.AddListener(Die);
     }
