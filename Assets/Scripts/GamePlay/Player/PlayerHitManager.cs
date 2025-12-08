@@ -12,6 +12,7 @@ public class PlayerHitManager : MonoBehaviour
     [SerializeField] private BulletReceiver _receiver;
 
     private PlayerDash _playerDash;
+    private BulletTimeManager _bulletTimeManager;
 
     // 내부 상태 변수
     private float _currentHp;
@@ -25,6 +26,7 @@ public class PlayerHitManager : MonoBehaviour
     {
         _receiver = GetComponent<BulletReceiver>();
         _playerDash = GetComponent<PlayerDash>();
+        _bulletTimeManager = GetComponent<BulletTimeManager>();
     }
 
     void Start()
@@ -62,7 +64,12 @@ public class PlayerHitManager : MonoBehaviour
         
         if (IsInvincible)
         {
-            Debug.Log("Bullet Collision : Grazed");
+            Debug.Log("call bullet Time");
+            
+            if (_bulletTimeManager != null)
+            {
+                _bulletTimeManager.TriggerSlowMotion();
+            }
             return;
         }
 
