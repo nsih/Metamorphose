@@ -5,7 +5,9 @@ using Reflex.Attributes;
 public class PlayerJump : MonoBehaviour
 {
     [Inject] private IInputService _input;
-    [Inject] private PlayerStat _playerStat;
+    
+    // [변경 1] PlayerStat 대신 PlayerModel 주입
+    [Inject] private PlayerModel _model; 
 
     private Rigidbody2D _rb;
 
@@ -14,41 +16,35 @@ public class PlayerJump : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
     }
 
-    #region event subscribe
-    private void OnEnable()
+    void Start()
     {
-        if (_input != null) 
+        if (_input == null)
         {
-            _input.OnJumpPressed += HandleJump;
+            Debug.LogError("PlayerJump: DI error");
+            return;
         }
+
+        _input.OnJumpPressed += HandleJump;
     }
-    private void OnDisable()
+
+    void OnDestroy()
     {
         if (_input != null)
         {
             _input.OnJumpPressed -= HandleJump;
         }
-    }        
-    #endregion
-
-    void Start()
-    {
-        if (_input == null)
-            Debug.LogError("IInputService injection error");
-        else
-        {
-            _input.OnJumpPressed -= HandleJump;
-            _input.OnJumpPressed += HandleJump;
-        }
     }
 
     private void HandleJump()
     {
-        // ground check 추가 필요
-        if (_playerStat != null)
+        // TODO: Ground Check 추가 필요
+        
+        if (_model != null)
         {
             _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0); 
-            _rb.AddForce(Vector2.up * _playerStat.JumpForce, ForceMode2D.Impulse);
+            
+            // 파사드
+            _rb.AddForce(Vector2.up * _model.JumpForce, ForceMode2D.Impulse);
         }
     }
 }

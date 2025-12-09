@@ -1,143 +1,111 @@
 using UnityEngine;
 using Reflex.Attributes;
 using System;
-
 using System.Threading;
 using Cysharp.Threading.Tasks;
-
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerDash : MonoBehaviour
 {
+    // DI
     [Inject] private IInputService _input;
-    [Inject] private PlayerStat _playerStat;
-
+    [Inject] private PlayerModel _model;
 
     private Rigidbody2D _rb;
-
     private float _defaultGravity;
-        private bool _isDashing = false;
+    private bool _isDashing = false;
     
     public bool IsDashing => _isDashing;
 
-    private int _currentDashCharges;   // 현재 충전 횟수
-    private float _chargeRegenTimer;   // 충전 타이머
-
-
-    private CancellationTokenSource _dashCts; //대쉬 캔슬 토큰 소스
-
-
+    // 비동기 토큰 관리
+    private CancellationTokenSource _dashCts; 
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-
         _defaultGravity = _rb.gravityScale;
     }
 
     void Start()
     {
-        if (_input == null) return;
-        _input.OnDashPressed += HandleDash;
-
-        if (_playerStat != null)
+        if (_input != null)
         {
-            _currentDashCharges = _playerStat.MaxDashChargeStack;
+            _input.OnDashPressed += HandleDash;
         }
     }
 
     void OnDestroy()
     {
         if (_input != null) _input.OnDashPressed -= HandleDash;
-
-        _dashCts?.Cancel();
-        _dashCts?.Dispose();
+        CancelDash();
     }
 
     void Update()
     {
-        DashCoolDown();
+        _model?.UpdateDashCooldown(Time.deltaTime);
     }
-
-
 
     private void HandleDash()
     {
-        // 스택확인
-        if (_currentDashCharges <= 0) return;
-        // 토큰 확인
-        if (_isDashing && _dashCts != null)
-        {
-            _dashCts.Cancel();  // 야, 하던 거 멈춰.
-            _dashCts.Dispose(); // 다 쓴 리모컨 버리기.
-        }
+        // 스택 깍고 이벤트 발생
+        if (!_model.TryConsumeDash()) return;
 
-        _currentDashCharges--;
-        //Debug.Log($"DashStack: {_currentDashCharges}");
+        // 아무튼 대쉬 취소
+        CancelDash();
 
-        // [변경 5] 새 대시를 위한 새 리모컨(토큰) 발급
+        // 대쉬 시작
         _dashCts = new CancellationTokenSource();
-        
-        // 토큰을 들려 보낸다.
         DashAsync(_dashCts.Token).Forget();
     }
     
+    private void CancelDash()
+    {
+        if (_dashCts != null)
+        {
+            _dashCts.Cancel();
+            _dashCts.Dispose();
+            _dashCts = null;
+        }
+    }
+
     private async UniTaskVoid DashAsync(CancellationToken token)
     {
         _isDashing = true;
         
+        // 방향 계산
         float dashDirection;
-        
         float moveInputX = _input.MoveDirection.x; 
 
         if (Mathf.Abs(moveInputX) > 0.1f)
-        {
             dashDirection = Mathf.Sign(moveInputX); 
-        }
         else
-        {
-            dashDirection = transform.localScale.x > 0 ? 1f : -1f;
-        }
+            dashDirection = transform.localScale.x > 0 ? 1f : -1f; // 입력 없으면 바라보는 방향
         
+        // 물리 적용 (데이터는 모델을 통해 가져옵니다: _model.DashSpeed)
         _rb.gravityScale = 0f;
-        _rb.linearVelocity = new Vector2(dashDirection * _playerStat.DashSpeed, 0);
+        
+        // Unity 6000 이상: linearVelocity / 이전 버전: velocity
+        _rb.linearVelocity = new Vector2(dashDirection * _model.DashSpeed, 0);
 
-
-        //
         try
         {
-            // 딜레이 중에 취소 토큰(token)을 감시함
+            // 시간 지연 (모델 데이터 사용: _model.DashDuration)
             await UniTask.Delay(
-                TimeSpan.FromSeconds(_playerStat.DashDuration),
+                TimeSpan.FromSeconds(_model.DashDuration),
                 cancellationToken: token
             );
         }
         catch (OperationCanceledException)
         {
-            // 취소당했으면 여기로 옴.
+            // 취소당했으면(연타 등) 즉시 종료
             return;
         }
-        //
 
+        // 대시 종료 처리 (안전장치 추가)
         if (this == null) return; 
 
         _rb.gravityScale = _defaultGravity;
         _rb.linearVelocity = Vector2.zero;
         _isDashing = false;
-    }
-    
-    void DashCoolDown()
-    {
-        if (_playerStat != null && _currentDashCharges < _playerStat.MaxDashChargeStack)
-        {
-            _chargeRegenTimer += Time.deltaTime;
-
-            if (_chargeRegenTimer >= _playerStat.DashChargeTime)
-            {
-                _currentDashCharges++;
-                _chargeRegenTimer = 0f;
-                Debug.Log($"DashStack: {_currentDashCharges}");
-            }
-        }
     }
 }

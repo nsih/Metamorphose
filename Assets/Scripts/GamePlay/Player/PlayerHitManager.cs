@@ -2,24 +2,17 @@ using UnityEngine;
 using Reflex.Attributes;
 using BulletPro;
 
-
 [RequireComponent(typeof(BulletReceiver))]
 public class PlayerHitManager : MonoBehaviour
 {
-    [Inject]
-    private PlayerStat _playerStat;
+    [Inject] private PlayerModel _model;
 
     [SerializeField] private BulletReceiver _receiver;
 
     private PlayerDash _playerDash;
     private BulletTimeManager _bulletTimeManager;
 
-    // 내부 상태 변수
-    private float _currentHp;
-    private bool _isDead = false;
-    
-    // [내일 구현 예정] 무적 상태 플래그
-    // private bool _isInvincible = false; 
+
     public bool IsInvincible => (_playerDash != null && _playerDash.IsDashing);
 
     void Awake()
@@ -31,63 +24,50 @@ public class PlayerHitManager : MonoBehaviour
 
     void Start()
     {
-        // 의존성 주입 확인
-        if (_playerStat == null)
+        if (_model == null)
         {
-            Debug.LogError("PlayerHitManager: PlayerStat 데이터 주입 실패");
+            Debug.LogError("PlayerHitManager: DI Error");
             return;
         }
 
-        InitializeHealth();
-
-
-        /*
-        if (_receiver == null) 
+        if (_receiver != null)
         {
-            _receiver = GetComponent<BulletReceiver>();
+            _receiver.OnHitByBullet.AddListener(HandleBulletHit);
         }
-        */
-
-        _receiver = GetComponent<BulletReceiver>();
-        _receiver.OnHitByBullet.AddListener(TakeDamage);
     }
 
-    private void InitializeHealth()
+    public void HandleBulletHit(Bullet bullet, Vector3 hitPoint)
     {
-        _currentHp = _playerStat.MaxHealth;
-        Debug.Log($"InitializeHealth : {_currentHp}/{_playerStat.MaxHealth}");
-    }
-
-    public void TakeDamage(Bullet bullet, Vector3 hitPoint)
-    {
-        if (_isDead) return;
+        // 이미 죽었으면 무시 (Model 데이터 확인)
+        if (_model.CurrentHP.Value <= 0) return;
         
         if (IsInvincible)
         {
-            Debug.Log("call bullet Time");
+            Debug.Log("Graze");
             
             if (_bulletTimeManager != null)
             {
                 _bulletTimeManager.TriggerSlowMotion();
             }
-            return;
+            
+            // 그레이즈 시 bullet.Die() 호출 안 함
+            return; 
         }
 
-        float damage = 0;
+        float damage = 1; // 기본 데미지
         if (bullet.dynamicSolver != null)
         {
             damage = bullet.moduleParameters.GetFloat("_Damage");
+            if (damage == 0) damage = 1; 
         }
 
-        Debug.Log($"Bullet Collision : HIT");
-        _currentHp -= damage;
-        Debug.Log(_currentHp);
+        Debug.Log($"dmg: {damage}");
+        
+        _model.TakeDamage(damage);
 
-
-        bullet.Die();//맞으면 없어짐
-
-        // 사망 체크
-        if (_currentHp <= 0)
+        bullet.Die();
+        
+        if (_model.CurrentHP.Value <= 0)
         {
             Die();
         }
@@ -95,9 +75,9 @@ public class PlayerHitManager : MonoBehaviour
 
     private void Die()
     {
-        _isDead = true;
-
-        // 임시 처리: 플레이어 비활성화
+        Debug.Log("Game Over");
+        
+        // 임시 처리
         gameObject.SetActive(false); 
     }
 }
