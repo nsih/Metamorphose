@@ -18,4 +18,6 @@ MonoBehaviour:
   DashSpeed: 120
   DashDuration: 0.15
   MaxDashChargeStack: 3
-  DashChargeTime: 2
+  DashChargeTime: 1.5
+  TimeSlowFactor: 0.5
+  SlowMotionDuration: 2

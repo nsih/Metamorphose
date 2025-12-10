@@ -49,6 +49,6 @@ public class BulletTimeManager : MonoBehaviour
 
     void OnDestroy()
     {
-        SetTimeScale(1f); // 안전하게 복구
+        SetTimeScale(1f);
     }
 }

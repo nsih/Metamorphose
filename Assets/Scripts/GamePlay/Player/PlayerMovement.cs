@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
                 horizontalInput * _model.MoveSpeed,
                 _rb.linearVelocity.y 
             );
-
+            /*
             // 방향전환
             if (Mathf.Abs(horizontalInput) > 0.1f)
             {
@@ -52,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
                 newScale.x = Mathf.Sign(horizontalInput); 
                 transform.localScale = newScale;
             }
+            */
         }
     }
 }
