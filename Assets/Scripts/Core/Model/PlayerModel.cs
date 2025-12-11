@@ -1,11 +1,13 @@
 using System;
+using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
-public class PlayerModel
+public class PlayerModel : IDisposable
 {
     // 유사 파사드
     private PlayerStat _stat;
+    private CancellationTokenSource _cts; // 비동기 작업 취소용
 
     
     //초기화는 SO로 초기화 되는 데이터
@@ -20,37 +22,50 @@ public class PlayerModel
     public float SlowMotionDuration => _stat.SlowMotionDuration;
 
 
-
-    // runtime data
-    public AsyncReactiveProperty<float> CurrentHP { get; private set; } //HP
-    public AsyncReactiveProperty<int> CurrentDashCount { get; private set; }    //대쉬 스택
-    public AsyncReactiveProperty<float> DashCooldownNormalized { get; private set; } //대쉬 쿨다운
-
+    // Runtime Data
+    public AsyncReactiveProperty<float> CurrentHP { get; private set; }
+    public AsyncReactiveProperty<int> CurrentDashCount { get; private set; }
+    public AsyncReactiveProperty<float> DashCooldownNormalized { get; private set; }
 
 
-
-    //
-    private float _currentCooldownTimer;
-
-
-    // 생성자 (SO로 초기화 되는 데이터로 초기화되는 런타임 데이터)
-    // 인스톨러에서 stat 주입
     public PlayerModel(PlayerStat stat)
     {
         _stat = stat;
+        _cts = new CancellationTokenSource();
 
         CurrentHP = new AsyncReactiveProperty<float>(_stat.MaxHealth);
         CurrentDashCount = new AsyncReactiveProperty<int>(_stat.MaxDashChargeStack);
         DashCooldownNormalized = new AsyncReactiveProperty<float>(0f);
+
+        StartCooldownLoop(_cts.Token).Forget();
     }
 
+    private async UniTaskVoid StartCooldownLoop(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            await UniTask.WaitUntil(() => CurrentDashCount.Value < MaxDashChargeStack, cancellationToken: token);
 
+            float localTimer = 0f; 
 
-    // 함수
+            while (localTimer < DashChargeTime)
+            {
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
+
+                // 불렛타임 무시 (Unscaled Time)
+                localTimer += Time.unscaledDeltaTime;
+
+                DashCooldownNormalized.Value = localTimer / DashChargeTime;
+            }
+
+            CurrentDashCount.Value++;
+            DashCooldownNormalized.Value = 0f;
+        }
+    }
+
     public void TakeDamage(float amount)
     {
         CurrentHP.Value -= amount;
-
         if (CurrentHP.Value < 0) CurrentHP.Value = 0;
     }
 
@@ -58,40 +73,18 @@ public class PlayerModel
     {
         if (CurrentDashCount.Value > 0)
         {
-            CurrentDashCount.Value--; // 자동 통지
+            CurrentDashCount.Value--;
+
             return true;
         }
         return false;
     }
 
-    public void UpdateDashCooldown(float deltaTime)
-    {
-        // 대시가 꽉 찼으면 쿨타임 계산 안 함
-        if (CurrentDashCount.Value >= MaxDashChargeStack) 
-        {
-            _currentCooldownTimer = 0f;
-            if (DashCooldownNormalized.Value != 0f) DashCooldownNormalized.Value = 0f;
-            return;
-        }
-
-        // 시간 누적
-        _currentCooldownTimer += deltaTime;
-
-        // UI 갱신을 위해 0.0 ~ 1.0 사이 값으로 변환하여 알림
-        DashCooldownNormalized.Value = _currentCooldownTimer / DashChargeTime;
-
-        // 충전 완료 체크
-        if (_currentCooldownTimer >= DashChargeTime)
-        {
-            CurrentDashCount.Value++; // 대시 충전!
-            _currentCooldownTimer = 0f;
-            DashCooldownNormalized.Value = 0f; // 게이지 리셋
-        }
-    }
-
 
     public void Dispose()
     {
+        _cts?.Cancel(); // 루프 정지
+        _cts?.Dispose();
         CurrentHP?.Dispose();
         CurrentDashCount?.Dispose();
         DashCooldownNormalized?.Dispose();
