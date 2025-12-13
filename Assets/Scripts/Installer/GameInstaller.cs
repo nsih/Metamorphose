@@ -1,11 +1,14 @@
 using System;
 using Reflex.Core;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class GameInstaller : MonoBehaviour, IInstaller
 {
     [SerializeField]
     private PlayerStat _playerStatSO;
+
+    [SerializeField] private RoomManager _roomManager;
 
 
     public void InstallBindings(ContainerBuilder builder)
@@ -21,6 +24,10 @@ public class GameInstaller : MonoBehaviour, IInstaller
 
         //interface
         builder.AddSingleton(typeof(PlayerInputService), typeof(IInputService));
+
+
+        //room manager
+        builder.AddSingleton(new AsyncReactiveProperty<RoomManager>(null));
 
 
         
