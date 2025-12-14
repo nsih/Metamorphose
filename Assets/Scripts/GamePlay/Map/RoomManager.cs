@@ -161,7 +161,8 @@ public class RoomManager : MonoBehaviour
             // Count만큼 적 생성
             for (int k = 0; k < entry.Count; k++)
             {
-                Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+                //Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+                Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, 0);
                 
                 GameObject mob = Instantiate(entry.EnemyPrefab, spawnTr.position + offset, Quaternion.identity);
                 
