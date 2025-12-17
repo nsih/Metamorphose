@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: RoomWaveData
   m_EditorClassIdentifier: 
   Waves:
-  - SpawnGroups:
-    - EnemyPrefab: {fileID: 2495162762500294389, guid: b46fe24fc8f384c4f82f5de59682d7de, type: 3}
+  - PostWaveDelay: 1
+    SpawnGroups:
+    - EnemyData: {fileID: 11400000, guid: f04cec566e155034c80875e13a0dd54e, type: 2}
       SpawnPointIndex: 0
       Count: 1
-    - EnemyPrefab: {fileID: 2495162762500294389, guid: b46fe24fc8f384c4f82f5de59682d7de, type: 3}
+    - EnemyData: {fileID: 11400000, guid: f04cec566e155034c80875e13a0dd54e, type: 2}
       SpawnPointIndex: 1
       Count: 1

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7264249612656455438}
   - component: {fileID: 6674657361345093260}
   - component: {fileID: 8330267057039541680}
+  - component: {fileID: 6688459884827929541}
   m_Layer: 0
   m_Name: EnemyPrefab
   m_TagString: Untagged
@@ -29,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 1415287814724296997}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -45.5, y: 1.3, z: 0.5761637}
-  m_LocalScale: {x: 4.8865, y: 4.4365, z: 1}
+  m_LocalPosition: {x: -45.5, y: 1.3, z: 0}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8930606706929581252}
@@ -177,7 +178,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10f3a6e179d14ac4081b36268b81e433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyDataSO: {fileID: 0}
+  enemyDataSO: {fileID: 11400000, guid: f04cec566e155034c80875e13a0dd54e, type: 2}
+--- !u!114 &6688459884827929541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415287814724296997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0de87f058cf57d4084ea1a6868c3550, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7523565015613730554
 GameObject:
   m_ObjectHideFlags: 0
