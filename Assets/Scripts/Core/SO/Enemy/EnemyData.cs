@@ -11,4 +11,8 @@ public class EnemyDataSO : ScriptableObject
     public int MaxHp = 5;
     public float MoveSpeed = 5f;
     public int Damage = 1;
+
+
+    public float AggroRange = 10;
+    public float AttackRange = 7.5f;
 }

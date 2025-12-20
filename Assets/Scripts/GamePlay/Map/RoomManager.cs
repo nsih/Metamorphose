@@ -76,7 +76,7 @@ public class RoomManager : MonoBehaviour
     {
         if (_roomState.Value != RoomState.Idle) return;
 
-        Debug.Log("[Room] Battle Start!");
+        //Debug.Log("Start Room event");
         _roomState.Value = RoomState.Battle;
 
         // 시나리오 랜덤 선택
@@ -103,7 +103,7 @@ public class RoomManager : MonoBehaviour
             for (int i = 0; i < _currentWaveData.Waves.Count; i++)
             {
                 Wave wave = _currentWaveData.Waves[i];
-                Debug.Log($"[Room] Wave {i + 1} Start");
+                Debug.Log($"Wave {i + 1} Started");
 
                 SpawnWaveUnits(wave);
 
@@ -114,7 +114,7 @@ public class RoomManager : MonoBehaviour
                     return _activeEnemies.Count == 0;
                 }, cancellationToken: token);
 
-                Debug.Log($"[Room] Wave {i + 1} Clear!");
+                Debug.Log($"Wave {i + 1} Cleared");
 
                 if (wave.PostWaveDelay > 0)
                 {

@@ -13,7 +13,7 @@ public class GameInstaller : MonoBehaviour, IInstaller
 
     public void InstallBindings(ContainerBuilder builder)
     {
-        Debug.Log("scene install start");
+        //Debug.Log("scene install start");
 
         //data
         builder.AddSingleton(_playerStatSO, typeof(PlayerStat));
@@ -31,6 +31,6 @@ public class GameInstaller : MonoBehaviour, IInstaller
 
 
         
-        Debug.Log("scene install done");
+        //Debug.Log("scene install done");
     }
 }
