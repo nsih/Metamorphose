@@ -6,6 +6,7 @@ using Core;                 // RoomState가 있는 네임스페이스
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Reflex.Attributes;    // DI
+using System.Linq;
 
 using Random = UnityEngine.Random;
 
@@ -28,22 +29,52 @@ public class RoomManager : MonoBehaviour
     private RoomWaveData _currentWaveData;
     private List<Enemy> _activeEnemies = new List<Enemy>();
     private EnemyFactory _factory; // 팩토리 패턴 주체
+    
+    //
+    private PlayerSpawner _playerSpawner; // 주입받을 스포너
+    private Transform _playerTransform;   // 생성된 플레이어 위치
+    
     private CancellationTokenSource _cts;
+
+    /*
+    RoomManager: 웨이브 시작
+
+    EnemyFactory: 플레이어 위치 확인, 웨이브 SO 에따른 적 출고
+
+    Enemy: 태어나자마자 플레이어가 어딘지 알고 있음
+
+    RoomManager: WaitUntil로 감시
+    */
 
 
     // DI
     [Inject]
-    public void Construct(AsyncReactiveProperty<RoomManager> globalHandle)
+    public void Construct(AsyncReactiveProperty<RoomManager> globalHandle , PlayerSpawner spawner)
     {
         _globalCurrentRoomHandle = globalHandle;
+        _playerSpawner = spawner;
+
     }
 
     private void Start()
     {
-        // 팩토리 고용
-        _factory = new EnemyFactory();
+        
+        if (_playerSpawner != null)
+        {
+            GameObject playerObj = _playerSpawner.Spawn();
+            
+            //최초에는 플레이어까지 직접 소환
+            if (playerObj != null)
+                _playerTransform = playerObj.transform;
+        }
+        else
+        {
+            Debug.Log("playerSpawner error");
+        }
 
-        // 전역
+        _factory = new EnemyFactory(_playerTransform);
+
+        // 전역핸들
         if (_globalCurrentRoomHandle != null)
         {
             _globalCurrentRoomHandle.Value = this;
@@ -103,18 +134,25 @@ public class RoomManager : MonoBehaviour
             for (int i = 0; i < _currentWaveData.Waves.Count; i++)
             {
                 Wave wave = _currentWaveData.Waves[i];
-                Debug.Log($"Wave {i + 1} Started");
+                //Debug.Log($"Wave {i + 1} Started");
 
+                //적 생성
                 SpawnWaveUnits(wave);
 
+                //수정 : removeAll -> All (LINQ)
                 await UniTask.WaitUntil(() => 
                 {
+                    /*
                     _activeEnemies.RemoveAll(x => x == null || !x.gameObject.activeSelf); 
-                    
                     return _activeEnemies.Count == 0;
+                    */
+                    return _activeEnemies.All(x => x == null || !x.gameObject.activeSelf);
                 }, cancellationToken: token);
 
-                Debug.Log($"Wave {i + 1} Cleared");
+                //Debug.Log($"Wave {i + 1} Cleared");
+
+                // removeall -> all : 직접 비워줘야함
+                _activeEnemies.Clear();
 
                 if (wave.PostWaveDelay > 0)
                 {
@@ -150,7 +188,7 @@ public class RoomManager : MonoBehaviour
             {
                 Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
                 
-                // 팩토리에게 주문 (Create 내부에서 Pool.Get -> Init(Data) -> SetReleaseAction 다 해줬잖아)
+                // 팩토리에게 주문 : Pool.Get -> Init(Data) -> SetTarget(Player) -> SetReleaseAction 다해줬잖아
                 Enemy enemy = _factory.Create(spawnTr.position + offset, entry.EnemyData);
                 
                 _activeEnemies.Add(enemy);
@@ -160,7 +198,7 @@ public class RoomManager : MonoBehaviour
 
     private void CompleteRoom()
     {
-        Debug.Log("[Room] All Waves Cleared! Room Complete.");
+        Debug.Log("Clear");
         _roomState.Value = RoomState.Complete;
         
         // TODO: 문 열림 연출, 보상 상자 생성 등
@@ -188,6 +226,7 @@ public class RoomManager : MonoBehaviour
 
         // 초기화하고 재시작
         _roomState.Value = RoomState.Idle;
-        StartRoomEvent();
+
+        UniTask.DelayFrame(1).ContinueWith(StartRoomEvent).Forget();
     }
 }

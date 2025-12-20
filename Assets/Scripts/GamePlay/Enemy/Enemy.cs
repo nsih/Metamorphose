@@ -11,10 +11,14 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public event System.Action OnHit;
     public event System.Action OnDeath;
-    private System.Action _returnToPool;
+    System.Action _returnToPool;
 
-    private int _hp;
-    private bool _isDead = false;
+    int _hp;
+    bool _isDead = false;
+
+    private Transform _target;
+
+
 
     private void Awake()
     {
@@ -47,6 +51,36 @@ public class Enemy : MonoBehaviour, IDamageable
         _isDead = false;
     }
 
+    public void SetTarget(Transform target)
+    {
+        _target = target;
+    }
+
+    public float GetDistanceToTarget()
+    {
+        if (_target == null)
+        {
+            return float.MaxValue;
+        }
+
+        return Vector3.Distance(transform.position, _target.position);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (_data == null) return;
+        
+        // 어그로 범위
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, _data.AggroRange);
+
+        // 공격 범위
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, _data.AttackRange);
+    }
+
+
+    //
     public void OnBulletHit(Bullet bullet, Vector3 hitPoint)
     {
         if (_isDead) return;
