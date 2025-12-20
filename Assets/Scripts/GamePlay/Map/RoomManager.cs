@@ -26,7 +26,7 @@ public class RoomManager : MonoBehaviour
 
     // logic
     private RoomWaveData _currentWaveData;
-    private List<EnemyHealth> _activeEnemies = new List<EnemyHealth>();
+    private List<Enemy> _activeEnemies = new List<Enemy>();
     private EnemyFactory _factory; // 팩토리 패턴 주체
     private CancellationTokenSource _cts;
 
@@ -151,7 +151,7 @@ public class RoomManager : MonoBehaviour
                 Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
                 
                 // 팩토리에게 주문 (Create 내부에서 Pool.Get -> Init(Data) -> SetReleaseAction 다 해줬잖아)
-                EnemyHealth enemy = _factory.Create(spawnTr.position + offset, entry.EnemyData);
+                Enemy enemy = _factory.Create(spawnTr.position + offset, entry.EnemyData);
                 
                 _activeEnemies.Add(enemy);
             }

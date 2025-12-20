@@ -6,10 +6,10 @@ public class EnemyFactory
     {
     }
 
-    public EnemyHealth Create(Vector3 position, EnemyDataSO data)
+    public Enemy Create(Vector3 position, EnemyDataSO data)
     {
         // get
-        EnemyHealth enemy = EnemyPoolManager.Instance.Get();
+        Enemy enemy = EnemyPoolManager.Instance.Get();
 
         // location
         enemy.transform.position = position;

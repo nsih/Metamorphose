@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6674657361345093260}
   - component: {fileID: 8330267057039541680}
   - component: {fileID: 6688459884827929541}
+  - component: {fileID: 101416943244610006}
   m_Layer: 0
   m_Name: EnemyPrefab
   m_TagString: Untagged
@@ -34,7 +35,6 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8930606706929581252}
   - {fileID: 4201884371974415452}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -178,7 +178,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10f3a6e179d14ac4081b36268b81e433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyDataSO: {fileID: 11400000, guid: f04cec566e155034c80875e13a0dd54e, type: 2}
+  _data: {fileID: 11400000, guid: f04cec566e155034c80875e13a0dd54e, type: 2}
+  _receiver: {fileID: 101416943244610006}
 --- !u!114 &6688459884827929541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,51 +192,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0de87f058cf57d4084ea1a6868c3550, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &7523565015613730554
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8930606706929581252}
-  - component: {fileID: 7719136861608022068}
-  m_Layer: 0
-  m_Name: Bullet Receiver
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8930606706929581252
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7523565015613730554}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 85287228532182553}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7719136861608022068
+--- !u!114 &101416943244610006
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7523565015613730554}
+  m_GameObject: {fileID: 1415287814724296997}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a50e756f139e8884f93ef2eca2eef78d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  self: {fileID: 8930606706929581252}
+  self: {fileID: 85287228532182553}
   colliderType: 0
   startingChildren: []
   syncEnable: 1

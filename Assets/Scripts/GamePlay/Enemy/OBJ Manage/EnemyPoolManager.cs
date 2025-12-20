@@ -6,7 +6,7 @@ public class EnemyPoolManager : MonoBehaviour
     public static EnemyPoolManager Instance;
 
     [Header("Settings")]
-    [SerializeField] private EnemyHealth _prefab; 
+    [SerializeField] private Enemy _prefab; 
     [SerializeField] private int _defaultCapacity = 20;
     [SerializeField] private int _maxSize = 100;
 
@@ -16,7 +16,7 @@ public class EnemyPoolManager : MonoBehaviour
     [SerializeField] private int _inactiveCount;
 
 
-    private ObjectPool<EnemyHealth> _pool;
+    private ObjectPool<Enemy> _pool;
 
     private void Awake()
     {
@@ -38,7 +38,7 @@ public class EnemyPoolManager : MonoBehaviour
 
     private void InitPool()
     {
-        _pool = new ObjectPool<EnemyHealth>(
+        _pool = new ObjectPool<Enemy>(
             createFunc: CreateEnemy,
             actionOnGet: OnGetEnemy,
             actionOnRelease: OnReleaseEnemy,
@@ -50,27 +50,27 @@ public class EnemyPoolManager : MonoBehaviour
     }
 
     //콜백
-    private EnemyHealth CreateEnemy()
+    private Enemy CreateEnemy()
     {
         return Instantiate(_prefab, transform);
     }
 
-    private void OnGetEnemy(EnemyHealth enemy)
+    private void OnGetEnemy(Enemy enemy)
     {
         enemy.gameObject.SetActive(true);
     }
 
-    private void OnReleaseEnemy(EnemyHealth enemy)
+    private void OnReleaseEnemy(Enemy enemy)
     {
         enemy.gameObject.SetActive(false);
     }
 
-    private void OnDestroyEnemy(EnemyHealth enemy)
+    private void OnDestroyEnemy(Enemy enemy)
     {
         Destroy(enemy.gameObject);
     }
 
     //Public API
-    public EnemyHealth Get() => _pool.Get();
-    public void Release(EnemyHealth enemy) => _pool.Release(enemy);
+    public Enemy Get() => _pool.Get();
+    public void Release(Enemy enemy) => _pool.Release(enemy);
 }
