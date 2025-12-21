@@ -58,7 +58,7 @@ Transform:
   m_GameObject: {fileID: 1118534394636021727}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 3.05, y: 0, z: 0}
+  m_LocalPosition: {x: 1.06, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -151,7 +151,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 36.1
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -369,7 +369,7 @@ MonoBehaviour:
   syncEnable: 1
   syncDisable: 1
   syncCollisionTags: 1
-  hitboxSize: 3
+  hitboxSize: 1
   hitboxOffset: {x: 0, y: 0}
   killBulletOnCollision: 0
   maxSimultaneousCollisionsPerFrame: 1
@@ -513,11 +513,11 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 6.1943736, y: 8.83}
+    oldSize: {x: 2.064791, y: 2.9433331}
     newSize: {x: 6.1943736, y: 8.83}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 6.1943736, y: 8.83}
+  m_Size: {x: 1, y: 3}
   m_EdgeRadius: 0

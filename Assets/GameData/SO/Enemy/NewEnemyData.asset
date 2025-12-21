@@ -16,3 +16,6 @@ MonoBehaviour:
   MaxHp: 5
   MoveSpeed: 5
   Damage: 1
+  AttackCoolTime: 1
+  AggroRange: 50
+  AttackRange: 7.5
