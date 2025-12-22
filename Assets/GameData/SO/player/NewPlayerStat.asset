@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0d08cdfb249f3448aa6c75dd77c959f, type: 3}
   m_Name: NewPlayerStat
   m_EditorClassIdentifier: 
-  MaxHealth: 10
-  MoveSpeed: 40
+  MaxHealth: 30
+  MoveSpeed: 20
   JumpForce: 50
-  DashSpeed: 120
-  DashDuration: 0.15
-  MaxDashChargeStack: 3
+  DashSpeed: 85
+  DashDuration: 0.25
+  MaxDashChargeStack: 5
   DashChargeTime: 1.5
   TimeSlowFactor: 0.5
   SlowMotionDuration: 2
