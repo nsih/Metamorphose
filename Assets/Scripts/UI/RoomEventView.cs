@@ -4,7 +4,7 @@ using Reflex.Attributes;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using System.Threading;
-using Core;
+using Common;
 using System;
 
 public class RoomEventView : MonoBehaviour

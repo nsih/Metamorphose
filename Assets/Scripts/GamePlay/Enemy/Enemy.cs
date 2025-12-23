@@ -1,17 +1,11 @@
 using UnityEngine;
 using BulletPro;
 using Cysharp.Threading.Tasks;
+using Common;
 
-// 1. 상태 정의 (가벼운 FSM)
-public enum EnemyState
-{
-    Idle,   // 대기/배회
-    Chase,  // 추적
-    Attack  // 공격
-}
 
 [RequireComponent(typeof(BulletReceiver))]
-[RequireComponent(typeof(EnemyMovement))] // Movement 필수 보장
+[RequireComponent(typeof(EnemyMovement))]
 public class Enemy : MonoBehaviour, IDamageable
 {
     [SerializeField] private EnemyDataSO _data;
@@ -96,7 +90,7 @@ public class Enemy : MonoBehaviour, IDamageable
                 break;
 
             case EnemyState.Attack:
-                // 공격 범위를 벗어나면 -> 다시 추적
+                // 공격 범위를 벗어나면 -> 다시 이동
                 if (distance > _data.AttackRange)
                 {
                     ChangeState(EnemyState.Chase);
@@ -154,7 +148,6 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void TryAttack()
     {
-        // 쿨타임 체크
         if (Time.time - _lastAttackTime >= _data.AttackCoolTime)
         {
             _lastAttackTime = Time.time;
@@ -164,13 +157,14 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private async UniTaskVoid PerformAttack()
     {
-        // TODO: 나중에 AttackStrategySO를 연결할 곳
-        Debug.Log("Attack"); 
+        if (_data.AttackStrategy == null) return;
+
+        _data.AttackStrategy.Attack(transform, _target);
         
-        // 임시 딜레이 (애니메이션 시간)
-        await UniTask.Delay(500); 
+        // 후딜
+        int delay = 1000;
+        await UniTask.Delay(delay, cancellationToken: this.GetCancellationTokenOnDestroy()); 
     }
-    // -----------------------
 
     public void SetTarget(Transform target)
     {
@@ -241,4 +235,33 @@ public class Enemy : MonoBehaviour, IDamageable
         if (_returnToPool != null) _returnToPool.Invoke();
         else gameObject.SetActive(false);
     }
+
+
+    #if UNITY_EDITOR
+    private void OnGUI()
+    {
+        if (_target == null || _isDead) return;
+
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 0.8f); // 0.8f는 높이 조절
+        if (screenPos.z < 0) return;
+
+        GUIStyle style = new GUIStyle();
+        style.fontSize = 15;
+        style.fontStyle = FontStyle.Bold;
+        style.alignment = TextAnchor.MiddleCenter;
+        
+        switch (_currentState)
+        {
+            case EnemyState.Idle: style.normal.textColor = Color.green; break;
+            case EnemyState.Chase: style.normal.textColor = Color.yellow; break;
+            case EnemyState.Attack: style.normal.textColor = Color.red; break;
+        }
+
+        screenPos.y = Screen.height - screenPos.y;
+
+        string text = $"{_currentState}\nDist: {GetDistanceToTarget():F1}";
+        
+        GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 25, 100, 50), text, style);
+    }
+#endif
 }

@@ -6,6 +6,7 @@ public class EnemyDataSO : ScriptableObject
     //public Sprite Icon;
     //public Color TintColor = Color.white;
     public EnemyMoveStrategySO MoveStrategy; 
+    public EnemyAttackStrategySO AttackStrategy; 
 
     
     public int MaxHp = 5;

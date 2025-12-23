@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0d08cdfb249f3448aa6c75dd77c959f, type: 3}
-  m_Name: NewPlayerStat
+  m_Name: DebugingPlayerStat
   m_EditorClassIdentifier: 
   MaxHealth: 30
   MoveSpeed: 20

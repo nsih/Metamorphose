@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading;
-using Core;                 // RoomState가 있는 네임스페이스
+using Common;                 // RoomState가 있는 네임스페이스
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Reflex.Attributes;    // DI

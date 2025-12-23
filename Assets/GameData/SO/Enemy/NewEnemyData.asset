@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: NewEnemyData
   m_EditorClassIdentifier: 
   MoveStrategy: {fileID: 11400000, guid: 0ff6dc7e1eb542346812aa1d5fce1351, type: 2}
+  AttackStrategy: {fileID: 11400000, guid: 7d7353be5635e25419dada1c78569183, type: 2}
   MaxHp: 5
   MoveSpeed: 5
   Damage: 1
