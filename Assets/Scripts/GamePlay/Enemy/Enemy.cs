@@ -25,10 +25,16 @@ public class Enemy : MonoBehaviour, IDamageable
     private EnemyMovement _movement;
     private float _lastAttackTime;
 
+    //sr
+    private SpriteRenderer _spriteRenderer;
+
+
+
     private void Awake()
     {
         _receiver = GetComponent<BulletReceiver>();
         _movement = GetComponent<EnemyMovement>(); // 다리(이동) 컴포넌트 가져오기
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void OnEnable()
@@ -208,11 +214,27 @@ public class Enemy : MonoBehaviour, IDamageable
         bullet.Die();
     }
 
+    private async UniTaskVoid PlayFlashEffect()
+    {
+        if (_spriteRenderer == null) return;
+        var token = this.GetCancellationTokenOnDestroy();
+
+        try
+        {
+            _spriteRenderer.color = Color.red;
+            await UniTask.Delay(100, cancellationToken: token);
+
+            _spriteRenderer.color = Color.white; 
+        }catch (System.OperationCanceledException){}
+    }
+
     public void TakeDamage(int dmg)
     {
         if (_isDead) return;
 
         _hp -= dmg;
+        PlayFlashEffect().Forget();
+        
         OnHit?.Invoke();
 
         if (_hp <= 0)

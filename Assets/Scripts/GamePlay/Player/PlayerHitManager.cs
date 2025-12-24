@@ -1,13 +1,15 @@
 using UnityEngine;
 using Reflex.Attributes;
 using BulletPro;
+using Cysharp.Threading.Tasks;
 
 [RequireComponent(typeof(BulletReceiver))]
 public class PlayerHitManager : MonoBehaviour
 {
     [Inject] private PlayerModel _model;
 
-    [SerializeField] private BulletReceiver _receiver;
+    private BulletReceiver _receiver;
+    private SpriteRenderer _spriteRenderer;
 
     private PlayerDash _playerDash;
     private BulletTimeManager _bulletTimeManager;
@@ -20,6 +22,8 @@ public class PlayerHitManager : MonoBehaviour
         _receiver = GetComponent<BulletReceiver>();
         _playerDash = GetComponent<PlayerDash>();
         _bulletTimeManager = GetComponent<BulletTimeManager>();
+
+        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Start()
@@ -41,6 +45,7 @@ public class PlayerHitManager : MonoBehaviour
         // 이미 죽었으면 무시 (Model 데이터 확인)
         if (_model.CurrentHP.Value <= 0) return;
         
+        //그레이즈 처리
         if (IsInvincible)
         {
             Debug.Log("Graze");
@@ -58,12 +63,13 @@ public class PlayerHitManager : MonoBehaviour
         if (bullet.dynamicSolver != null)
         {
             damage = bullet.moduleParameters.GetFloat("_Damage");
-            if (damage == 0) damage = 1; 
+            if (damage == 0) damage = 1;             
         }
 
         Debug.Log($"dmg: {damage}");
         
         _model.TakeDamage(damage);
+        PlayHitFeedback().Forget();
 
         bullet.Die();
         
@@ -79,5 +85,24 @@ public class PlayerHitManager : MonoBehaviour
         
         // 임시 처리
         gameObject.SetActive(false); 
+    }
+
+    //
+    private async UniTaskVoid PlayHitFeedback()
+    {
+        //맞을때 잠깐 번쩍이는데 무적시간 추가할때 이것도 바꿔야함
+        if (_spriteRenderer != null)
+        {
+            var token = this.GetCancellationTokenOnDestroy();
+            try
+            {
+                _spriteRenderer.color = Color.red;
+                await UniTask.Delay(100, cancellationToken: token);
+                _spriteRenderer.color = Color.white;
+            }
+            catch (System.OperationCanceledException) { }
+        }
+
+        // 카메라 흔드는 효과 추가? (아직 안만듬)
     }
 }
