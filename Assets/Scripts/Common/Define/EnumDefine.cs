@@ -2,6 +2,17 @@ using UnityEngine;
 
 namespace Common 
 {
+
+    #region 'Room'
+    public enum RoomType
+    {
+        Start,
+        Battle,
+        Shop,
+        Elite,
+        Boss,
+        Event
+    }
     // 방의 상태 (대기 -> 전투 -> 완료)
     public enum RoomState
     {
@@ -9,7 +20,9 @@ namespace Common
         Battle,
         Complete
     }
+    #endregion
 
+    #region 'enemy'
     public enum EnemyType
     {
         asd
@@ -21,4 +34,5 @@ namespace Common
         Chase,  // 추적
         Attack  // 공격
     }
+    #endregion
 }

@@ -8,6 +8,7 @@ public class SceneInstaller : MonoBehaviour, IInstaller
     [SerializeField] private PlayerSpawner _playerSpawner;
 
     //[SerializeField] private RoomManager _roomManager;
+    
 
 
     public void InstallBindings(ContainerBuilder builder)
@@ -19,6 +20,12 @@ public class SceneInstaller : MonoBehaviour, IInstaller
 
 
         //room manager
-        builder.AddSingleton(new AsyncReactiveProperty<RoomManager>(null));
+        var roomProperty = new AsyncReactiveProperty<RoomManager>(null);
+        builder.AddSingleton(
+            roomProperty, 
+            typeof(AsyncReactiveProperty<RoomManager>),          // RoomManager용 (쓰기 가능)
+            typeof(IReadOnlyAsyncReactiveProperty<RoomManager>)  // UI용 (읽기 전용)
+        );
+        //builder.AddSingleton(new AsyncReactiveProperty<RoomManager>(null));
     }
 }

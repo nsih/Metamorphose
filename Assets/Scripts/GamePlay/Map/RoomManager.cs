@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading;
-using Common;                 // RoomState가 있는 네임스페이스
+using Common;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Reflex.Attributes;    // DI
@@ -35,6 +35,8 @@ public class RoomManager : MonoBehaviour
     private Transform _playerTransform;   // 생성된 플레이어 위치
     
     private CancellationTokenSource _cts;
+
+    
 
     /*
     RoomManager: 웨이브 시작
@@ -162,14 +164,8 @@ public class RoomManager : MonoBehaviour
 
             CompleteRoom();
         }
-        catch (System.OperationCanceledException)
-        {
-            Debug.Log("웨이브 취소");
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Room Error");
-        }
+        catch (OperationCanceledException){Debug.Log("웨이브 취소");}
+        catch (Exception e){Debug.LogError("Room Error");}
     }
 
     private void SpawnWaveUnits(Wave wave)
@@ -198,10 +194,10 @@ public class RoomManager : MonoBehaviour
 
     private void CompleteRoom()
     {
-        Debug.Log("Clear");
+        Debug.Log("Complete Room");
+
+        //나머지는 UI가 알아서 해야하지 않겠니
         _roomState.Value = RoomState.Complete;
-        
-        // TODO: 문 열림 연출, 보상 상자 생성 등
     }
 
     public void ResetRoom()
