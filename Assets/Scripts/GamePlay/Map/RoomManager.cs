@@ -2,48 +2,79 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Threading;
-using Core;                 // RoomState, RoomWaveData가 있는 네임스페이스
+using Common;                 // RoomState가 있는 네임스페이스
 using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq; // AsyncReactiveProperty 사용을 위해 필요
-using Reflex.Attributes;    // [Inject] 사용을 위해 필요
+using Cysharp.Threading.Tasks.Linq;
+using Reflex.Attributes;    // DI
+using System.Linq;
 
-// Random 모호함 해결을 위한 별칭 선언
 using Random = UnityEngine.Random;
 
 public class RoomManager : MonoBehaviour
 {
-    [Header("Settings")]
-    [SerializeField] private List<RoomWaveData> _possibleWaveDatas;
+    [SerializeField] private List<RoomWaveData> _possibleWaveDatas; // 랜덤으로 고를 시나리오들
+    [SerializeField] private List<Transform> _spawnPoints; // 씬에 배치된 스폰 위치들
 
-    [Header("Scene References")]
-    [SerializeField] private List<Transform> _spawnPoints;
 
-    // [핵심 1] 로컬 상태 관리: UI가 이 값을 구독하여 화면을 갱신함
-    // 외부에서는 읽기만 가능(IReadOnly...)하도록 캡슐화
+    // state
     private AsyncReactiveProperty<RoomState> _roomState = new AsyncReactiveProperty<RoomState>(RoomState.Idle);
     public IReadOnlyAsyncReactiveProperty<RoomState> CurrentRoomState => _roomState;
 
-    // [핵심 2] 글로벌 등록용 핸들: Installer가 만든 전역 변수를 주입받음
-    private AsyncReactiveProperty<RoomManager> _globalCurrentRoomHandle;
+    private AsyncReactiveProperty<RoomManager> _globalCurrentRoomHandle; // 전역 등록용 핸들
 
-    // 내부 변수들
+
+
+
+    // logic
     private RoomWaveData _currentWaveData;
-    private List<GameObject> _activeEnemies = new List<GameObject>();
+    private List<Enemy> _activeEnemies = new List<Enemy>();
+    private EnemyFactory _factory; // 팩토리 패턴 주체
+    
+    //
+    private PlayerSpawner _playerSpawner; // 주입받을 스포너
+    private Transform _playerTransform;   // 생성된 플레이어 위치
+    
     private CancellationTokenSource _cts;
 
-    // 1. 의존성 주입 (Reflex)
-    // 인스톨러가 생성해둔 '현재 방을 담는 그릇'을 받아옵니다.
+    /*
+    RoomManager: 웨이브 시작
+
+    EnemyFactory: 플레이어 위치 확인, 웨이브 SO 에따른 적 출고
+
+    Enemy: 태어나자마자 플레이어가 어딘지 알고 있음
+
+    RoomManager: WaitUntil로 감시
+    */
+
+
+    // DI
     [Inject]
-    public void Construct(AsyncReactiveProperty<RoomManager> globalHandle)
+    public void Construct(AsyncReactiveProperty<RoomManager> globalHandle , PlayerSpawner spawner)
     {
         _globalCurrentRoomHandle = globalHandle;
+        _playerSpawner = spawner;
+
     }
 
     private void Start()
     {
-        // 2. 전역 등록
-        // 게임이 시작되면(또는 이 방이 생성되면) "내가 현재 방이야!"라고 등록합니다.
-        // 이를 구독 중인 UI가 "어, 방 바꼈네?" 하고 이 방의 _roomState를 새로 구독하게 됩니다.
+        
+        if (_playerSpawner != null)
+        {
+            GameObject playerObj = _playerSpawner.Spawn();
+            
+            //최초에는 플레이어까지 직접 소환
+            if (playerObj != null)
+                _playerTransform = playerObj.transform;
+        }
+        else
+        {
+            Debug.Log("playerSpawner error");
+        }
+
+        _factory = new EnemyFactory(_playerTransform);
+
+        // 전역핸들
         if (_globalCurrentRoomHandle != null)
         {
             _globalCurrentRoomHandle.Value = this;
@@ -54,7 +85,6 @@ public class RoomManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        // 메모리 누수 방지: ReactiveProperty와 CTS는 반드시 해제해야 합니다.
         _roomState?.Dispose();
         
         if (_cts != null)
@@ -72,26 +102,23 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    //Battle Flow 
     public void StartRoomEvent()
     {
-        // 이미 배틀 중이거나 완료된 상태면 진입 차단 (.Value로 값 접근)
         if (_roomState.Value != RoomState.Idle) return;
 
-        Debug.Log("Room Event Start");
-        
-        // 구독 중인 UI 자동 갱신
+        //Debug.Log("Start Room event");
         _roomState.Value = RoomState.Battle;
 
-        // 웨이브 데이터 랜덤 선택
+        // 시나리오 랜덤 선택
         if (_possibleWaveDatas != null && _possibleWaveDatas.Count > 0)
         {
             int rnd = Random.Range(0, _possibleWaveDatas.Count);
             _currentWaveData = _possibleWaveDatas[rnd];
-            Debug.Log($"Selected Data: {_currentWaveData.name}");
         }
         else
         {
-            Debug.LogError("WaveData error");
+            Debug.LogError("RoomWaveData error");
             return;
         }
 
@@ -104,38 +131,44 @@ public class RoomManager : MonoBehaviour
     {
         try
         {
-            // 웨이브 순차 실행
             for (int i = 0; i < _currentWaveData.Waves.Count; i++)
             {
                 Wave wave = _currentWaveData.Waves[i];
+                //Debug.Log($"Wave {i + 1} Started");
 
-                // 적 스폰
+                //적 생성
                 SpawnWaveUnits(wave);
 
-                // Polling: 적들이 모두 죽을 때까지 대기
-                // (적이 Destroy되면 리스트에서 null이 되므로 RemoveAll로 정리)
+                //수정 : removeAll -> All (LINQ)
                 await UniTask.WaitUntil(() => 
                 {
-                    _activeEnemies.RemoveAll(x => x == null); 
+                    /*
+                    _activeEnemies.RemoveAll(x => x == null || !x.gameObject.activeSelf); 
                     return _activeEnemies.Count == 0;
+                    */
+                    return _activeEnemies.All(x => x == null || !x.gameObject.activeSelf);
                 }, cancellationToken: token);
 
-                Debug.Log($"{i + 1} Wave end");
+                //Debug.Log($"Wave {i + 1} Cleared");
 
-                // 웨이브 간 잠시 대기 (연출 시간)
-                await UniTask.Delay(1000, cancellationToken: token);
+                // removeall -> all : 직접 비워줘야함
+                _activeEnemies.Clear();
+
+                if (wave.PostWaveDelay > 0)
+                {
+                    await UniTask.Delay(TimeSpan.FromSeconds(wave.PostWaveDelay), cancellationToken: token);
+                }
             }
 
-            // 모든 웨이브 종료
             CompleteRoom();
         }
         catch (System.OperationCanceledException)
         {
-            Debug.Log("웨이브 강제 취소됨 (리셋 등)");
+            Debug.Log("웨이브 취소");
         }
         catch (Exception e)
         {
-            Debug.LogError($"Scenario Error: {e.Message}");
+            Debug.LogError("Room Error");
         }
     }
 
@@ -143,45 +176,37 @@ public class RoomManager : MonoBehaviour
     {
         foreach (var entry in wave.SpawnGroups)
         {
-            int index = entry.SpawnPointIndex;
-            
-            // 스폰 포인트 인덱스 안전장치
+            int index = 0;
             if (_spawnPoints.Count > 0)
-            {
-                index = index % _spawnPoints.Count; 
-            }
-            else 
-            {
-                Debug.LogError("Spawn point error");
-                return;
-            }
-
+                index = entry.SpawnPointIndex % _spawnPoints.Count;
+            
             Transform spawnTr = _spawnPoints[index];
 
-            // Count만큼 적 생성
+
+
             for (int k = 0; k < entry.Count; k++)
             {
                 Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
                 
-                GameObject mob = Instantiate(entry.EnemyPrefab, spawnTr.position + offset, Quaternion.identity);
+                // 팩토리에게 주문 : Pool.Get -> Init(Data) -> SetTarget(Player) -> SetReleaseAction 다해줬잖아
+                Enemy enemy = _factory.Create(spawnTr.position + offset, entry.EnemyData);
                 
-                _activeEnemies.Add(mob);
+                _activeEnemies.Add(enemy);
             }
         }
     }
 
     private void CompleteRoom()
     {
-        Debug.Log("Room Clear");
-        
+        Debug.Log("Clear");
         _roomState.Value = RoomState.Complete;
         
-        // 보상 UI 구현해야함 호옹이
+        // TODO: 문 열림 연출, 보상 상자 생성 등
     }
 
     public void ResetRoom()
     {
-        // 1. 비동기 작업 취소
+        // 웨이브 취소
         if (_cts != null)
         {
             _cts.Cancel();
@@ -189,16 +214,19 @@ public class RoomManager : MonoBehaviour
             _cts = null;
         }
 
-        // 살아있는 적 제거
+        // 수거
         foreach (var enemy in _activeEnemies)
         {
-            if (enemy != null) Destroy(enemy);
+            if (enemy != null && enemy.gameObject.activeSelf)
+            {
+                EnemyPoolManager.Instance.Release(enemy);
+            }
         }
         _activeEnemies.Clear();
 
-        // UI OFF
+        // 초기화하고 재시작
         _roomState.Value = RoomState.Idle;
 
-        StartRoomEvent();
+        UniTask.DelayFrame(1).ContinueWith(StartRoomEvent).Forget();
     }
 }
