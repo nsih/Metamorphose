@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea4dc650b8b112a428bb2bb952d4369a, type: 3}
+  m_Name: NewPlayerWeaponData
+  m_EditorClassIdentifier: 
+  Profile: {fileID: 11400000, guid: fd852e33a81fa4148b6a1735a62d24d8, type: 2}
+  BaseDamage: 1
+  BaseFireRate: 0.5
+  BaseRange: 30
+  BaseProjectileCount: 1
+  BaseSpreadAngle: 0
+  BaseSpeedScale: 1
+  BaseHomingStrength: 0

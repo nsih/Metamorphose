@@ -165,7 +165,7 @@ public class RoomManager : MonoBehaviour
             CompleteRoom();
         }
         catch (OperationCanceledException){Debug.Log("웨이브 취소");}
-        catch (Exception e){Debug.LogError("Room Error");}
+        //catch (Exception e){Debug.LogError("Room Error");}
     }
 
     private void SpawnWaveUnits(Wave wave)
