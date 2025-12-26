@@ -32,10 +32,8 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
-        // 모델이 없으면 아무것도 못함
         if (_input == null || _mainEmitter == null || _model == null) return;
 
-        // 공격 버튼 누름
         if (_input.IsAttackPressed) 
         {
             if (!_isShooting)
@@ -43,7 +41,6 @@ public class PlayerAttack : MonoBehaviour
                 StartShooting();
             }
         }
-        // 공격 버튼 뗌
         else
         {
             if (_isShooting)
@@ -78,20 +75,20 @@ public class PlayerAttack : MonoBehaviour
 
         if (rootBullet != null)
         {
-            // 데미지 (Bullet Module -> Custom Params)
             rootBullet.moduleParameters.SetFloat(BPParams.Damage, _model.Damage);
-            
-            // 갈래 수 (Shot Module -> Layout -> Number)
-            rootBullet.moduleParameters.SetFloat(BPParams.Count, _model.ProjectileCount);
-            
-            // 탄 퍼짐
-            rootBullet.moduleParameters.SetFloat(BPParams.Spread, _model.SpreadAngle);
-            
-            // 탄속
+            Debug.Log(rootBullet.moduleParameters.GetFloat(BPParams.Damage));
             rootBullet.moduleParameters.SetFloat(BPParams.Speed, _model.SpeedScale);
+            Debug.Log(rootBullet.moduleParameters.GetFloat(BPParams.Speed));
             
-            // 유도력
+            rootBullet.moduleParameters.SetInt(BPParams.Count, _model.ProjectileCount);
+            Debug.Log(rootBullet.moduleParameters.GetFloat(BPParams.Count));
+            rootBullet.moduleParameters.SetFloat(BPParams.Spread, _model.SpreadAngle);
+            Debug.Log(rootBullet.moduleParameters.GetFloat(BPParams.Spread));
+            
             rootBullet.moduleParameters.SetFloat(BPParams.Homing, _model.HomingStrength);
+            Debug.Log(rootBullet.moduleParameters.GetFloat(BPParams.Homing));
+
+            Debug.Log("커스텀 파라메터 모델에 연결");
         }
         else
         {

@@ -18,6 +18,6 @@ public class PlayerWeaponData : ScriptableObject
     [Header("무기 초기값")]
     public int BaseProjectileCount = 1;
     public float BaseSpreadAngle = 0f;
-    public float BaseSpeedScale = 1.0f;
+    public float BaseSpeedScale = 20.0f;
     public float BaseHomingStrength = 0f;
 }
