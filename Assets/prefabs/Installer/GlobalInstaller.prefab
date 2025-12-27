@@ -58,3 +58,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerStatSO: {fileID: 11400000, guid: d9684b8b2401829408e5f0fff6b04f58, type: 2}
+  _startWeapon: {fileID: 11400000, guid: c9e159b352f194a40b3f338be04f3d9b, type: 2}

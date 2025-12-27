@@ -206,7 +206,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         if (bullet.dynamicSolver != null)
         {
-            damage = bullet.moduleParameters.GetFloat("_Damage");
+            damage = bullet.moduleParameters.GetFloat("Damage");
             if (damage == 0) damage = 1;
         }
 
