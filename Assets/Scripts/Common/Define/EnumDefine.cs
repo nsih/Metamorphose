@@ -35,4 +35,13 @@ namespace Common
         Attack  // 공격
     }
     #endregion
+
+    #region 'stat'
+    public enum StatModType
+    {
+        Flat = 100,        // 깡스탯 (공격력 +10)
+        PercentAdd = 200,  // 합연산 (공격력 +10%, +20% -> 총 30%)
+        PercentMult = 300  // 곱연산 (최종 데미지 2배)
+    }
+    #endregion
 }
