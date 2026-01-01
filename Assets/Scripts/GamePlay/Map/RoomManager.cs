@@ -36,6 +36,11 @@ public class RoomManager : MonoBehaviour
     
     private CancellationTokenSource _cts;
 
+
+    //보상시스템 테스트용 임시 변수
+    [Inject] private PlayerModel _model;
+    [SerializeField] private RewardLibrary _testLibrary;
+
     
 
     /*
@@ -98,10 +103,36 @@ public class RoomManager : MonoBehaviour
 
     private void Update()
     {
+        //임시 리셋버튼
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetRoom();
         }
+
+        #region '보상 테스트'
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            if (_testLibrary != null)
+            {
+                var rewards = _testLibrary.GetRandomRewards(1);
+                if (rewards.Count > 0)
+                {
+                    _model.Reward.ApplyReward(rewards[0]);
+                }
+            }
+        }
+        
+        // Y키: 현재 스탯 출력
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            Debug.Log($"=== 현재 스탯 ===\n" +
+                     $"MaxHP: {_model.MaxHP}\n" +
+                     $"CurrentHP: {_model.CurrentHP.Value}\n" +
+                     $"Damage: {_model.Damage}\n" +
+                     $"ProjectileCount: {_model.ProjectileCount}\n" +
+                     $"MoveSpeed: {_model.MoveSpeed}");
+        }
+        #endregion
     }
 
     //Battle Flow 
