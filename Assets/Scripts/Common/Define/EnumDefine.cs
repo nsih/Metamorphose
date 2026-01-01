@@ -76,7 +76,9 @@ namespace Common
         // Homing
         //Piercing,          // 관통 +1
         //Bounce,            // 튕김 +1
-        //ChainLightning,    // 연쇄 번개 (3회 튕김)
+        //ChainLightning,    // 스태틱의 단검
+
+        RewardChoiceCount
     }
     
     public enum RewardRarity

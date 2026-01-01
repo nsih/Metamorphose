@@ -93,6 +93,12 @@ public class RewardSystem
                 Debug.Log($"  → 이동 속도 +{effect.Value}: {_model.MoveSpeed}");
                 break;
 
+            // reward cnt
+            case RewardType.RewardChoiceCount:
+                _model.Stats.IncreaseRewardChoiceCount((int)effect.Value);
+                Debug.Log($"  → 보상 선택지 +{effect.Value}: {_model.RewardChoiceCount}");
+                break;
+
             default:
                 Debug.LogWarning($"RewardSystem: 처리되지 않은 보상 타입 - {effect.Type}");
                 break;

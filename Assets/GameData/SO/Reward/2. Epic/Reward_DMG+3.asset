@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c659421ae71ab994d804c93d406e670a, type: 3}
   m_Name: Reward_DMG+3
   m_EditorClassIdentifier: 
-  Type: 3
   Rarity: 2
-  Value: 3
+  Effects:
+  - Type: 0
+    Value: 0
   Icon: {fileID: 0}
   DisplayName: DMG +3
   Description: DMG +3

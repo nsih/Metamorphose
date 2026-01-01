@@ -55,6 +55,7 @@ public class PlayerModel : IDisposable
     public float JumpForce => Stats.JumpForce;
     public float TimeSlowFactor => Stats.TimeSlowFactor;
     public float SlowMotionDuration => Stats.SlowMotionDuration;
+    public int RewardChoiceCount => Stats.RewardChoiceCount;
 
     // reward 함수 (파사드 하위 시스템의 함수)
     public void IncreaseMaxHP(float amount) => Health.AddMaxHP(amount);

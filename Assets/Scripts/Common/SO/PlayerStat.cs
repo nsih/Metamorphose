@@ -28,4 +28,10 @@ public class PlayerStat : ScriptableObject
     public float SlowMotionDuration = 5.0f;  // n초 동안 지속
 
     //public float TimeTransitionSpeed = 5f;
+
+
+
+    [Header("Reward")]
+    [Tooltip("보상 선택지 개수")]
+    public int RewardChoiceCount = 3;
 }

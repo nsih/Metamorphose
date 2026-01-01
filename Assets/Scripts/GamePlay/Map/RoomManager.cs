@@ -37,9 +37,11 @@ public class RoomManager : MonoBehaviour
     private CancellationTokenSource _cts;
 
 
+    /*
     //보상시스템 테스트용 임시 변수
     [Inject] private PlayerModel _model;
     [SerializeField] private RewardLibrary _testLibrary;
+    */
 
     
 
@@ -109,6 +111,7 @@ public class RoomManager : MonoBehaviour
             ResetRoom();
         }
 
+        /*
         #region '보상 테스트'
         if (Input.GetKeyDown(KeyCode.T))
         {
@@ -133,6 +136,7 @@ public class RoomManager : MonoBehaviour
                      $"MoveSpeed: {_model.MoveSpeed}");
         }
         #endregion
+        */
     }
 
     //Battle Flow 
