@@ -1,16 +1,25 @@
 using UnityEngine;
 using Common;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class RewardEffect
+{
+    public RewardType Type;
+    public float Value;
+}
 
 [CreateAssetMenu(fileName = "Reward_", menuName = "SO/Reward/Reward Data")]
 public class RewardData : ScriptableObject
 {
-    public RewardType Type;
+    [Header("Reward Info")]
     public RewardRarity Rarity;
-    public float Value;
-
-    // public bool IsStackable = true;        // 중복 획득 가능?
-    // public int MaxStack = 5;               // 최대 스택 개수
     
+    [Header("Effects")]
+    [Tooltip("이 보상이 적용하는 효과들 (여러 개 가능)")]
+    public List<RewardEffect> Effects = new List<RewardEffect>();
+    
+    [Header("UI Display")]
     public Sprite Icon;
     public string DisplayName;
     

@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c659421ae71ab994d804c93d406e670a, type: 3}
   m_Name: Reward_MultiShot+2
   m_EditorClassIdentifier: 
-  Type: 7
   Rarity: 1
-  Value: 2
+  Effects:
+  - Type: 7
+    Value: 2
   Icon: {fileID: 0}
   DisplayName: Multi Shot +2
   Description: Multi Shot +2

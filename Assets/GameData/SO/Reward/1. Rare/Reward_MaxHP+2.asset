@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c659421ae71ab994d804c93d406e670a, type: 3}
   m_Name: Reward_MaxHP+2
   m_EditorClassIdentifier: 
-  Type: 0
   Rarity: 1
-  Value: 2
+  Effects:
+  - Type: 0
+    Value: 2
   Icon: {fileID: 0}
   DisplayName: max HP +2
   Description: max HP +2
