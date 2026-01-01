@@ -44,4 +44,48 @@ namespace Common
         PercentMult = 300  // 곱연산 (최종 데미지 2배)
     }
     #endregion
+
+    #region 'reward'
+    public enum RewardType
+    {
+        // Health
+        MaxHP,              // 최대 체력
+        MaxHPPercent,       // 최대 체력 % 증가 (+10%)
+        Heal,               // 즉시 회복
+        
+        // amage
+        Damage,             // 공격력 증가 (+5)
+        DamagePercent,      // 공격력 % 증가 (+10%)
+        DamageMultiplier,   // 공격력 배율 (×1.5)
+        
+        // Fire Rate
+        AttackSpeed,        // 공격 속도 증가 (쿨타임 -10%)
+        
+        // Projectile
+        Multishot,          // 발사체 개수 증가 (+1)
+        //Projectile Speed,
+        //Projectile Range,
+        //Projectile Sprite Change,
+        //Projectile Bullet Size,
+        
+        // Movement
+        MoveSpeed,          // 이동 속도 증가
+        
+        // Special
+        // DashCharge,      // 대시 충전 개수
+        // Homing
+        //Piercing,          // 관통 +1
+        //Bounce,            // 튕김 +1
+        //ChainLightning,    // 스태틱의 단검
+
+        RewardChoiceCount
+    }
+    
+    public enum RewardRarity
+    {
+        Common,
+        Rare,
+        Epic,
+    }
+    #endregion
 }

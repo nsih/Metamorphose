@@ -199,6 +199,7 @@ MonoBehaviour:
   _spawnPoints:
   - {fileID: 4035460468779396228}
   - {fileID: 5213326703617945216}
+  _testLibrary: {fileID: 11400000, guid: 71c4652413993d949ab8eb17412e42b1, type: 2}
 --- !u!1 &341616453980259848
 GameObject:
   m_ObjectHideFlags: 0

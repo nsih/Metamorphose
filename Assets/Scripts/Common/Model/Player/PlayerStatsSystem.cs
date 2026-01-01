@@ -2,6 +2,8 @@ public class PlayerStatsSystem
 {
     public float MoveSpeed { get; private set; }
     public float JumpForce { get; private set; }
+
+    public int RewardChoiceCount { get; private set; }
     
     private PlayerStat _stat;
     public float TimeSlowFactor => _stat.TimeSlowFactor;
@@ -12,10 +14,17 @@ public class PlayerStatsSystem
         _stat = stat;
         MoveSpeed = stat.MoveSpeed;
         JumpForce = stat.JumpForce;
+
+        RewardChoiceCount = stat.RewardChoiceCount;
     }
 
     public void IncreaseMoveSpeed(float amount)
     {
         MoveSpeed += amount;
+    }
+
+    public void IncreaseRewardChoiceCount(int amount)
+    {
+        RewardChoiceCount += amount;
     }
 }

@@ -1,14 +1,17 @@
 using System;
+using UnityEngine;
 using Cysharp.Threading.Tasks;
 using BulletPro;
+using Common;
 
 public class PlayerModel : IDisposable
 {
-    // 하위 시스템
-    public PlayerHealthSystem Health { get; private set; }
-    public PlayerWeaponSystem Weapon { get; private set; }
-    public PlayerDashSystem Dash { get; private set; }
-    public PlayerStatsSystem Stats { get; private set; }
+    // 하위시스템
+    public PlayerHealthSystem Health { get; private set; }//HP
+    public PlayerWeaponSystem Weapon { get; private set; }//공격
+    public PlayerDashSystem Dash { get; private set; }//대시
+    public PlayerStatsSystem Stats { get; private set; }//스택
+    public RewardSystem Reward { get; private set; } // 보상
 
     public PlayerModel(PlayerStat stat, PlayerWeaponData initialWeapon)
     {
@@ -16,9 +19,10 @@ public class PlayerModel : IDisposable
         Weapon = new PlayerWeaponSystem(initialWeapon);
         Dash = new PlayerDashSystem(stat);
         Stats = new PlayerStatsSystem(stat);
+        Reward = new RewardSystem(this);
     }
 
-    // Facade 프로퍼티 (하위 호환)
+    // 파사드 프로퍼티
     
     // Health
     public float MaxHP => Health.MaxHP.Value;
@@ -51,10 +55,9 @@ public class PlayerModel : IDisposable
     public float JumpForce => Stats.JumpForce;
     public float TimeSlowFactor => Stats.TimeSlowFactor;
     public float SlowMotionDuration => Stats.SlowMotionDuration;
+    public int RewardChoiceCount => Stats.RewardChoiceCount;
 
-
-
-    // === 보상 메서드 ===
+    // reward 함수 (파사드 하위 시스템의 함수)
     public void IncreaseMaxHP(float amount) => Health.AddMaxHP(amount);
     public void IncreaseDamage(float amount) => Weapon.AddDamage(amount);
     public void IncreaseMultishot(int amount) => Weapon.AddProjectileCount(amount);
