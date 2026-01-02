@@ -1,9 +1,9 @@
-# TOUHOU Roguelike Shooting Game
+# TOUHOU ~ Bulletive Faith
 
 ---
 
 ##  개요
-- **장르:** 로그라이크 슈팅  
+- **장르:** 2D, Roguelike, Bullet curtain, Shooting, Platformer
 - **플랫폼:** PC (Steam Demo 예정)  
 - **엔진:** Unity 6000.0.60f1
 
