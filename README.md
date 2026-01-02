@@ -14,6 +14,6 @@
 - **IDE:** Visual Studio Code
 - **Version Control:** Git / GitHub  / <del>plasticSCM</del>
 - **Documentation:** README / Notion  
-- **Assets:** FMOD, BullerPro, Unitask
+- **Assets:** <del>FMODM</del>, BullerPro, Unitask, Animancer
 
 ---
