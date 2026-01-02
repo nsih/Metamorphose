@@ -4,13 +4,12 @@
 
 ##  개요
 - **장르:** 2D, Roguelike, Bullet curtain, Shooting, Platformer
-- **플랫폼:** PC (Steam Demo 예정)  
-- **엔진:** Unity 6000.0.60f1
+- **플랫폼:** PC 
 
 ---
 
 ## 환경
-- **Engine:** Unity (C#)  
+- **Engine:** Unity 6000.0.60f1 (C#)  
 - **IDE:** Visual Studio Code
 - **Version Control:** Git / GitHub  / <del>plasticSCM</del>
 - **Documentation:** README / Notion  
