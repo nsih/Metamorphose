@@ -13,28 +13,26 @@ public class MapGeneratorTest : MonoBehaviour
             return;
         }
 
-        TestPathGeneration();
+        TestMapGeneration(); // ⭐ 이름 변경
     }
 
-    // ⭐ Phase 3 테스트
-    void TestPathGeneration()
+    // ⭐ Phase 4 테스트
+    void TestMapGeneration()
     {
-        Debug.Log("=== Phase 3 테스트: 경로 생성 ===");
+        Debug.Log("=== Phase 1~4 테스트: 완전한 맵 생성 ===");
 
         MapGenerator generator = new MapGenerator(_config);
-        List<List<MapNode>> grid = generator.GenerateMap();
+        List<List<MapNode>> finalMap = generator.GenerateMap();
 
-        // 그리드 출력
-        generator.PrintGrid(grid);
-
-        // 연결 정보 출력
-        generator.PrintConnections(grid);
+        // 최종 맵 출력
+        generator.PrintGrid(finalMap);
+        generator.PrintConnections(finalMap);
 
         // 경로 검증
-        ValidatePaths(grid);
+        ValidatePaths(finalMap);
     }
 
-    // 경로 검증 (Start → Boss 도달 가능 확인)
+    // 경로 검증
     void ValidatePaths(List<List<MapNode>> grid)
     {
         Debug.Log("=== 경로 검증 ===");
@@ -42,7 +40,6 @@ public class MapGeneratorTest : MonoBehaviour
         MapNode start = grid[0][0];
         MapNode boss = grid[grid.Count - 1][0];
 
-        // DFS로 Start → Boss 경로 존재 확인
         HashSet<MapNode> visited = new HashSet<MapNode>();
         bool canReachBoss = DFS(start, boss, visited);
 
@@ -56,7 +53,6 @@ public class MapGeneratorTest : MonoBehaviour
         }
     }
 
-    // DFS로 경로 존재 확인
     bool DFS(MapNode current, MapNode target, HashSet<MapNode> visited)
     {
         if (current == target)

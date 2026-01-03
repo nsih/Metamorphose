@@ -23,13 +23,14 @@ public class MapGenerator
     {
         _nodeIdCounter = 0;
 
-        // Phase 2: 그리드 생성
+        // 그리드 생성
         List<List<MapNode>> grid = CreateGrid();
 
-        // Phase 3: 경로 생성
+        // 경로 생성
         HashSet<MapNode> usedNodes = GeneratePaths(grid);
 
-        // Phase 4: 고아 노드 제거 (TODO)
+        // 고아 노드 제거
+        RemoveOrphanNodes(grid, usedNodes);
 
         return grid;
     }
@@ -189,6 +190,21 @@ public class MapGenerator
         return adjacentNodes;
     }
 
+    //고아 노드 삭제
+    private void RemoveOrphanNodes(List<List<MapNode>> grid, HashSet<MapNode> usedNodes)
+    {
+        int removedCount = 0;
+
+        foreach (var layer in grid)
+        {
+            // RemoveAll: 조건에 맞는 요소 제거
+            int removed = layer.RemoveAll(node => !usedNodes.Contains(node));
+            removedCount += removed;
+        }
+
+        Debug.Log($"고아 노드 {removedCount}개 제거 완료");
+    }
+
     #region Debug
 
     // 그리드 정보 출력
@@ -197,6 +213,7 @@ public class MapGenerator
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
         sb.AppendLine("=== 그리드 구조 ===");
 
+        int totalNodes = 0;
         for (int i = 0; i < grid.Count; i++)
         {
             sb.Append($"Layer {i}: ");
@@ -205,8 +222,10 @@ public class MapGenerator
                 sb.Append($"[{node.Type}] ");
             }
             sb.AppendLine($"({grid[i].Count}개)");
+            totalNodes += grid[i].Count;
         }
 
+        sb.AppendLine($"총 {totalNodes}개 노드");
         Debug.Log(sb.ToString());
     }
 
