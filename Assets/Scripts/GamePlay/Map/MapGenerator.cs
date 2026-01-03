@@ -18,7 +18,7 @@ public class MapGenerator
         _config = config;
     }
 
-    // 전체 맵 생성 (Phase 3에서 완성)
+    // 전체 맵 생성
     public List<List<MapNode>> GenerateMap()
     {
         _nodeIdCounter = 0;
@@ -26,7 +26,9 @@ public class MapGenerator
         // Phase 2: 그리드 생성
         List<List<MapNode>> grid = CreateGrid();
 
-        // Phase 3: 경로 생성 (TODO)
+        // Phase 3: 경로 생성
+        HashSet<MapNode> usedNodes = GeneratePaths(grid);
+
         // Phase 4: 고아 노드 제거 (TODO)
 
         return grid;
@@ -41,24 +43,20 @@ public class MapGenerator
         {
             List<MapNode> currentLayer = new List<MapNode>();
 
-            // 첫 층 (Start)
             if (layer == 0)
             {
                 MapNode startNode = CreateNode(layer, 0, RoomType.Start);
                 currentLayer.Add(startNode);
             }
-            // 마지막 층 (Boss)
             else if (layer == _config.LayerCount - 1)
             {
                 MapNode bossNode = CreateNode(layer, 0, RoomType.Boss);
                 currentLayer.Add(bossNode);
             }
-            // 중간 층 (일반 방들)
             else
             {
                 for (int index = 0; index < _config.NodesPerLayer; index++)
                 {
-                    // 제약 조건 고려해서 방 타입 결정
                     RoomType type = _config.RollRoomTypeWithConstraint(layer);
                     MapNode node = CreateNode(layer, index, type);
                     currentLayer.Add(node);
@@ -72,6 +70,79 @@ public class MapGenerator
         return grid;
     }
 
+    // 랜덤 경로 생성
+    private HashSet<MapNode> GeneratePaths(List<List<MapNode>> grid)
+    {
+        HashSet<MapNode> usedNodes = new HashSet<MapNode>();
+
+        for (int i = 0; i < _config.PathCount; i++)
+        {
+            List<MapNode> path = GenerateSinglePath(grid);
+            
+            // 경로의 모든 노드를 사용된 노드로 마킹
+            foreach (var node in path)
+            {
+                usedNodes.Add(node);
+            }
+
+            // 경로 연결 (NextNodes 설정)
+            ConnectPath(path);
+
+            Debug.Log($"경로 {i + 1} 생성: {path.Count}개 노드");
+        }
+
+        Debug.Log($"총 {usedNodes.Count}개 노드 사용됨 (전체 {_nodeIdCounter}개 중)");
+        return usedNodes;
+    }
+
+    // 단일 경로 생성 (Start → Boss)
+    private List<MapNode> GenerateSinglePath(List<List<MapNode>> grid)
+    {
+        List<MapNode> path = new List<MapNode>();
+
+        // Start 노드
+        MapNode current = grid[0][0];
+        path.Add(current);
+
+        // 중간 층들 순회
+        for (int layer = 1; layer < grid.Count; layer++)
+        {
+            List<MapNode> nextLayer = grid[layer];
+            
+            // 현재 노드와 인접한 노드들 찾기
+            List<MapNode> adjacentNodes = GetAdjacentNodes(current, nextLayer);
+
+            if (adjacentNodes.Count == 0)
+            {
+                Debug.LogError($"경로 생성 실패: Layer {layer}에 인접 노드 없음!");
+                break;
+            }
+
+            // 인접 노드 중 랜덤 선택
+            int randomIndex = Random.Range(0, adjacentNodes.Count);
+            current = adjacentNodes[randomIndex];
+            path.Add(current);
+        }
+
+        return path;
+    }
+
+    // 경로 연결 (NextNodes 설정)
+    private void ConnectPath(List<MapNode> path)
+    {
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            MapNode from = path[i];
+            MapNode to = path[i + 1];
+
+            // 이미 연결되어 있지 않으면 추가
+            if (!from.NextNodes.Contains(to))
+            {
+                from.NextNodes.Add(to);
+            }
+        }
+    }
+
     // 노드 생성
     private MapNode CreateNode(int layer, int indexInLayer, RoomType type)
     {
@@ -80,33 +151,29 @@ public class MapGenerator
         return node;
     }
 
-    // 인접 노드 판단 (바로 위 층의 같은 위치 또는 ±1)
+    // 인접 노드 판단
     public bool IsAdjacent(MapNode from, MapNode to)
     {
-        // 다음 층이 아니면 인접 아님
         if (to.Layer != from.Layer + 1)
         {
             return false;
         }
 
-        // Start 노드는 다음 층 모든 노드와 인접
         if (from.Type == RoomType.Start)
         {
             return true;
         }
 
-        // 이전 층 모든 노드는 Boss와 인접
         if (to.Type == RoomType.Boss)
         {
             return true;
         }
 
-        // 일반 노드: 같은 인덱스 또는 ±1 인덱스만 인접
         int indexDiff = Mathf.Abs(to.IndexInLayer - from.IndexInLayer);
         return indexDiff <= 1;
     }
 
-    // 특정 노드의 다음 층 인접 노드들 반환
+    // 인접 노드들 반환
     public List<MapNode> GetAdjacentNodes(MapNode from, List<MapNode> nextLayer)
     {
         List<MapNode> adjacentNodes = new List<MapNode>();
@@ -140,6 +207,35 @@ public class MapGenerator
             sb.AppendLine($"({grid[i].Count}개)");
         }
 
+        Debug.Log(sb.ToString());
+    }
+
+    // 연결 정보 출력
+    public void PrintConnections(List<List<MapNode>> grid)
+    {
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.AppendLine("=== 노드 연결 구조 ===");
+
+        int totalConnections = 0;
+
+        foreach (var layer in grid)
+        {
+            foreach (var node in layer)
+            {
+                if (node.NextNodes.Count > 0)
+                {
+                    sb.Append($"{node} → ");
+                    foreach (var next in node.NextNodes)
+                    {
+                        sb.Append($"{next} ");
+                    }
+                    sb.AppendLine();
+                    totalConnections += node.NextNodes.Count;
+                }
+            }
+        }
+
+        sb.AppendLine($"총 {totalConnections}개 연결");
         Debug.Log(sb.ToString());
     }
 
