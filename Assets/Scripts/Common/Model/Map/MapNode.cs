@@ -1,8 +1,11 @@
 using UnityEngine;
-using System.Collections;
-using Common;
 using System.Collections.Generic;
+using Common;
 
+/// <summary>
+/// 맵의 개별 노드
+/// 추상 좌표(Layer, IndexInLayer)로 위치 표현
+/// </summary>
 [System.Serializable]
 public class MapNode
 {
@@ -11,24 +14,23 @@ public class MapNode
     public GameObject RoomPrefab;
     public List<MapNode> NextNodes = new List<MapNode>();
 
-
-    //추상 좌표
-    public int Layer;         
-    public int IndexInLayer;   
-
+    // 추상 좌표
+    public int Layer;           
+    public int IndexInLayer;    
+    
+    // 상태
     public NodeState State;
 
-
-
-    public MapNode(int id, RoomType type, GameObject prefab)
+    public MapNode(int id, int layer, int indexInLayer, RoomType type, GameObject prefab)
     {
         NodeID = id;
+        Layer = layer;
+        IndexInLayer = indexInLayer;
         Type = type;
         RoomPrefab = prefab;
+        State = NodeState.Locked;
     }
 
-
-    //상태 변경
     public void Unlock()
     {
         if (State == NodeState.Locked)
@@ -51,6 +53,4 @@ public class MapNode
     {
         return $"[L{Layer}-{IndexInLayer}] {Type} (ID:{NodeID})";
     }
-
-    
 }

@@ -46,6 +46,7 @@ public class MapManager : MonoBehaviour
     private void GenerateDummyMap()
     {
         // 노드 생성
+        /*
         MapNode startNode = new MapNode(0, RoomType.Battle, _battleRoomPrefab);
         MapNode nodeA = new MapNode(1, RoomType.Battle, _battleRoomPrefab);
         MapNode nodeB = new MapNode(2, RoomType.Shop, _battleRoomPrefab); 
@@ -59,6 +60,7 @@ public class MapManager : MonoBehaviour
 
         // 첫 방 로드
         LoadNode(startNode).Forget();
+        */
     }
 
     // 맵 UI가 호출할 코드
