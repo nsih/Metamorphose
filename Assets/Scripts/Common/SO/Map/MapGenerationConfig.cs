@@ -31,15 +31,24 @@ public class MapGenerationConfig : ScriptableObject
     [Header("Path Constraints")]
     public List<PathConstraint> Constraints = new List<PathConstraint>();
 
-
-
     // 특정 계층에 적용되는 제약 조건 반환
     public PathConstraint GetConstraintForLayer(int layer)
     {
-        return Constraints.Find(c => c.Layer == layer);
+        Debug.Log($"GetConstraintForLayer({layer}) 호출 - 총 {Constraints.Count}개 제약");
+        
+        foreach (var c in Constraints)
+        {
+            Debug.Log($"  제약 확인: Layer={c.Layer}, Required={c.RequiredType?.ToString() ?? "null"}");
+            if (c.Layer == layer)
+            {
+                Debug.Log($"  -> Layer {layer} 제약 발견!");
+                return c;
+            }
+        }
+        
+        Debug.Log($"  -> Layer {layer} 제약 없음");
+        return null;
     }
-
-
 
     // 방 타입에 해당하는 프리팹 반환 (없으면 첫 번째 프리팹)
     public GameObject GetPrefabForType(RoomType type)
@@ -60,7 +69,6 @@ public class MapGenerationConfig : ScriptableObject
 
         return null;
     }
-
 
     // 확률 기반으로 방 타입 랜덤 선택 (대부분 노드)
     public RoomType RollRoomType()
@@ -85,7 +93,6 @@ public class MapGenerationConfig : ScriptableObject
 
         return RoomTypeChances[0].Type;
     }
-
 
     // 특정 타입을 제외하고 방 타입 랜덤 선택
     public RoomType RollRoomType(List<RoomType> excludeTypes)
@@ -227,20 +234,31 @@ public class MapGenerationConfig : ScriptableObject
         Constraints.Clear();
 
         // 예시 1: 5층은 무조건 상점
-        PathConstraint shop5 = new PathConstraint(5, RoomType.Shop);
+        PathConstraint shop5 = new PathConstraint();
+        shop5.Layer = 5;
+        shop5.RequiredType = RoomType.Shop;
+        shop5.BannedTypes = new List<RoomType>();
         Constraints.Add(shop5);
 
         // 예시 2: 10층은 무조건 상점
-        PathConstraint shop10 = new PathConstraint(10, RoomType.Shop);
+        PathConstraint shop10 = new PathConstraint();
+        shop10.Layer = 10;
+        shop10.RequiredType = RoomType.Shop;
+        shop10.BannedTypes = new List<RoomType>();
         Constraints.Add(shop10);
 
         // 예시 3: 1~6층은 엘리트 금지
         for (int layer = 1; layer <= 6; layer++)
         {
-            PathConstraint noElite = new PathConstraint(layer);
-            noElite.BannedTypes.Add(RoomType.Elite);
+            PathConstraint noElite = new PathConstraint();
+            noElite.Layer = layer;
+            noElite.RequiredType = null;
+            noElite.BannedTypes = new List<RoomType> { RoomType.Elite };
             Constraints.Add(noElite);
         }
+
+        // 강제 저장
+        UnityEditor.EditorUtility.SetDirty(this);
 
         Debug.Log($"예시 제약 조건 {Constraints.Count}개 추가됨");
     }

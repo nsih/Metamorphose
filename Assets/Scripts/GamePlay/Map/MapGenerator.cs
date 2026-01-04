@@ -78,6 +78,27 @@ public class MapGenerator
                         currentLayer.Add(node);
                     }
                 }
+
+                if (constraint?.RequiredType != null)
+                {
+                    Debug.Log($">>> Layer {layer} 전체를 {constraint.RequiredType.Value}로 생성");
+                    
+                    for (int index = 0; index < _config.NodesPerLayer; index++)
+                    {
+                        MapNode node = CreateNode(layer, index, constraint.RequiredType.Value);
+                        currentLayer.Add(node);
+                    }
+                }
+                else
+                {
+                    // 필수 타입 없으면 확률내 랜덤
+                    for (int index = 0; index < _config.NodesPerLayer; index++)
+                    {
+                        RoomType type = _config.RollRoomTypeWithConstraint(layer);
+                        MapNode node = CreateNode(layer, index, type);
+                        currentLayer.Add(node);
+                    }
+                }
             }
 
             grid.Add(currentLayer);

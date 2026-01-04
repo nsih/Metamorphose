@@ -24,24 +24,12 @@ MonoBehaviour:
     Probability: 0.2
   - Type: 5
     Probability: 0.15
-  RoomPrefabs:
-  - Type: 0
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
-  - Type: 1
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
-  - Type: 2
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
-  - Type: 3
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
-  - Type: 5
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
-  - Type: 4
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
+  RoomPrefabs: []
   Constraints:
   - Layer: 5
-    BannedTypes: 02000000
+    BannedTypes: 
   - Layer: 10
-    BannedTypes: 02000000
+    BannedTypes: 
   - Layer: 1
     BannedTypes: 03000000
   - Layer: 2
