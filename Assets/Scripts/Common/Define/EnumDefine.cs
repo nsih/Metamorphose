@@ -20,6 +20,14 @@ namespace Common
         Battle,
         Complete
     }
+
+    //이동시 필요한 상태
+    public enum NodeState
+    {
+        Locked,      // 잠김
+        Available,   // 선택 가능
+        Completed    // 완료됨
+    }
     #endregion
 
     #region 'enemy'
