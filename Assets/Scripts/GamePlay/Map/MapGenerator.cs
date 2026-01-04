@@ -35,7 +35,7 @@ public class MapGenerator
         return grid;
     }
 
-    // 그리드 생성: LayerCount × NodesPerLayer
+    // 그리드 생성 LayerCount × NodesPerLayer
     private List<List<MapNode>> CreateGrid()
     {
         List<List<MapNode>> grid = new List<List<MapNode>>();
@@ -56,11 +56,27 @@ public class MapGenerator
             }
             else
             {
-                for (int index = 0; index < _config.NodesPerLayer; index++)
+                // 제약 조건 확인
+                var constraint = _config.GetConstraintForLayer(layer);
+                
+                // 필수 타입이 있으면 전체 층을 그 타입으로
+                if (constraint?.RequiredType != null)
                 {
-                    RoomType type = _config.RollRoomTypeWithConstraint(layer);
-                    MapNode node = CreateNode(layer, index, type);
-                    currentLayer.Add(node);
+                    for (int index = 0; index < _config.NodesPerLayer; index++)
+                    {
+                        MapNode node = CreateNode(layer, index, constraint.RequiredType.Value);
+                        currentLayer.Add(node);
+                    }
+                }
+                else
+                {
+                    // 필수 타입 없으면 확률내 랜덤
+                    for (int index = 0; index < _config.NodesPerLayer; index++)
+                    {
+                        RoomType type = _config.RollRoomTypeWithConstraint(layer);
+                        MapNode node = CreateNode(layer, index, type);
+                        currentLayer.Add(node);
+                    }
                 }
             }
 

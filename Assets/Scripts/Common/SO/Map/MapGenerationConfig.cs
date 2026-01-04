@@ -182,5 +182,67 @@ public class MapGenerationConfig : ScriptableObject
         Debug.Log($"Grid: {LayerCount}층 × {NodesPerLayer}노드\n" +
                   $"경로: {PathCount}개");
     }
+
+    [ContextMenu("Validate Constraints")]
+    private void ValidateConstraints()
+    {
+        if (Constraints.Count == 0)
+        {
+            Debug.Log("제약 조건 없음");
+            return;
+        }
+
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.AppendLine("=== 제약 조건 검증 ===");
+
+        foreach (var constraint in Constraints)
+        {
+            sb.Append($"Layer {constraint.Layer}: ");
+
+            if (constraint.RequiredType.HasValue)
+            {
+                sb.Append($"필수=[{constraint.RequiredType.Value}] ");
+            }
+
+            if (constraint.BannedTypes != null && constraint.BannedTypes.Count > 0)
+            {
+                sb.Append($"금지=[");
+                foreach (var banned in constraint.BannedTypes)
+                {
+                    sb.Append($"{banned} ");
+                }
+                sb.Append("] ");
+            }
+
+            sb.AppendLine();
+        }
+
+        Debug.Log(sb.ToString());
+    }
+
+    // 예시 제약 조건 추가 (테스트용)
+    [ContextMenu("Add Example Constraints")]
+    private void AddExampleConstraints()
+    {
+        Constraints.Clear();
+
+        // 예시 1: 5층은 무조건 상점
+        PathConstraint shop5 = new PathConstraint(5, RoomType.Shop);
+        Constraints.Add(shop5);
+
+        // 예시 2: 10층은 무조건 상점
+        PathConstraint shop10 = new PathConstraint(10, RoomType.Shop);
+        Constraints.Add(shop10);
+
+        // 예시 3: 1~6층은 엘리트 금지
+        for (int layer = 1; layer <= 6; layer++)
+        {
+            PathConstraint noElite = new PathConstraint(layer);
+            noElite.BannedTypes.Add(RoomType.Elite);
+            Constraints.Add(noElite);
+        }
+
+        Debug.Log($"예시 제약 조건 {Constraints.Count}개 추가됨");
+    }
     #endif
 }
