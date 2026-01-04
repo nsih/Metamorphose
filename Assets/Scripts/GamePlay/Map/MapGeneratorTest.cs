@@ -9,55 +9,33 @@ public class MapGeneratorTest : MonoBehaviour
     {
         if (_config == null)
         {
-            Debug.LogError("Config가 할당되지 않았습니다");
+            Debug.LogError("Config null");
             return;
         }
 
         TestMapGeneration();
     }
 
-    // Phase 5 테스트
     void TestMapGeneration()
     {
-        Debug.Log("Phase 1-5 테스트: 제약 조건 적용 맵 생성");
-
         MapGenerator generator = new MapGenerator(_config);
         List<List<MapNode>> finalMap = generator.GenerateMap();
 
-        // 최종 맵 출력
         generator.PrintGrid(finalMap);
-        
-        // 제약 조건 검증
         ValidateConstraints(finalMap);
-
-        // 연결 정보
         generator.PrintConnections(finalMap);
-
-        // 경로 검증
         ValidatePaths(finalMap);
     }
 
     void ValidatePaths(List<List<MapNode>> grid)
     {
-        Debug.Log("경로 검증");
-
         MapNode start = grid[0][0];
         MapNode boss = grid[grid.Count - 1][0];
 
         HashSet<MapNode> visited = new HashSet<MapNode>();
         bool canReachBoss = DFS(start, boss, visited);
-
-        if (canReachBoss)
-        {
-            Debug.Log("Start -> Boss 경로 존재");
-        }
-        else
-        {
-            Debug.LogError("Start -> Boss 경로 없음");
-        }
     }
 
-    // 제약 조건 검증
     void ValidateConstraints(List<List<MapNode>> grid)
     {
         Debug.Log("제약 조건 검증");
@@ -80,14 +58,14 @@ public class MapGeneratorTest : MonoBehaviour
             var layer = grid[constraint.Layer];
 
             // 필수 타입 검증
-            if (constraint.RequiredType.HasValue)
+            if (constraint.HasRequiredType)
             {
                 bool allMatch = true;
                 int count = 0;
                 
                 foreach (var node in layer)
                 {
-                    if (node.Type == constraint.RequiredType.Value)
+                    if (node.Type == constraint.RequiredType)
                     {
                         count++;
                     }
@@ -99,15 +77,15 @@ public class MapGeneratorTest : MonoBehaviour
 
                 if (allMatch && count > 0)
                 {
-                    Debug.Log($"Layer {constraint.Layer}: 전체 {count}개 노드가 {constraint.RequiredType.Value}");
+                    Debug.Log($"Layer {constraint.Layer}: 전체 {count}개 노드가 {constraint.RequiredType}");
                 }
                 else if (count > 0)
                 {
-                    Debug.LogWarning($"Layer {constraint.Layer}: {count}개만 {constraint.RequiredType.Value} (전체 {layer.Count}개 중)");
+                    Debug.LogWarning($"Layer {constraint.Layer}: {count}개만 {constraint.RequiredType} (전체 {layer.Count}개 중)");
                 }
                 else
                 {
-                    Debug.LogError($"Layer {constraint.Layer}: {constraint.RequiredType.Value} 없음");
+                    Debug.LogError($"Layer {constraint.Layer}: {constraint.RequiredType} 없음");
                     allSatisfied = false;
                 }
             }
