@@ -1,31 +1,27 @@
 using UnityEngine;
-using UnityEngine.UI; 
-using Cysharp.Threading.Tasks; 
+using Cysharp.Threading.Tasks;
 using Common;
 using Reflex.Core;
 using Reflex.Attributes;
 using Reflex.Injectors;
+using System.Collections.Generic;
 
 public class MapManager : MonoBehaviour
 {
     public static MapManager Instance;
 
-    [SerializeField] private Transform _roomParent; // 방이 생성될 부모 (Hierarchy 정리용)
-
-    [Header("Dummy Data")]
-    [SerializeField] private GameObject _battleRoomPrefab;
-
+    [SerializeField] private Transform _roomParent;
+    [SerializeField] private MapGenerationConfig _config;
 
     [Inject] private Container _container;
 
-    
-
     public MapNode CurrentNode { get; private set; }
     
-    private GameObject _currentRoomInstance; 
+    private GameObject _currentRoomInstance;
+    private bool _isTransitioning = false;
     
-    // [Safety] 중복 실행 방지용 플래그
-    private bool _isTransitioning = false; 
+    // 추가: 생성된 맵 저장
+    private List<List<MapNode>> _currentMap;
 
     private void Awake()
     {
@@ -39,38 +35,42 @@ public class MapManager : MonoBehaviour
 
     private void Start()
     {
-        GenerateDummyMap(); 
+        GenerateMap();
     }
 
-    // 임시 맵 생성
-    private void GenerateDummyMap()
+    // 추가: 맵 생성 메서드
+    private void GenerateMap()
     {
-        // 노드 생성
-        /*
-        MapNode startNode = new MapNode(0, RoomType.Battle, _battleRoomPrefab);
-        MapNode nodeA = new MapNode(1, RoomType.Battle, _battleRoomPrefab);
-        MapNode nodeB = new MapNode(2, RoomType.Shop, _battleRoomPrefab); 
+        if (_config == null)
+        {
+            Debug.LogError("MapManager: MapGenerationConfig null");
+            return;
+        }
 
-        // [Start] -> [A], [B] -> [Start] //임시
-        startNode.NextNodes.Add(nodeA);
-        startNode.NextNodes.Add(nodeB);
+        MapGenerator generator = new MapGenerator(_config);
+        _currentMap = generator.GenerateMap();
 
-        nodeA.NextNodes.Add(startNode);
-        nodeB.NextNodes.Add(startNode);
+        generator.PrintGrid(_currentMap);
+        generator.PrintConnections(_currentMap);
 
-        // 첫 방 로드
-        LoadNode(startNode).Forget();
-        */
+        if (_currentMap.Count > 0 && _currentMap[0].Count > 0)
+        {
+            LoadNode(_currentMap[0][0]).Forget();
+        }
     }
 
-    // 맵 UI가 호출할 코드
+    // 추가: 현재 맵 반환 메서드
+    public List<List<MapNode>> GetCurrentMap()
+    {
+        return _currentMap;
+    }
+
     public void MoveToNode(MapNode nextNode)
     {
         if (_isTransitioning) return;
         LoadNode(nextNode).Forget();
     }
 
-    // 맵 참조해서 방 교체
     private async UniTaskVoid LoadNode(MapNode node)
     {
         _isTransitioning = true;
@@ -80,11 +80,11 @@ public class MapManager : MonoBehaviour
             if (_currentRoomInstance != null)
             {
                 Destroy(_currentRoomInstance);
-                await UniTask.Yield(); 
+                await UniTask.Yield();
             }
 
-
             CurrentNode = node;
+            
             if (node.RoomPrefab != null)
             {
                 _currentRoomInstance = Instantiate(node.RoomPrefab, _roomParent);
@@ -94,13 +94,10 @@ public class MapManager : MonoBehaviour
 
                 Debug.Log($"방 생성: {node.Type} (ID: {node.NodeID})");
             }
-
             else
             {
                 Debug.LogError($"Node {node.NodeID} prefab null");
             }
-
-            // Player.Instance.SetPosition(spawnPoint); 
         }
         finally
         {

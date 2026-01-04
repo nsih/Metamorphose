@@ -21,9 +21,9 @@ public class MapGeneratorTest : MonoBehaviour
         MapGenerator generator = new MapGenerator(_config);
         List<List<MapNode>> finalMap = generator.GenerateMap();
 
-        generator.PrintGrid(finalMap);
+        //generator.PrintGrid(finalMap); //디버깅용
         ValidateConstraints(finalMap);
-        generator.PrintConnections(finalMap);
+        //generator.PrintConnections(finalMap); //디버깅용
         ValidatePaths(finalMap);
     }
 
@@ -38,8 +38,6 @@ public class MapGeneratorTest : MonoBehaviour
 
     void ValidateConstraints(List<List<MapNode>> grid)
     {
-        Debug.Log("제약 조건 검증");
-
         if (_config.Constraints.Count == 0)
         {
             Debug.Log("제약 조건 없음");
@@ -77,15 +75,15 @@ public class MapGeneratorTest : MonoBehaviour
 
                 if (allMatch && count > 0)
                 {
-                    Debug.Log($"Layer {constraint.Layer}: 전체 {count}개 노드가 {constraint.RequiredType}");
+                    //Debug.Log($"Layer {constraint.Layer}: 전체 {count}개 노드가 {constraint.RequiredType}");
                 }
                 else if (count > 0)
                 {
-                    Debug.LogWarning($"Layer {constraint.Layer}: {count}개만 {constraint.RequiredType} (전체 {layer.Count}개 중)");
+                    //Debug.LogWarning($"Layer {constraint.Layer}: {count}개만 {constraint.RequiredType} (전체 {layer.Count}개 중)");
                 }
                 else
                 {
-                    Debug.LogError($"Layer {constraint.Layer}: {constraint.RequiredType} 없음");
+                    //Debug.LogError($"Layer {constraint.Layer}: {constraint.RequiredType} 없음");
                     allSatisfied = false;
                 }
             }
@@ -99,7 +97,7 @@ public class MapGeneratorTest : MonoBehaviour
                 {
                     if (constraint.BannedTypes.Contains(node.Type))
                     {
-                        Debug.LogWarning($"Layer {constraint.Layer}: 금지된 {node.Type} 발견");
+                        //Debug.LogWarning($"Layer {constraint.Layer}: 금지된 {node.Type} 발견");
                         allSatisfied = false;
                         foundBanned = true;
                     }
@@ -107,7 +105,7 @@ public class MapGeneratorTest : MonoBehaviour
                 
                 if (!foundBanned)
                 {
-                    Debug.Log($"Layer {constraint.Layer}: 금지 타입 없음");
+                    //Debug.Log($"Layer {constraint.Layer}: 금지 타입 없음");
                 }
             }
         }
