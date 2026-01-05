@@ -47,15 +47,48 @@ public class MapUIManager : MonoBehaviour
         _contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         _contentRect.pivot = new Vector2(0.5f, 0.5f);
         _contentRect.anchoredPosition = Vector2.zero;
-        
-        _scrollRect.horizontalNormalizedPosition = 0f;
 
         CalculateContentSize(grid);
         CreateNodeUIs(grid, currentNode);
         DrawConnections();
 
         Canvas.ForceUpdateCanvases();
-        _scrollRect.horizontalNormalizedPosition = 0f;
+        
+        ScrollToCurrentNode();
+    }
+
+    private void ScrollToCurrentNode()
+    {
+        if (_currentNode == null || !_nodePositions.ContainsKey(_currentNode))
+        {
+            _scrollRect.horizontalNormalizedPosition = 0f;
+            return;
+        }
+
+        RectTransform currentNodeRect = _nodePositions[_currentNode];
+        
+        float contentWidth = _contentRect.rect.width;
+        float viewportWidth = _scrollRect.viewport.rect.width;
+        
+        if (contentWidth <= viewportWidth)
+        {
+            _scrollRect.horizontalNormalizedPosition = 0f;
+            return;
+        }
+
+        float nodeWorldX = currentNodeRect.anchoredPosition.x;
+        
+        float contentLeftEdge = -contentWidth / 2f;
+        float nodePositionInContent = nodeWorldX - contentLeftEdge;
+        
+        float targetPosition = nodePositionInContent - (viewportWidth / 2f);
+        
+        float scrollableWidth = contentWidth - viewportWidth;
+        float normalizedPosition = Mathf.Clamp01(targetPosition / scrollableWidth);
+        
+        _scrollRect.horizontalNormalizedPosition = normalizedPosition;
+        
+        Debug.Log($"스크롤 위치 조정: 노드={_currentNode}, normalized={normalizedPosition}");
     }
 
     private void CalculateContentSize(List<List<MapNode>> grid)
