@@ -16,6 +16,7 @@ public class MapNodeUI : MonoBehaviour
     [SerializeField] private Color _availableColor = Color.white;
     [SerializeField] private Color _completedColor = new Color(0.5f, 1f, 0.5f);
     [SerializeField] private Color _currentColor = Color.yellow;
+    [SerializeField] private Color _highlightColor = Color.cyan;
 
     [Header("Icons")]
     [SerializeField] private Sprite _battleIcon;
@@ -27,6 +28,7 @@ public class MapNodeUI : MonoBehaviour
 
     private MapNode _node;
     private bool _isCurrent;
+    private bool _isHighlighted;
     private MapUIManager _manager;
 
     public void Initialize(MapNode node, bool isCurrent, MapUIManager manager)
@@ -48,6 +50,10 @@ public class MapNodeUI : MonoBehaviour
         if (_isCurrent)
         {
             _background.color = _currentColor;
+        }
+        else if (_isHighlighted)
+        {
+            _background.color = _highlightColor;
         }
         else
         {
@@ -91,7 +97,7 @@ public class MapNodeUI : MonoBehaviour
 
         _button.onClick.RemoveAllListeners();
 
-        if (_node.State == NodeState.Available)
+        if (_node.State == NodeState.Available && !_isCurrent)
         {
             _button.interactable = true;
             _button.onClick.AddListener(OnClicked);
@@ -112,13 +118,7 @@ public class MapNodeUI : MonoBehaviour
 
     public void SetHighlight(bool highlight)
     {
-        if (highlight && _node.State == NodeState.Available)
-        {
-            _background.color = Color.cyan;
-        }
-        else
-        {
-            UpdateVisuals();
-        }
+        _isHighlighted = highlight;
+        UpdateVisuals();
     }
 }
