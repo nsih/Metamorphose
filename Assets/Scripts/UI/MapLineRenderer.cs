@@ -8,6 +8,7 @@ public class MapLineRenderer : MonoBehaviour
     [SerializeField] private float _lineWidth = 3f;
     [SerializeField] private Color _activeLineColor = Color.white;
     [SerializeField] private Color _inactiveLineColor = new Color(0.5f, 0.5f, 0.5f);
+    [SerializeField] private Color _lockedLineColor = new Color(0.2f, 0.2f, 0.2f);
     [SerializeField] private Sprite _lineSprite;
 
     private List<GameObject> _lineObjects = new List<GameObject>();
@@ -35,13 +36,38 @@ public class MapLineRenderer : MonoBehaviour
                     RectTransform toRect = nodePositions[nextNode];
                     Vector3 toPos = toRect.anchoredPosition;
 
-                    DrawLine(fromPos, toPos, node.State == NodeState.Completed);
+                    Color lineColor = GetLineColor(node, nextNode);
+                    DrawLine(fromPos, toPos, lineColor);
                 }
             }
         }
     }
 
-    private void DrawLine(Vector2 from, Vector2 to, bool isActive)
+    private Color GetLineColor(MapNode fromNode, MapNode toNode)
+    {
+        // 시작 노드가 Completed이고 다음 노드가 Locked이면 검은색
+        if (fromNode.State == NodeState.Completed && toNode.State == NodeState.Locked)
+        {
+            return _lockedLineColor;
+        }
+        
+        // 시작 노드가 Completed이면 흰색 (활성화된 경로)
+        if (fromNode.State == NodeState.Completed)
+        {
+            return _activeLineColor;
+        }
+        
+        // 시작 노드가 Available이고 다음 노드가 Available이면 회색
+        if (fromNode.State == NodeState.Available && toNode.State == NodeState.Available)
+        {
+            return _inactiveLineColor;
+        }
+        
+        // 나머지는 검은색
+        return _lockedLineColor;
+    }
+
+    private void DrawLine(Vector2 from, Vector2 to, Color color)
     {
         GameObject lineObj = new GameObject("MapLine");
         lineObj.transform.SetParent(transform, false);
@@ -49,28 +75,19 @@ public class MapLineRenderer : MonoBehaviour
         RectTransform rect = lineObj.AddComponent<RectTransform>();
         Image image = lineObj.AddComponent<Image>();
 
-        // 선 스프라이트 설정 (없으면 기본 흰색)
         if (_lineSprite != null)
         {
             image.sprite = _lineSprite;
         }
-        image.color = isActive ? _activeLineColor : _inactiveLineColor;
+        image.color = color;
 
-        // 두 점 사이의 거리와 각도 계산
         Vector2 direction = to - from;
         float distance = direction.magnitude;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        // 위치: 두 점의 중간
         rect.anchoredPosition = (from + to) / 2f;
-
-        // 크기: 거리 x 선 두께
         rect.sizeDelta = new Vector2(distance, _lineWidth);
-
-        // 회전: 두 점을 잇는 각도
         rect.localRotation = Quaternion.Euler(0, 0, angle);
-
-        // 피벗을 중앙으로
         rect.pivot = new Vector2(0.5f, 0.5f);
 
         _lineObjects.Add(lineObj);
