@@ -44,6 +44,15 @@ public class MapNode
         State = NodeState.Completed;
     }
 
+    public void CompleteAndUnlockNext()
+    {
+        Complete();
+        foreach (var next in NextNodes)
+        {
+            next.Unlock();
+        }
+    }
+
     public bool IsAccessible()
     {
         return State == NodeState.Available;

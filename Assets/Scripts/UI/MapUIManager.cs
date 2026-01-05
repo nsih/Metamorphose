@@ -25,27 +25,11 @@ public class MapUIManager : MonoBehaviour
     private Dictionary<MapNode, MapNodeUI> _nodeUIMap = new Dictionary<MapNode, MapNodeUI>();
     private Dictionary<MapNode, RectTransform> _nodePositions = new Dictionary<MapNode, RectTransform>();
     private List<List<MapNode>> _currentGrid;
+    private MapNode _currentNode;
 
-    // 이벤트 추가
     public event Action<MapNode> OnNodeSelected;
 
     private void Awake()
-    {
-        HideMap();
-    }
-
-    public void ShowMap()
-    {
-        
-        if (_mapUIRoot == null)
-        {
-            return;
-        }
-        
-        _mapUIRoot.SetActive(true);
-    }
-
-    public void HideMap()
     {
         if (_mapUIRoot != null)
         {
@@ -56,9 +40,9 @@ public class MapUIManager : MonoBehaviour
     public void RenderMap(List<List<MapNode>> grid, MapNode currentNode)
     {
         _currentGrid = grid;
+        _currentNode = currentNode;
         ClearMap();
 
-        // Content를 중앙 기준으로
         _contentRect.anchorMin = new Vector2(0.5f, 0.5f);
         _contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         _contentRect.pivot = new Vector2(0.5f, 0.5f);
@@ -73,6 +57,7 @@ public class MapUIManager : MonoBehaviour
         Canvas.ForceUpdateCanvases();
         _scrollRect.horizontalNormalizedPosition = 0f;
     }
+
     private void CalculateContentSize(List<List<MapNode>> grid)
     {
         float width = grid.Count * _horizontalSpacing + _padding * 2;
@@ -117,7 +102,6 @@ public class MapUIManager : MonoBehaviour
 
     private Vector2 CalculateNodePosition(int layer, int indexInLayer, int totalNodesInLayer)
     {
-        // 중앙 기준 계산
         float totalWidth = (_currentGrid.Count - 1) * _horizontalSpacing;
         float startX = -totalWidth / 2f;
         float x = startX + (layer * _horizontalSpacing);
@@ -137,14 +121,6 @@ public class MapUIManager : MonoBehaviour
         }
     }
 
-    private void ScrollToCurrentNode(MapNode currentNode)
-    {
-        if (currentNode == null || !_nodePositions.ContainsKey(currentNode)) return;
-
-        // 일단 맨 왼쪽으로 스크롤 (0 = 맨 왼쪽)
-        _scrollRect.horizontalNormalizedPosition = 0f;
-    }
-
     public void HighlightAvailableNodes(List<MapNode> availableNodes)
     {
         foreach (var kvp in _nodeUIMap)
@@ -158,9 +134,18 @@ public class MapUIManager : MonoBehaviour
     {
         Debug.Log($"MapUI: 노드 클릭됨 - {node}");
 
-        if (node.State != NodeState.Available) return;
+        if (node.State != NodeState.Available)
+        {
+            Debug.LogWarning($"접근 불가: {node.State} 상태");
+            return;
+        }
 
-        // 이벤트 발생
+        if (_currentNode != null && !_currentNode.NextNodes.Contains(node))
+        {
+            Debug.LogWarning($"직접 연결되지 않은 노드: {node}");
+            return;
+        }
+
         OnNodeSelected?.Invoke(node);
     }
 

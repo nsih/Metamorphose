@@ -20,7 +20,6 @@ public class MapManager : MonoBehaviour
     private GameObject _currentRoomInstance;
     private bool _isTransitioning = false;
     
-    // 추가: 생성된 맵 저장
     private List<List<MapNode>> _currentMap;
 
     private void Awake()
@@ -38,7 +37,6 @@ public class MapManager : MonoBehaviour
         GenerateMap();
     }
 
-    // 추가: 맵 생성 메서드
     private void GenerateMap()
     {
         if (_config == null)
@@ -55,11 +53,12 @@ public class MapManager : MonoBehaviour
 
         if (_currentMap.Count > 0 && _currentMap[0].Count > 0)
         {
-            LoadNode(_currentMap[0][0]).Forget();
+            MapNode startNode = _currentMap[0][0];
+            startNode.Unlock();
+            LoadNode(startNode).Forget();
         }
     }
 
-    // 추가: 현재 맵 반환 메서드
     public List<List<MapNode>> GetCurrentMap()
     {
         return _currentMap;
@@ -67,8 +66,41 @@ public class MapManager : MonoBehaviour
 
     public void MoveToNode(MapNode nextNode)
     {
-        if (_isTransitioning) return;
+        if (_isTransitioning)
+        {
+            Debug.LogWarning("이미 방 전환 중입니다");
+            return;
+        }
+        
+        if (nextNode.State != NodeState.Available)
+        {
+            Debug.LogWarning($"접근 불가능한 노드: {nextNode} (State: {nextNode.State})");
+            return;
+        }
+        
+        LockOtherNodesInLayer(nextNode);
+        
         LoadNode(nextNode).Forget();
+    }
+
+    private void LockOtherNodesInLayer(MapNode selectedNode)
+    {
+        if (_currentMap == null) return;
+
+        int targetLayer = selectedNode.Layer;
+        
+        if (targetLayer < 0 || targetLayer >= _currentMap.Count) return;
+
+        var layer = _currentMap[targetLayer];
+        
+        foreach (var node in layer)
+        {
+            if (node != selectedNode && node.State == NodeState.Available)
+            {
+                node.State = NodeState.Locked;
+                Debug.Log($"노드 잠금: {node}");
+            }
+        }
     }
 
     private async UniTaskVoid LoadNode(MapNode node)
@@ -92,6 +124,8 @@ public class MapManager : MonoBehaviour
                 
                 GameObjectInjector.InjectRecursive(_currentRoomInstance, _container);
 
+                ResetPlayerPosition();
+
                 Debug.Log($"방 생성: {node.Type} (ID: {node.NodeID})");
             }
             else
@@ -102,6 +136,30 @@ public class MapManager : MonoBehaviour
         finally
         {
             _isTransitioning = false;
+        }
+    }
+
+    private void ResetPlayerPosition()
+    {
+        var newSpawner = _currentRoomInstance?.GetComponentInChildren<PlayerSpawner>();
+        
+        if (newSpawner != null)
+        {
+            GameObject player = newSpawner.Spawn();
+            Debug.Log($"플레이어 위치 초기화: {player.transform.position}");
+        }
+        else
+        {
+            var player = GameObject.Find("Player");
+            if (player != null)
+            {
+                player.transform.position = Vector3.zero;
+                Debug.Log("플레이어 원점으로 이동");
+            }
+            else
+            {
+                Debug.LogWarning("플레이어를 찾을 수 없습니다");
+            }
         }
     }
 }

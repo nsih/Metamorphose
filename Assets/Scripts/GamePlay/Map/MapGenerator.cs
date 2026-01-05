@@ -3,15 +3,6 @@ using UnityEngine;
 using Common;
 using Common.Model;
 
-
-/*
-그리드 생성 (LayerCount × NodesPerLayer)
-랜덤 경로 생성 (PathCount개)
-고아 노드 제거
-필수 타입 제약 (특정 층 전체를 지정 타입으로)
-금지 타입 제약 (특정 층에서 타입 배제)
-Unity Inspector 호환 (nullable 타입이 직렬화가 안돼서 걍 딴거 써서 문제 해결)
-*/
 public class MapGenerator
 {
     private MapGenerationConfig _config;
@@ -29,8 +20,20 @@ public class MapGenerator
         List<List<MapNode>> grid = CreateGrid();
         HashSet<MapNode> usedNodes = GeneratePaths(grid);
         RemoveOrphanNodes(grid, usedNodes);
+        
+        InitializeStartNode(grid);
 
         return grid;
+    }
+
+    private void InitializeStartNode(List<List<MapNode>> grid)
+    {
+        if (grid.Count > 0 && grid[0].Count > 0)
+        {
+            MapNode startNode = grid[0][0];
+            startNode.State = NodeState.Available;
+            Debug.Log($"시작 노드 초기화: {startNode}");
+        }
     }
 
     private List<List<MapNode>> CreateGrid()
@@ -55,11 +58,8 @@ public class MapGenerator
             {
                 var constraint = _config.GetConstraintForLayer(layer);
                 
-                // 필수 타입이 있으면 전체 층을 그 타입으로
                 if (constraint != null && constraint.HasRequiredType)
                 {
-                    //Debug.Log($"Layer {layer} 전체를 {constraint.RequiredType}로 생성");
-                    
                     for (int index = 0; index < _config.NodesPerLayer; index++)
                     {
                         MapNode node = CreateNode(layer, index, constraint.RequiredType);
@@ -68,7 +68,6 @@ public class MapGenerator
                 }
                 else
                 {
-                    // 필수 타입 없으면 확률 기반 랜덤
                     for (int index = 0; index < _config.NodesPerLayer; index++)
                     {
                         RoomType type = _config.RollRoomTypeWithConstraint(layer);
@@ -81,7 +80,6 @@ public class MapGenerator
             grid.Add(currentLayer);
         }
 
-        //Debug.Log($"그리드 생성 완료: {grid.Count}층, 총 {_nodeIdCounter}개 노드");
         return grid;
     }
 
@@ -99,11 +97,8 @@ public class MapGenerator
             }
 
             ConnectPath(path);
-
-            //Debug.Log($"경로 {i + 1} 생성: {path.Count}개 노드");
         }
 
-        //Debug.Log($"총 {usedNodes.Count}개 노드 사용됨 (전체 {_nodeIdCounter}개 중)");
         return usedNodes;
     }
 
@@ -199,8 +194,6 @@ public class MapGenerator
             int removed = layer.RemoveAll(node => !usedNodes.Contains(node));
             removedCount += removed;
         }
-
-        //Debug.Log($"고아 노드 {removedCount}개 제거 완료");
     }
 
     #region Debug
