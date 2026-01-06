@@ -4,11 +4,8 @@ using Reflex.Attributes;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
-    [Inject]
-    private IInputService _input;
-
-    [Inject]
-    private PlayerModel _model; 
+    [Inject] private IInputService _input;
+    [Inject] private PlayerModel _model;
 
     private Rigidbody2D _rb;
     private PlayerDash _playerDash;
@@ -36,23 +33,10 @@ public class PlayerMovement : MonoBehaviour
         
         if (_input != null && _model != null)
         {
-            float horizontalInput = _input.MoveDirection.x;
+            Vector2 moveInput = _input.MoveDirection;
+            Vector2 movement = moveInput.normalized * _model.MoveSpeed;
             
-            // 파사드 패턴
-            _rb.linearVelocity = new Vector2
-            (
-                horizontalInput * _model.MoveSpeed,
-                _rb.linearVelocity.y 
-            );
-            /*
-            // 방향전환
-            if (Mathf.Abs(horizontalInput) > 0.1f)
-            {
-                Vector3 newScale = transform.localScale;
-                newScale.x = Mathf.Sign(horizontalInput); 
-                transform.localScale = newScale;
-            }
-            */
+            _rb.linearVelocity = movement;
         }
     }
 }

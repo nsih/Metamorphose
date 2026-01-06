@@ -9,8 +9,6 @@ public class PlayerInputService : IInputService, IDisposable
     public Vector2 MoveDirection => _controls.Player.Move.ReadValue<Vector2>();
     public bool IsAttackPressed => _controls.Player.Attack.IsPressed();
 
-    public event Action OnJumpPressed;
-
     public event Action OnDashPressed;
 
     public PlayerInputService()
@@ -18,21 +16,13 @@ public class PlayerInputService : IInputService, IDisposable
         _controls = new PlayerControls();
         _controls.Enable();
 
-
-        _controls.Player.Jump.performed += OnJump;
         _controls.Player.Dash.performed += OnDash;
     }
 
     public void Dispose()
     {
         _controls.Disable();
-        _controls.Player.Jump.performed -= OnJump;
         _controls.Player.Dash.performed -= OnDash;
-    }
-
-    private void OnJump(InputAction.CallbackContext context)
-    {
-        OnJumpPressed?.Invoke();
     }
 
     private void OnDash(InputAction.CallbackContext context)
