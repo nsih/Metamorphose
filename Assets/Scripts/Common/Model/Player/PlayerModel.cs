@@ -6,12 +6,11 @@ using Common;
 
 public class PlayerModel : IDisposable
 {
-    // 하위시스템
-    public PlayerHealthSystem Health { get; private set; }//HP
-    public PlayerWeaponSystem Weapon { get; private set; }//공격
-    public PlayerDashSystem Dash { get; private set; }//대시
-    public PlayerStatsSystem Stats { get; private set; }//스택
-    public RewardSystem Reward { get; private set; } // 보상
+    public PlayerHealthSystem Health { get; private set; }
+    public PlayerWeaponSystem Weapon { get; private set; }
+    public PlayerDashSystem Dash { get; private set; }
+    public PlayerStatsSystem Stats { get; private set; }
+    public RewardSystem Reward { get; private set; }
 
     public PlayerModel(PlayerStat stat, PlayerWeaponData initialWeapon)
     {
@@ -22,8 +21,6 @@ public class PlayerModel : IDisposable
         Reward = new RewardSystem(this);
     }
 
-    // 파사드 프로퍼티
-    
     // Health
     public float MaxHP => Health.MaxHP.Value;
     public AsyncReactiveProperty<float> CurrentHP => Health.CurrentHP;
@@ -52,12 +49,11 @@ public class PlayerModel : IDisposable
     
     // Stats
     public float MoveSpeed => Stats.MoveSpeed;
-    public float JumpForce => Stats.JumpForce;
     public float TimeSlowFactor => Stats.TimeSlowFactor;
     public float SlowMotionDuration => Stats.SlowMotionDuration;
     public int RewardChoiceCount => Stats.RewardChoiceCount;
 
-    // reward 함수 (파사드 하위 시스템의 함수)
+    // Reward
     public void IncreaseMaxHP(float amount) => Health.AddMaxHP(amount);
     public void IncreaseDamage(float amount) => Weapon.AddDamage(amount);
     public void IncreaseMultishot(int amount) => Weapon.AddProjectileCount(amount);

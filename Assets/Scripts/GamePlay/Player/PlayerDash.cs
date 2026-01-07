@@ -11,16 +11,14 @@ public class PlayerDash : MonoBehaviour
     [Inject] private PlayerModel _model;
 
     private Rigidbody2D _rb;
-    private float _defaultGravity;
     private bool _isDashing = false;
-    private CancellationTokenSource _dashCts; 
+    private CancellationTokenSource _dashCts;
 
     public bool IsDashing => _isDashing;
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-        _defaultGravity = _rb.gravityScale;
     }
 
     void Start()
@@ -42,7 +40,6 @@ public class PlayerDash : MonoBehaviour
         if (!_model.TryConsumeDash()) return;
 
         CancelDash();
-
         _dashCts = new CancellationTokenSource();
         DashAsync(_dashCts.Token).Forget();
     }
@@ -61,24 +58,27 @@ public class PlayerDash : MonoBehaviour
     {
         _isDashing = true;
         
-        // 방향 계산
-        float moveInputX = _input.MoveDirection.x; 
-        float dashDirection;
+        Vector2 moveInput = _input.MoveDirection;
+        Vector2 dashDirection;
 
-        if (Mathf.Abs(moveInputX) > 0.1f)
-            dashDirection = Mathf.Sign(moveInputX); 
+        if (moveInput.magnitude > 0.1f)
+        {
+            dashDirection = moveInput.normalized;
+        }
         else
-            dashDirection = transform.localScale.x > 0 ? 1f : -1f; // 입력 없으면 바라보는 방향
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0;
+            dashDirection = ((Vector2)(mousePos - transform.position)).normalized;
+        }
         
-        _rb.gravityScale = 0f;
-        
-        _rb.linearVelocity = new Vector2(dashDirection * _model.DashSpeed, 0);
+        _rb.linearVelocity = dashDirection * _model.DashSpeed;
 
         try
         {
             await UniTask.Delay(
                 TimeSpan.FromSeconds(_model.DashDuration),
-                ignoreTimeScale: true, 
+                ignoreTimeScale: true,
                 cancellationToken: token
             );
         }
@@ -87,9 +87,8 @@ public class PlayerDash : MonoBehaviour
             return;
         }
 
-        if (this == null) return; 
+        if (this == null) return;
 
-        _rb.gravityScale = _defaultGravity;
         _rb.linearVelocity = Vector2.zero;
         _isDashing = false;
     }
