@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using Common;
 
 [CreateAssetMenu(fileName = "MapGenerationConfig", menuName = "SO/Map/Generation Config")]
@@ -26,12 +27,12 @@ public class MapGenerationConfig : ScriptableObject
     };
 
     [Header("Room Prefabs")]
+    [Tooltip("같은 타입의 방 여러 개 등록 가능 (랜덤 선택됨)")]
     public List<RoomPrefabMapping> RoomPrefabs = new List<RoomPrefabMapping>();
 
     [Header("Path Constraints")]
     public List<PathConstraint> Constraints = new List<PathConstraint>();
 
-    // 특정 계층에 적용되는 제약 조건 반환
     public PathConstraint GetConstraintForLayer(int layer)
     {
         foreach (var c in Constraints)
@@ -45,27 +46,29 @@ public class MapGenerationConfig : ScriptableObject
         return null;
     }
 
-    // 방 타입에 해당하는 프리팹 반환
+    // 같은 타입의 프리팹 중 랜덤 선택
     public GameObject GetPrefabForType(RoomType type)
     {
-        var mapping = RoomPrefabs.Find(m => m.Type == type);
+        var matchingPrefabs = RoomPrefabs
+            .Where(m => m.Type == type && m.Prefab != null)
+            .ToList();
         
-        if (mapping != null && mapping.Prefab != null)
+        if (matchingPrefabs.Count == 0)
         {
-            return mapping.Prefab;
+            Debug.LogWarning($"MapGenerationConfig: {type} 타입의 프리팹이 없습니다");
+            
+            if (RoomPrefabs.Count > 0 && RoomPrefabs[0].Prefab != null)
+            {
+                return RoomPrefabs[0].Prefab;
+            }
+            
+            return null;
         }
 
-        Debug.LogWarning($"MapGenerationConfig: {type} prefab null");
-        
-        if (RoomPrefabs.Count > 0 && RoomPrefabs[0].Prefab != null)
-        {
-            return RoomPrefabs[0].Prefab;
-        }
-
-        return null;
+        int randomIndex = Random.Range(0, matchingPrefabs.Count);
+        return matchingPrefabs[randomIndex].Prefab;
     }
 
-    // 확률 기반으로 방 타입 랜덤 선택
     public RoomType RollRoomType()
     {
         if (RoomTypeChances.Count == 0)
@@ -89,7 +92,6 @@ public class MapGenerationConfig : ScriptableObject
         return RoomTypeChances[0].Type;
     }
 
-    // 특정 타입을 제외하고 방 타입 랜덤 선택
     public RoomType RollRoomType(List<RoomType> excludeTypes)
     {
         if (excludeTypes == null || excludeTypes.Count == 0)
@@ -138,7 +140,6 @@ public class MapGenerationConfig : ScriptableObject
         return validChances[0].Type;
     }
 
-    // 제약 조건을 고려하여 방 타입 결정
     public RoomType RollRoomTypeWithConstraint(int layer)
     {
         var constraint = GetConstraintForLayer(layer);
@@ -168,7 +169,7 @@ public class MapGenerationConfig : ScriptableObject
 
         if (Mathf.Abs(total - 1f) > 0.01f)
         {
-            Debug.LogWarning($"확률 합계: {total:F2}");
+            Debug.LogWarning($"확률 합계: {total:F2} (100%가 아님)");
         }
         else
         {
@@ -179,8 +180,20 @@ public class MapGenerationConfig : ScriptableObject
     [ContextMenu("Print Configuration")]
     private void PrintConfiguration()
     {
-        Debug.Log($"Grid: {LayerCount}층 x {NodesPerLayer}노드\n" +
-                  $"경로: {PathCount}개");
+        Debug.Log($"=== Map Generation Config ===\n" +
+                  $"Grid: {LayerCount}층 × {NodesPerLayer}노드\n" +
+                  $"경로: {PathCount}개\n" +
+                  $"등록된 방 프리팹: {RoomPrefabs.Count}개");
+        
+        // 타입별 개수 출력
+        var grouped = RoomPrefabs
+            .Where(m => m.Prefab != null)
+            .GroupBy(m => m.Type);
+        
+        foreach (var group in grouped)
+        {
+            Debug.Log($"  • {group.Key}: {group.Count()}개 변형");
+        }
     }
 
     [ContextMenu("Validate Constraints")]
@@ -211,49 +224,13 @@ public class MapGenerationConfig : ScriptableObject
                 {
                     sb.Append($"{banned} ");
                 }
-                sb.Append("] ");
+                sb.Append("]");
             }
 
             sb.AppendLine();
         }
 
         Debug.Log(sb.ToString());
-    }
-
-    [ContextMenu("Add Example Constraints")]
-    private void AddExampleConstraints()
-    {
-        Constraints.Clear();
-
-        // 5층: 무조건 상점
-        PathConstraint shop5 = new PathConstraint();
-        shop5.Layer = 5;
-        shop5.HasRequiredType = true;
-        shop5.RequiredType = RoomType.Shop;
-        shop5.BannedTypes = new List<RoomType>();
-        Constraints.Add(shop5);
-
-        // 10층: 무조건 상점
-        PathConstraint shop10 = new PathConstraint();
-        shop10.Layer = 10;
-        shop10.HasRequiredType = true;
-        shop10.RequiredType = RoomType.Shop;
-        shop10.BannedTypes = new List<RoomType>();
-        Constraints.Add(shop10);
-
-        // 1~6층: 엘리트 금지
-        for (int layer = 1; layer <= 6; layer++)
-        {
-            PathConstraint noElite = new PathConstraint();
-            noElite.Layer = layer;
-            noElite.HasRequiredType = false;
-            noElite.BannedTypes = new List<RoomType> { RoomType.Elite };
-            Constraints.Add(noElite);
-        }
-
-        UnityEditor.EditorUtility.SetDirty(this);
-
-        Debug.Log($"예시 제약 조건 {Constraints.Count}개 추가됨");
     }
     #endif
 }
