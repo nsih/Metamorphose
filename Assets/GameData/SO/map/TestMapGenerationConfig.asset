@@ -26,17 +26,17 @@ MonoBehaviour:
     Probability: 0.15
   RoomPrefabs:
   - Type: 0
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
+    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
   - Type: 1
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
+    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
   - Type: 2
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
+    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
   - Type: 3
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
+    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
   - Type: 4
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
+    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
   - Type: 5
-    Prefab: {fileID: 225765945404880213, guid: d180aaf576121254398206c4d9c4222f, type: 3}
+    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
   Constraints:
   - Layer: 5
     HasRequiredType: 1

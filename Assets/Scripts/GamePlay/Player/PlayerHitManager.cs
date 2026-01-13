@@ -66,7 +66,7 @@ public class PlayerHitManager : MonoBehaviour
             if (damage == 0) damage = 1;             
         }
 
-        Debug.Log($"dmg: {damage}");
+        //Debug.Log($"dmg: {damage}");
         
         _model.TakeDamage(damage);
         PlayHitFeedback().Forget();
