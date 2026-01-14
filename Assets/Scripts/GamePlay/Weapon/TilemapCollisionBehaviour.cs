@@ -28,7 +28,7 @@ public class TilemapCollisionBehaviour : BaseBulletBehaviour
         
         if (hit.collider != null)
         {
-            Debug.Log($"Hit: {hit.collider.name}");
+            //Debug.Log($"Hit: {hit.collider.name}");
             bullet.Die();
         }
     }
@@ -36,6 +36,6 @@ public class TilemapCollisionBehaviour : BaseBulletBehaviour
     public override void OnBulletBirth()
     {
         base.OnBulletBirth();
-        Debug.Log($"Bullet born, wallLayer value: {wallLayer.value}");
+        //Debug.Log($"Bullet born, wallLayer value: {wallLayer.value}");
     }
 }
