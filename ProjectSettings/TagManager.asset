@@ -12,7 +12,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Wall
   - 
   - 
   - 
@@ -41,6 +41,24 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Ground
+    uniqueID: 2899457777
+    locked: 0
+  - name: Decoration
+    uniqueID: 1461479255
+    locked: 0
+  - name: Entities
+    uniqueID: 4101091631
+    locked: 0
+  - name: Walls
+    uniqueID: 484067023
+    locked: 0
+  - name: Projectiles
+    uniqueID: 1335511579
+    locked: 0
+  - name: UI
+    uniqueID: 2214626737
     locked: 0
   m_RenderingLayers:
   - Default
