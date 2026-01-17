@@ -138,7 +138,7 @@ namespace Animancer
 
             public const string UpdateModes = Docs + "bugs/update-modes";
 
-            public const string VersionName = "v8.2.2";
+            public const string VersionName = "v8.2.3";
 
             public const string ChangeLogURL = Docs + "changes/animancer-v8-2";
 

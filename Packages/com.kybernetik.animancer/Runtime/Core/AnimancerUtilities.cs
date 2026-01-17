@@ -328,6 +328,62 @@ namespace Animancer
             => $"<a href=\"{url}\">{text ?? url}</a>";
 
         /************************************************************************************************************************/
+
+        /// <summary>
+        /// Attempts to interpret the `name` as a direction
+        /// based on the presence of the characters <c>RLUD</c>
+        /// corresponding to Right, Left, Up, and Down.
+        /// </summary>
+        public static Vector2Int GetDirection(string name) => new(
+            GetDirection(name, 'R', 'L'),
+            GetDirection(name, 'U', 'D'));
+
+        /************************************************************************************************************************/
+
+        /// <summary>
+        /// Returns <c>1</c> if the `name` contains the `positive` value
+        /// or <c>-1</c> for `negative`. Otherwise returns <c>0</c>.
+        /// </summary>
+        public static int GetDirection(string name, char positive, char negative)
+        {
+            var isPositive = ContainsCaseInsensitive(name, positive);
+            var isNegative = ContainsCaseInsensitive(name, negative);
+
+            if (isPositive)
+            {
+                if (isNegative)
+                    return 0;
+                else
+                    return 1;
+            }
+            else
+            {
+                if (isNegative)
+                    return -1;
+                else
+                    return 0;
+            }
+        }
+
+        /************************************************************************************************************************/
+
+        /// <summary>Does the `text` contain the `character` (ignoring case)?</summary>
+        public static bool ContainsCaseInsensitive(string text, char character)
+        {
+            var upper = char.ToUpper(character);
+            var lower = char.ToLower(character);
+
+            for (int i = text.Length - 1; i >= 0; i--)
+            {
+                var c = text[i];
+                if (c == upper || c == lower)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /************************************************************************************************************************/
         #endregion
         /************************************************************************************************************************/
         #region Collections
