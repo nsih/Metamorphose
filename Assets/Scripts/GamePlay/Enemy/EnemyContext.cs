@@ -14,7 +14,7 @@ public class EnemyContext
     public float LastAttackTime { get; set; }
     
     // 타겟
-    public Transform Target { get; private set; }
+    public Transform Target { get; set; }
     public Transform Self { get; private set; }
     
     // 컴포넌트 참조
@@ -111,7 +111,7 @@ public class EnemyContext
         }
     }
 
-    // 초기화 (풀으로 돌아감)
+    // 풀링 시 초기화
     public void Reset()
     {
         CurrentHP = Data != null ? Data.MaxHp : 0;
