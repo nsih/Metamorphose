@@ -38,9 +38,9 @@ namespace Common
 
     public enum EnemyState
     {
-        Idle,   // 대기/배회
-        Chase,  // 추적
-        Attack  // 공격
+        Idle,
+        Chase,
+        Attack
     }
     #endregion
 
