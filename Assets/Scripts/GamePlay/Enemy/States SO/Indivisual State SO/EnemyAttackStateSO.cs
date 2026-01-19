@@ -28,9 +28,8 @@ public class EnemyAttackStateSO : EnemyStateSO
 
     public override void Exit(EnemyContext ctx)
     {
-        // 공격 중단
         if (ctx.Emitter != null)
-            ctx.Emitter.Kill();
+            ctx.Emitter.Stop();
     }
 
     public override void Reset(EnemyContext ctx)
