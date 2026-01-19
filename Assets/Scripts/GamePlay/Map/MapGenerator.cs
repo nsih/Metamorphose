@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Common;
-using Common.Model;
 
 public class MapGenerator
 {
     private MapGenerationConfig _config;
     private int _nodeIdCounter = 0;
+    private List<(MapNode from, MapNode to)> _allConnections = new List<(MapNode, MapNode)>();
 
     public MapGenerator(MapGenerationConfig config)
     {
@@ -15,14 +15,56 @@ public class MapGenerator
 
     public List<List<MapNode>> GenerateMap()
     {
-        _nodeIdCounter = 0;
+        int maxAttempts = 10;
+        
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            _nodeIdCounter = 0;
+            _allConnections.Clear();
 
-        List<List<MapNode>> grid = CreateGrid();
-        HashSet<MapNode> usedNodes = GeneratePaths(grid);
-        RemoveOrphanNodes(grid, usedNodes);
+            List<List<MapNode>> grid = CreateGrid();
+            HashSet<MapNode> usedNodes = GeneratePaths(grid);
+            
+            if (usedNodes.Count == 0)
+            {
+                Debug.LogWarning($"맵 생성 실패, 재시도 {attempt + 1}/{maxAttempts}");
+                continue;
+            }
+            
+            RemoveOrphanNodes(grid, usedNodes);
+            InitializeStartNode(grid);
+
+            return grid;
+        }
+
+        Debug.LogError("맵 생성 최대 시도 횟수 초과, 기본 맵 반환");
+        return CreateFallbackMap();
+    }
+
+    private List<List<MapNode>> CreateFallbackMap()
+    {
+        _nodeIdCounter = 0;
+        _allConnections.Clear();
+        
+        List<List<MapNode>> grid = new List<List<MapNode>>();
+        
+        MapNode startNode = CreateNode(0, 0, RoomType.Start);
+        grid.Add(new List<MapNode> { startNode });
+        
+        MapNode current = startNode;
+        for (int layer = 1; layer < _config.LayerCount - 1; layer++)
+        {
+            MapNode node = CreateNode(layer, 0, RoomType.Battle);
+            grid.Add(new List<MapNode> { node });
+            current.NextNodes.Add(node);
+            current = node;
+        }
+        
+        MapNode bossNode = CreateNode(_config.LayerCount - 1, 0, RoomType.Boss);
+        grid.Add(new List<MapNode> { bossNode });
+        current.NextNodes.Add(bossNode);
         
         InitializeStartNode(grid);
-
         return grid;
     }
 
@@ -32,7 +74,6 @@ public class MapGenerator
         {
             MapNode startNode = grid[0][0];
             startNode.State = NodeState.Available;
-            Debug.Log($"시작 노드 초기화: {startNode}");
         }
     }
 
@@ -86,10 +127,25 @@ public class MapGenerator
     private HashSet<MapNode> GeneratePaths(List<List<MapNode>> grid)
     {
         HashSet<MapNode> usedNodes = new HashSet<MapNode>();
+        int failedPaths = 0;
+        int maxFailures = _config.PathCount * 2;
 
         for (int i = 0; i < _config.PathCount; i++)
         {
             List<MapNode> path = GenerateSinglePath(grid);
+            
+            if (path == null || path.Count < grid.Count)
+            {
+                failedPaths++;
+                i--;
+                
+                if (failedPaths >= maxFailures)
+                {
+                    Debug.LogWarning("경로 생성 실패 횟수 초과");
+                    return new HashSet<MapNode>();
+                }
+                continue;
+            }
             
             foreach (var node in path)
             {
@@ -112,20 +168,81 @@ public class MapGenerator
         for (int layer = 1; layer < grid.Count; layer++)
         {
             List<MapNode> nextLayer = grid[layer];
-            List<MapNode> adjacentNodes = GetAdjacentNodes(current, nextLayer);
+            List<MapNode> validNodes = GetNonCrossingAdjacentNodes(current, nextLayer);
 
-            if (adjacentNodes.Count == 0)
+            if (validNodes.Count == 0)
             {
-                Debug.LogError($"경로 생성 실패: Layer {layer}에 인접 노드 없음");
-                break;
+                return null;
             }
 
-            int randomIndex = Random.Range(0, adjacentNodes.Count);
-            current = adjacentNodes[randomIndex];
+            int randomIndex = Random.Range(0, validNodes.Count);
+            current = validNodes[randomIndex];
             path.Add(current);
         }
 
         return path;
+    }
+
+    private List<MapNode> GetNonCrossingAdjacentNodes(MapNode from, List<MapNode> nextLayer)
+    {
+        List<MapNode> validNodes = new List<MapNode>();
+
+        foreach (var node in nextLayer)
+        {
+            if (!IsAdjacent(from, node))
+                continue;
+            
+            if (from.NextNodes.Contains(node))
+            {
+                validNodes.Add(node);
+                continue;
+            }
+            
+            if (!WouldCrossExistingConnection(from, node))
+            {
+                validNodes.Add(node);
+            }
+        }
+
+        return validNodes;
+    }
+
+    private bool WouldCrossExistingConnection(MapNode from, MapNode to)
+    {
+        foreach (var connection in _allConnections)
+        {
+            if (connection.from == from || connection.to == to)
+                continue;
+            
+            if (connection.from.Layer != from.Layer)
+                continue;
+
+            if (DoLinesCross(from.IndexInLayer, to.IndexInLayer, 
+                           connection.from.IndexInLayer, connection.to.IndexInLayer))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool DoLinesCross(int fromA, int toA, int fromB, int toB)
+    {
+        bool aGoesDown = toA > fromA;
+        bool bGoesDown = toB > fromB;
+        
+        if (aGoesDown == bGoesDown)
+            return false;
+        
+        int minA = Mathf.Min(fromA, toA);
+        int maxA = Mathf.Max(fromA, toA);
+        int minB = Mathf.Min(fromB, toB);
+        int maxB = Mathf.Max(fromB, toB);
+        
+        bool overlaps = minA < maxB && minB < maxA;
+        
+        return overlaps;
     }
 
     private void ConnectPath(List<MapNode> path)
@@ -138,6 +255,7 @@ public class MapGenerator
             if (!from.NextNodes.Contains(to))
             {
                 from.NextNodes.Add(to);
+                _allConnections.Add((from, to));
             }
         }
     }
@@ -187,12 +305,9 @@ public class MapGenerator
 
     private void RemoveOrphanNodes(List<List<MapNode>> grid, HashSet<MapNode> usedNodes)
     {
-        int removedCount = 0;
-
         foreach (var layer in grid)
         {
-            int removed = layer.RemoveAll(node => !usedNodes.Contains(node));
-            removedCount += removed;
+            layer.RemoveAll(node => !usedNodes.Contains(node));
         }
     }
 
@@ -232,7 +347,7 @@ public class MapGenerator
             {
                 if (node.NextNodes.Count > 0)
                 {
-                    sb.Append($"{node} → ");
+                    sb.Append($"{node} -> ");
                     foreach (var next in node.NextNodes)
                     {
                         sb.Append($"{next} ");
