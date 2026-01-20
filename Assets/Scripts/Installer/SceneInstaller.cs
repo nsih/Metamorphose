@@ -1,4 +1,3 @@
-using System;
 using Reflex.Core;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
@@ -7,6 +6,8 @@ public class SceneInstaller : MonoBehaviour, IInstaller
 {
     [SerializeField] private PlayerSpawner _playerSpawner;
     [SerializeField] private MapUIManager _mapUIManager;
+    [SerializeField] private MapManager _mapManager;
+    [SerializeField] private EnemyPoolManager _enemyPoolManager;
 
     public void InstallBindings(ContainerBuilder builder)
     {
@@ -15,13 +16,17 @@ public class SceneInstaller : MonoBehaviour, IInstaller
         var roomProperty = new AsyncReactiveProperty<RoomManager>(null);
         builder.AddSingleton(
             roomProperty, 
-            typeof(AsyncReactiveProperty<RoomManager>),             // RoomManager용 (쓰기 가능)
-            typeof(IReadOnlyAsyncReactiveProperty<RoomManager>)     // UI용 (읽기 전용)
+            typeof(AsyncReactiveProperty<RoomManager>),
+            typeof(IReadOnlyAsyncReactiveProperty<RoomManager>)
         );
 
         if (_mapUIManager != null)
-        {
             builder.AddSingleton(_mapUIManager);
-        }
+
+        if (_mapManager != null)
+            builder.AddSingleton(_mapManager);
+
+        if (_enemyPoolManager != null)
+            builder.AddSingleton(_enemyPoolManager);
     }
 }

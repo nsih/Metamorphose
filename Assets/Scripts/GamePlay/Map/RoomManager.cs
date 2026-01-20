@@ -19,6 +19,8 @@ public class RoomManager : MonoBehaviour
     public IReadOnlyAsyncReactiveProperty<RoomState> CurrentRoomState => _roomState;
 
     private AsyncReactiveProperty<RoomManager> _globalCurrentRoomHandle;
+    private EnemyPoolManager _enemyPoolManager;
+    private MapManager _mapManager;
 
     private RoomWaveData _currentWaveData;
     private List<Enemy> _activeEnemies = new List<Enemy>();
@@ -30,10 +32,16 @@ public class RoomManager : MonoBehaviour
     private CancellationTokenSource _cts;
 
     [Inject]
-    public void Construct(AsyncReactiveProperty<RoomManager> globalHandle, PlayerSpawner spawner)
+    public void Construct(
+        AsyncReactiveProperty<RoomManager> globalHandle, 
+        PlayerSpawner spawner,
+        EnemyPoolManager enemyPoolManager,
+        MapManager mapManager)
     {
         _globalCurrentRoomHandle = globalHandle;
         _playerSpawner = spawner;
+        _enemyPoolManager = enemyPoolManager;
+        _mapManager = mapManager;
     }
 
     private void Start()
@@ -41,16 +49,11 @@ public class RoomManager : MonoBehaviour
         if (_playerSpawner != null)
         {
             GameObject playerObj = _playerSpawner.Spawn();
-            
             if (playerObj != null)
                 _playerTransform = playerObj.transform;
         }
-        else
-        {
-            Debug.Log("playerSpawner error");
-        }
 
-        _factory = new EnemyFactory(_playerTransform);
+        _factory = new EnemyFactory(_playerTransform, _enemyPoolManager);
 
         if (_globalCurrentRoomHandle != null)
         {
@@ -87,7 +90,7 @@ public class RoomManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("RoomWaveData error");
+            Debug.LogError("RoomManager: wave data null");
             return;
         }
 
@@ -120,10 +123,7 @@ public class RoomManager : MonoBehaviour
 
             CompleteRoom();
         }
-        catch (OperationCanceledException)
-        {
-            Debug.Log("웨이브 취소");
-        }
+        catch (OperationCanceledException) { }
     }
 
     private void SpawnWaveUnits(Wave wave)
@@ -139,9 +139,7 @@ public class RoomManager : MonoBehaviour
             for (int k = 0; k < entry.Count; k++)
             {
                 Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
-                
                 Enemy enemy = _factory.Create(spawnTr.position + offset, entry.EnemyData);
-                
                 _activeEnemies.Add(enemy);
             }
         }
@@ -149,14 +147,11 @@ public class RoomManager : MonoBehaviour
 
     private void CompleteRoom()
     {
-        Debug.Log("Complete Room");
-
         _roomState.Value = RoomState.Complete;
         
-        if (MapManager.Instance?.CurrentNode != null)
+        if (_mapManager != null && _mapManager.CurrentNode != null)
         {
-            MapManager.Instance.CurrentNode.CompleteAndUnlockNext();
-            Debug.Log($"노드 완료: {MapManager.Instance.CurrentNode}");
+            _mapManager.CurrentNode.CompleteAndUnlockNext();
         }
     }
 
@@ -173,7 +168,7 @@ public class RoomManager : MonoBehaviour
         {
             if (enemy != null && enemy.gameObject.activeSelf)
             {
-                EnemyPoolManager.Instance.Release(enemy);
+                _enemyPoolManager.Release(enemy);
             }
         }
         _activeEnemies.Clear();
@@ -182,9 +177,7 @@ public class RoomManager : MonoBehaviour
     public void ResetRoom()
     {
         CleanupRoom();
-
         _roomState.Value = RoomState.Idle;
-
         UniTask.DelayFrame(1).ContinueWith(StartRoomEvent).Forget();
     }
 }

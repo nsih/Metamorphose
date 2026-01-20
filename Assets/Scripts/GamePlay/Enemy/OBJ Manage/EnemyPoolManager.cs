@@ -3,26 +3,20 @@ using UnityEngine.Pool;
 
 public class EnemyPoolManager : MonoBehaviour
 {
-    public static EnemyPoolManager Instance;
-
     [Header("Settings")]
     [SerializeField] private Enemy _prefab; 
     [SerializeField] private int _defaultCapacity = 20;
     [SerializeField] private int _maxSize = 100;
 
-    [Header("Debug Info (Read Only)")]
+    [Header("Debug Info")]
     [SerializeField] private int _totalCount;
     [SerializeField] private int _activeCount;
     [SerializeField] private int _inactiveCount;
-
 
     private ObjectPool<Enemy> _pool;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
         InitPool();
     }
 
@@ -49,7 +43,6 @@ public class EnemyPoolManager : MonoBehaviour
         );
     }
 
-    //콜백
     private Enemy CreateEnemy()
     {
         return Instantiate(_prefab, transform);
@@ -70,7 +63,6 @@ public class EnemyPoolManager : MonoBehaviour
         Destroy(enemy.gameObject);
     }
 
-    //Public API
     public Enemy Get() => _pool.Get();
     public void Release(Enemy enemy) => _pool.Release(enemy);
 }
