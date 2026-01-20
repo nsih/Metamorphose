@@ -2,13 +2,13 @@
     "name": "GamePlay",
     "rootNamespace": "",
     "references": [
-        "Core",
         "Package",
         "Reflex",
         "Unity.InputSystem",
         "UniTask",
         "BulletPro.Runtime",
-        "UniTask.Linq"
+        "UniTask.Linq",
+        "Common"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

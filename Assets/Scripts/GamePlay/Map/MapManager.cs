@@ -35,6 +35,10 @@ public class MapManager : MonoBehaviour
         MapGenerator generator = new MapGenerator(_config);
         _currentMap = generator.GenerateMap();
 
+        //generator.PrintGrid(_currentMap);
+        //generator.PrintConnections(_currentMap);
+        //generator.PrintConnectionsDetailed(_currentMap);
+
         if (_currentMap.Count > 0 && _currentMap[0].Count > 0)
         {
             MapNode startNode = _currentMap[0][0];
