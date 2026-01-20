@@ -8,26 +8,22 @@ using System.Threading;
 [RequireComponent(typeof(EnemyFSM))]
 public class Enemy : MonoBehaviour, IDamageable
 {
-    [SerializeField] private EnemyDataSO _data;
+    [SerializeField] private EnemyDataSO _defaultData;
 
-    // 컴포넌트 캐싱
     private BulletReceiver _receiver;
     private EnemyMovement _movement;
     private EnemyFSM _fsm;
     private SpriteRenderer _spriteRenderer;
     private BulletEmitter _emitter;
 
-    // Context
     private EnemyContext _ctx;
+    private EnemyDataSO _currentData;
 
-    // 이벤트
     public event System.Action OnHit;
     public event System.Action OnDeath;
 
-    // 풀 반환 콜백
     private System.Action _returnToPool;
 
-    // 색상 복구용
     private Color _originalColor;
     private CancellationTokenSource _flashCts;
 
@@ -41,13 +37,12 @@ public class Enemy : MonoBehaviour, IDamageable
 
         if (_spriteRenderer != null)
             _originalColor = _spriteRenderer.color;
+
+        _ctx = new EnemyContext(transform, _movement, _spriteRenderer, _emitter);
     }
 
     private void OnEnable()
     {
-        if (_data != null)
-            Initialize(_data);
-
         if (_receiver != null)
             _receiver.OnHitByBullet.AddListener(OnBulletHit);
     }
@@ -62,19 +57,31 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public void Initialize(EnemyDataSO data)
     {
-        _data = data;
+        _currentData = data != null ? data : _defaultData;
+        
+        if (_currentData == null)
+        {
+            Debug.LogError("Enemy: data null");
+            return;
+        }
 
-        _ctx = new EnemyContext(
-            transform,
-            _movement,
-            _spriteRenderer,
-            _emitter
-        );
-
-        _ctx.Initialize(data, null);
+        ResetState();
+        
+        _ctx.Initialize(_currentData, null);
         _fsm.Initialize(_ctx);
+    }
 
-        ResetVisuals();
+    private void ResetState()
+    {
+        CancelFlash();
+        
+        if (_spriteRenderer != null)
+            _spriteRenderer.color = _originalColor;
+        
+        if (_emitter != null)
+            _emitter.Kill();
+        
+        _ctx.Reset();
     }
 
     public void SetTarget(Transform target)
@@ -82,8 +89,9 @@ public class Enemy : MonoBehaviour, IDamageable
         if (_ctx != null)
         {
             _ctx.Target = target;
+            
             if (_movement != null)
-                _movement.Initialize(target, _data);
+                _movement.Initialize(target, _currentData);
         }
     }
 
@@ -99,8 +107,8 @@ public class Enemy : MonoBehaviour, IDamageable
         float damage = 1f;
         if (bullet.dynamicSolver != null)
         {
-            damage = bullet.moduleParameters.GetFloat("Damage");
-            if (damage == 0) damage = 1;
+            damage = bullet.moduleParameters.GetFloat(BPParams.Damage);
+            if (damage <= 0) damage = 1;
         }
 
         TakeDamage((int)damage);
@@ -147,13 +155,6 @@ public class Enemy : MonoBehaviour, IDamageable
         }
     }
 
-    private void ResetVisuals()
-    {
-        CancelFlash();
-        if (_spriteRenderer != null)
-            _spriteRenderer.color = _originalColor;
-    }
-
     private async UniTaskVoid DieSequence()
     {
         _ctx.IsDead = true;
@@ -176,18 +177,19 @@ public class Enemy : MonoBehaviour, IDamageable
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        if (_data == null) return;
+        if (_currentData == null) return;
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, _data.AggroRange);
+        Gizmos.DrawWireSphere(transform.position, _currentData.AggroRange);
 
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _data.AttackRange);
+        Gizmos.DrawWireSphere(transform.position, _currentData.AttackRange);
     }
 
     private void OnGUI()
     {
         if (_ctx == null || _ctx.Target == null || _ctx.IsDead) return;
+        if (_fsm == null) return;
 
         Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 0.8f);
         if (screenPos.z < 0) return;
