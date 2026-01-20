@@ -126,7 +126,7 @@ public class MapUIManager : MonoBehaviour
         {
             foreach (var node in layer)
             {
-                Vector2 position = CalculateNodePosition(node.Layer, node.IndexInLayer, node.NodeID);
+                Vector2 position = CalculateNodePosition(node.Layer, node.IndexInLayer, node.NodeID, node.Type);
 
                 MapNodeUI nodeUI = Instantiate(_nodeUIPrefab, _contentRect);
                 RectTransform rect = nodeUI.GetComponent<RectTransform>();
@@ -141,15 +141,24 @@ public class MapUIManager : MonoBehaviour
         }
     }
 
-    private Vector2 CalculateNodePosition(int layer, int indexInLayer, int nodeId)
+    private Vector2 CalculateNodePosition(int layer, int indexInLayer, int nodeId, RoomType type)
     {
         float totalWidth = (_currentGrid.Count - 1) * _horizontalSpacing;
         float startX = -totalWidth / 2f;
         float x = startX + (layer * _horizontalSpacing);
         
-        float totalHeight = (_maxNodesPerLayer - 1) * _verticalSpacing;
-        float startY = totalHeight / 2f;
-        float y = startY - (indexInLayer * _verticalSpacing);
+        float y;
+        
+        if (type == RoomType.Start || type == RoomType.Boss)
+        {
+            y = 0f;
+        }
+        else
+        {
+            float totalHeight = (_maxNodesPerLayer - 1) * _verticalSpacing;
+            float startY = totalHeight / 2f;
+            y = startY - (indexInLayer * _verticalSpacing);
+        }
 
         System.Random rng = new System.Random(_layoutSeed + nodeId);
         float jitterX = ((float)rng.NextDouble() * 2f - 1f) * _positionJitter;
