@@ -2,23 +2,25 @@ using UnityEngine;
 
 public class EnemyFactory
 {
-    private Transform _playerTransform;
+    private readonly Transform _playerTransform;
+    private readonly EnemyPoolManager _poolManager;
 
-    public EnemyFactory(Transform playerTransform)
+    public EnemyFactory(Transform playerTransform, EnemyPoolManager poolManager)
     {
         _playerTransform = playerTransform;
+        _poolManager = poolManager;
     }
 
     public Enemy Create(Vector3 position, EnemyDataSO data)
     {
-        Enemy enemy = EnemyPoolManager.Instance.Get();
+        Enemy enemy = _poolManager.Get();
 
         enemy.transform.position = position;
         enemy.transform.rotation = Quaternion.identity;
 
         enemy.Initialize(data);
         enemy.SetTarget(_playerTransform);
-        enemy.SetReleaseAction(() => EnemyPoolManager.Instance.Release(enemy));
+        enemy.SetReleaseAction(() => _poolManager.Release(enemy));
 
         return enemy;
     }

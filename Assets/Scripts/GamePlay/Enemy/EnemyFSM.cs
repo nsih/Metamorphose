@@ -72,14 +72,15 @@ public class EnemyFSM : MonoBehaviour
 
     public void Reset()
     {
+        _isInitialized = false;
+        
         if (_currentState != null && _ctx != null)
+        {
             _currentState.Exit(_ctx);
-
+            _currentState.Reset(_ctx);
+        }
+        
         _currentState = _idleState;
-        _ctx?.Reset();
-
-        if (_currentState != null && _ctx != null)
-            _currentState.Enter(_ctx);
     }
 
     public void Stop()

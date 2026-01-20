@@ -8,8 +8,7 @@ public class EnemyAttackStateSO : EnemyStateSO
 
     public override void Enter(EnemyContext ctx)
     {
-        if (ctx.Movement != null)
-            ctx.Movement.enabled = false;
+        
     }
 
     public override void Execute(EnemyContext ctx)

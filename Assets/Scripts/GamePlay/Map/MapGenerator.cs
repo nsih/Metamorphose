@@ -27,7 +27,6 @@ public class MapGenerator
             
             if (usedNodes.Count == 0)
             {
-                Debug.LogWarning($"맵 생성 실패, 재시도 {attempt + 1}/{maxAttempts}");
                 continue;
             }
             
@@ -37,7 +36,6 @@ public class MapGenerator
             return grid;
         }
 
-        Debug.LogError("맵 생성 최대 시도 횟수 초과, 기본 맵 반환");
         return CreateFallbackMap();
     }
 
@@ -141,7 +139,6 @@ public class MapGenerator
                 
                 if (failedPaths >= maxFailures)
                 {
-                    Debug.LogWarning("경로 생성 실패 횟수 초과");
                     return new HashSet<MapNode>();
                 }
                 continue;
@@ -316,7 +313,7 @@ public class MapGenerator
     public void PrintGrid(List<List<MapNode>> grid)
     {
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        sb.AppendLine("=== 그리드 구조 ===");
+        sb.AppendLine("=== Grid ===");
 
         int totalNodes = 0;
         for (int i = 0; i < grid.Count; i++)
@@ -326,18 +323,18 @@ public class MapGenerator
             {
                 sb.Append($"[{node.Type}] ");
             }
-            sb.AppendLine($"({grid[i].Count}개)");
+            sb.AppendLine($"({grid[i].Count})");
             totalNodes += grid[i].Count;
         }
 
-        sb.AppendLine($"총 {totalNodes}개 노드");
+        sb.AppendLine($"Total: {totalNodes} nodes");
         Debug.Log(sb.ToString());
     }
 
     public void PrintConnections(List<List<MapNode>> grid)
     {
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        sb.AppendLine("=== 노드 연결 구조 ===");
+        sb.AppendLine("=== Connections ===");
 
         int totalConnections = 0;
 
@@ -358,7 +355,48 @@ public class MapGenerator
             }
         }
 
-        sb.AppendLine($"총 {totalConnections}개 연결");
+        sb.AppendLine($"Total: {totalConnections} connections");
+        Debug.Log(sb.ToString());
+    }
+
+    public void PrintConnectionsDetailed(List<List<MapNode>> grid)
+    {
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.AppendLine("=== Connection Details ===");
+
+        for (int layer = 0; layer < grid.Count - 1; layer++)
+        {
+            sb.AppendLine($"Layer {layer} -> {layer + 1}:");
+            
+            List<(int from, int to)> connections = new List<(int, int)>();
+            
+            foreach (var node in grid[layer])
+            {
+                foreach (var next in node.NextNodes)
+                {
+                    connections.Add((node.IndexInLayer, next.IndexInLayer));
+                    sb.AppendLine($"  {node.IndexInLayer} -> {next.IndexInLayer}");
+                }
+            }
+            
+            for (int i = 0; i < connections.Count; i++)
+            {
+                for (int j = i + 1; j < connections.Count; j++)
+                {
+                    var a = connections[i];
+                    var b = connections[j];
+                    
+                    bool aStartsAboveB = a.from < b.from;
+                    bool aEndsAboveB = a.to < b.to;
+                    
+                    if (aStartsAboveB != aEndsAboveB)
+                    {
+                        sb.AppendLine($"  CROSS: ({a.from}->{a.to}) X ({b.from}->{b.to})");
+                    }
+                }
+            }
+        }
+
         Debug.Log(sb.ToString());
     }
 
