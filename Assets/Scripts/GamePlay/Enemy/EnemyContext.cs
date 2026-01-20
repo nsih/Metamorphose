@@ -3,26 +3,21 @@ using BulletPro;
 
 public class EnemyContext
 {
-    // 데이터
     public EnemyDataSO Data { get; private set; }
     
-    // 런타임 상태
     public int CurrentHP { get; set; }
     public int MaxHP => Data.MaxHp;
     public bool IsEnraged { get; private set; }
     public bool IsDead { get; set; }
     public float LastAttackTime { get; set; }
     
-    // 타겟
     public Transform Target { get; set; }
     public Transform Self { get; private set; }
     
-    // 컴포넌트 참조
     public EnemyMovement Movement { get; private set; }
     public SpriteRenderer SpriteRenderer { get; private set; }
     public BulletEmitter Emitter { get; private set; }
     
-    // 원본 색상 저장
     private Color _originalColor;
 
     public EnemyContext(Transform self, EnemyMovement movement, SpriteRenderer spriteRenderer, BulletEmitter emitter)
@@ -58,7 +53,6 @@ public class EnemyContext
         }
     }
 
-    // 현재 페이즈에 맞는 전략 반환
     public EnemyMoveStrategySO CurrentMoveStrategy
     {
         get
@@ -99,7 +93,6 @@ public class EnemyContext
         }
     }
 
-    // 발악 체크
     public void CheckEnrage()
     {
         if (IsEnraged || !Data.HasEnragedPhase) return;
@@ -107,11 +100,9 @@ public class EnemyContext
         if (CurrentHP <= MaxHP * Data.EnrageThreshold)
         {
             IsEnraged = true;
-            Debug.Log($"[{Self.name}] Enraged");
         }
     }
 
-    // 풀링 시 초기화
     public void Reset()
     {
         CurrentHP = Data != null ? Data.MaxHp : 0;
@@ -119,15 +110,9 @@ public class EnemyContext
         IsEnraged = false;
         LastAttackTime = 0f;
         
-        // 색상 복구
         if (SpriteRenderer != null)
             SpriteRenderer.color = _originalColor;
         
-        // 이동 멈춤
-        if (Movement != null)
-            Movement.enabled = false;
-        
-        // 공격 멈춤
         if (Emitter != null)
             Emitter.Kill();
     }

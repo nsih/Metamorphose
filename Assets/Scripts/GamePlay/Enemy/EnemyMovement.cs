@@ -1,24 +1,20 @@
 using UnityEngine;
-using Common;
 
 public class EnemyMovement : MonoBehaviour
 {
-    // 팩토리에서 주입받을 데이터들
     private Transform _target;
     private EnemyDataSO _data;
 
-    // 초기화 함수
     public void Initialize(Transform target, EnemyDataSO data)
     {
         _target = target;
         _data = data;
     }
 
-    private void Update()
+    public void ExecuteMove(EnemyMoveStrategySO strategy)
     {
-        if (_data == null || _data.MoveStrategy == null) return;
-
-
-        _data.MoveStrategy.Move(transform, _target, _data);
+        if (_target == null || _data == null || strategy == null) return;
+        
+        strategy.Move(transform, _target, _data);
     }
 }
