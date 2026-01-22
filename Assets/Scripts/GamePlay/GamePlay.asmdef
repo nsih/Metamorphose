@@ -2,7 +2,6 @@
     "name": "GamePlay",
     "rootNamespace": "",
     "references": [
-        "Core",
         "Package",
         "Reflex",
         "Unity.InputSystem",
@@ -10,6 +9,7 @@
         "BulletPro.Runtime",
         "UniTask.Linq",
         "Kybernetik.Animancer"
+        "Common"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

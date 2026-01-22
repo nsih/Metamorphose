@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5acb78d5f6b58444a8487f4526d9ba5d, type: 3}
   m_Name: TestMapGenerationConfig
   m_EditorClassIdentifier: 
-  LayerCount: 15
-  NodesPerLayer: 5
-  PathCount: 8
+  LayerCount: 10
+  NodesPerLayer: 6
+  PathCount: 5
   RoomTypeChances:
   - Type: 1
     Probability: 0.5

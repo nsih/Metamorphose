@@ -19,6 +19,10 @@ public class MapUIManager : MonoBehaviour
     [SerializeField] private float _verticalSpacing = 150f;
     [SerializeField] private float _padding = 100f;
 
+    [Header("Organic Layout Settings")]
+    [SerializeField] private float _positionJitter = 20f;
+    [SerializeField] private int _layoutSeed = 42;
+
     [Header("Line Renderer")]
     [SerializeField] private MapLineRenderer _lineRenderer;
 
@@ -26,6 +30,7 @@ public class MapUIManager : MonoBehaviour
     private Dictionary<MapNode, RectTransform> _nodePositions = new Dictionary<MapNode, RectTransform>();
     private List<List<MapNode>> _currentGrid;
     private MapNode _currentNode;
+    private int _maxNodesPerLayer;
 
     public event Action<MapNode> OnNodeSelected;
 
@@ -43,6 +48,8 @@ public class MapUIManager : MonoBehaviour
         _currentNode = currentNode;
         ClearMap();
 
+        _maxNodesPerLayer = CalculateMaxNodesPerLayer(grid);
+
         _contentRect.anchorMin = new Vector2(0.5f, 0.5f);
         _contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         _contentRect.pivot = new Vector2(0.5f, 0.5f);
@@ -55,6 +62,22 @@ public class MapUIManager : MonoBehaviour
         Canvas.ForceUpdateCanvases();
         
         ScrollToCurrentNode();
+    }
+
+    private int CalculateMaxNodesPerLayer(List<List<MapNode>> grid)
+    {
+        int maxNodes = 0;
+        foreach (var layer in grid)
+        {
+            foreach (var node in layer)
+            {
+                if (node.IndexInLayer + 1 > maxNodes)
+                {
+                    maxNodes = node.IndexInLayer + 1;
+                }
+            }
+        }
+        return maxNodes;
     }
 
     private void ScrollToCurrentNode()
@@ -87,24 +110,12 @@ public class MapUIManager : MonoBehaviour
         float normalizedPosition = Mathf.Clamp01(targetPosition / scrollableWidth);
         
         _scrollRect.horizontalNormalizedPosition = normalizedPosition;
-        
-        Debug.Log($"스크롤 위치 조정: 노드={_currentNode}, normalized={normalizedPosition}");
     }
 
     private void CalculateContentSize(List<List<MapNode>> grid)
     {
         float width = grid.Count * _horizontalSpacing + _padding * 2;
-
-        int maxNodesInLayer = 0;
-        foreach (var layer in grid)
-        {
-            if (layer.Count > maxNodesInLayer)
-            {
-                maxNodesInLayer = layer.Count;
-            }
-        }
-
-        float height = maxNodesInLayer * _verticalSpacing + _padding * 2;
+        float height = _maxNodesPerLayer * _verticalSpacing + _padding * 2;
 
         _contentRect.sizeDelta = new Vector2(width, height);
     }
@@ -113,12 +124,9 @@ public class MapUIManager : MonoBehaviour
     {
         foreach (var layer in grid)
         {
-            int totalNodesInLayer = layer.Count;
-
-            for (int i = 0; i < layer.Count; i++)
+            foreach (var node in layer)
             {
-                MapNode node = layer[i];
-                Vector2 position = CalculateNodePosition(node.Layer, i, totalNodesInLayer);
+                Vector2 position = CalculateNodePosition(node.Layer, node.IndexInLayer, node.NodeID, node.Type);
 
                 MapNodeUI nodeUI = Instantiate(_nodeUIPrefab, _contentRect);
                 RectTransform rect = nodeUI.GetComponent<RectTransform>();
@@ -133,17 +141,30 @@ public class MapUIManager : MonoBehaviour
         }
     }
 
-    private Vector2 CalculateNodePosition(int layer, int indexInLayer, int totalNodesInLayer)
+    private Vector2 CalculateNodePosition(int layer, int indexInLayer, int nodeId, RoomType type)
     {
         float totalWidth = (_currentGrid.Count - 1) * _horizontalSpacing;
         float startX = -totalWidth / 2f;
         float x = startX + (layer * _horizontalSpacing);
         
-        float totalHeight = (totalNodesInLayer - 1) * _verticalSpacing;
-        float startY = totalHeight / 2f;
-        float y = startY - (indexInLayer * _verticalSpacing);
+        float y;
         
-        return new Vector2(x, y);
+        if (type == RoomType.Start || type == RoomType.Boss)
+        {
+            y = 0f;
+        }
+        else
+        {
+            float totalHeight = (_maxNodesPerLayer - 1) * _verticalSpacing;
+            float startY = totalHeight / 2f;
+            y = startY - (indexInLayer * _verticalSpacing);
+        }
+
+        System.Random rng = new System.Random(_layoutSeed + nodeId);
+        float jitterX = ((float)rng.NextDouble() * 2f - 1f) * _positionJitter;
+        float jitterY = ((float)rng.NextDouble() * 2f - 1f) * _positionJitter;
+        
+        return new Vector2(x + jitterX, y + jitterY);
     }
 
     private void DrawConnections()

@@ -275,6 +275,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f619e2844d6fbed43a3ad6ad9b80d95c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  _collisionCheckRadius: 0.3
 --- !u!114 &3074840396876414495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -398,7 +402,7 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -409,7 +413,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &5364182852138832805
 BoxCollider2D:

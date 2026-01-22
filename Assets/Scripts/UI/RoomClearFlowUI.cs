@@ -10,8 +10,6 @@ using System.Collections.Generic;
 
 public class RoomClearFlowUI : MonoBehaviour
 {
-    public static RoomClearFlowUI Instance;
-
     [Header("UI Panels")]
     [SerializeField] private GameObject _rewardPanel;
 
@@ -31,37 +29,28 @@ public class RoomClearFlowUI : MonoBehaviour
     private IReadOnlyAsyncReactiveProperty<RoomManager> _globalCurrentRoomHandle;
     private PlayerModel _playerModel;
     private MapUIManager _mapUIManager;
+    private MapManager _mapManager;
 
     [Inject]
     public void Construct(
         IReadOnlyAsyncReactiveProperty<RoomManager> globalHandle,
         PlayerModel playerModel,
-        MapUIManager mapUIManager)
+        MapUIManager mapUIManager,
+        MapManager mapManager)
     {
         _globalCurrentRoomHandle = globalHandle;
         _playerModel = playerModel;
         _mapUIManager = mapUIManager;
-        
-        Debug.Log("RoomClearFlowUI: Construct 완료");
+        _mapManager = mapManager;
     }
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
-        
-        Debug.Log("RoomClearFlowUI: Awake");
         CloseAllPanels();
     }
 
     private void Start()
     {
-        Debug.Log($"RoomClearFlowUI: Start - _mapToggleController={_mapToggleController != null}");
-        
         if (_mapUIManager != null)
         {
             _mapUIManager.OnNodeSelected += OnMapNodeSelected;
@@ -106,42 +95,28 @@ public class RoomClearFlowUI : MonoBehaviour
 
     private void StartClearFlow()
     {
-        Debug.Log("StartClearFlow 호출");
         if (_currentState != FlowState.None) return;
         SetState(FlowState.Reward);
     }
 
     private void SetState(FlowState newState)
     {
-        Debug.Log($"SetState: {_currentState} -> {newState}");
         _currentState = newState;
 
         switch (_currentState)
         {
             case FlowState.Reward:
-                Debug.Log("FlowState.Reward 진입");
                 CloseAllPanels();
                 _rewardPanel.SetActive(true);
                 GenerateRewardButtons();
                 break;
 
             case FlowState.MapSelect:
-                Debug.Log("FlowState.MapSelect 진입");
                 CloseAllPanels();
-                
-                if (_mapToggleController != null)
-                {
-                    Debug.Log("OpenMap 호출 시작");
-                    _mapToggleController.OpenMap();
-                }
-                else
-                {
-                    Debug.LogError("_mapToggleController가 null입니다!");
-                }
+                _mapToggleController?.OpenMap();
                 break;
 
             case FlowState.None:
-                Debug.Log("FlowState.None 진입");
                 CloseAllPanels();
                 break;
         }
@@ -154,25 +129,9 @@ public class RoomClearFlowUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        if (_rewardLibrary == null)
-        {
-            Debug.LogError("RoomClearFlowUI: RewardLibrary null");
-            return;
-        }
-
-        if (_rewardButtonPrefab == null)
-        {
-            Debug.LogError("RoomClearFlowUI: RewardButtonPrefab null");
-            return;
-        }
+        if (_rewardLibrary == null || _rewardButtonPrefab == null) return;
 
         List<RewardData> rewards = _rewardLibrary.GetRandomRewards(_playerModel.RewardChoiceCount);
-
-        if (rewards.Count == 0)
-        {
-            Debug.LogWarning("RoomClearFlowUI: 보상 cnt error");
-            return;
-        }
 
         foreach (var reward in rewards)
         {
@@ -190,8 +149,6 @@ public class RoomClearFlowUI : MonoBehaviour
             RewardData capturedReward = reward;
             btn.onClick.AddListener(() => OnRewardSelected(capturedReward));
         }
-
-        Debug.Log($"보상 버튼 {rewards.Count}개 생성");
     }
 
     private string GetEffectsSummary(RewardData reward)
@@ -225,23 +182,18 @@ public class RoomClearFlowUI : MonoBehaviour
                 return $"최대 체력 +{effect.Value * 100}%";
             case RewardType.Heal:
                 return $"체력 회복 +{effect.Value}";
-            
             case RewardType.Damage:
                 return $"공격력 +{effect.Value}";
             case RewardType.DamagePercent:
                 return $"공격력 +{effect.Value * 100}%";
             case RewardType.DamageMultiplier:
                 return $"공격력 ×{effect.Value}";
-            
             case RewardType.AttackSpeed:
                 return $"공격 속도 +{effect.Value * 100}%";
-            
             case RewardType.Multishot:
                 return $"발사체 +{effect.Value}";
-            
             case RewardType.MoveSpeed:
                 return $"이동 속도 +{effect.Value}";
-            
             default:
                 return $"{effect.Type} +{effect.Value}";
         }
@@ -249,53 +201,21 @@ public class RoomClearFlowUI : MonoBehaviour
 
     private void OnRewardSelected(RewardData reward)
     {
-        Debug.Log($"OnRewardSelected: {reward.DisplayName}");
-        
-        if (_playerModel != null)
-        {
-            _playerModel.Reward.ApplyReward(reward);
-        }
-        else
-        {
-            Debug.LogError("RoomClearFlowUI: PlayerModel null");
-        }
-        
+        _playerModel?.Reward.ApplyReward(reward);
         SetState(FlowState.MapSelect);
     }
 
     private void OnMapNodeSelected(MapNode node)
     {
-        Debug.Log($"OnMapNodeSelected: {node}");
+        if (node.State != NodeState.Available) return;
         
-        if (node.State != NodeState.Available)
-        {
-            Debug.LogWarning($"선택 불가능한 노드입니다: {node.State}");
-            return;
-        }
-        
-        Debug.Log("SetState(None) 호출 시작");
         SetState(FlowState.None);
-        
-        Debug.Log("MoveToNode 호출 시작");
-        MapManager.Instance.MoveToNode(node);
+        _mapManager.MoveToNode(node);
     }
 
     private void CloseAllPanels()
     {
-        Debug.Log("CloseAllPanels 호출");
-        
-        if (_rewardPanel != null)
-        {
-            _rewardPanel.SetActive(false);
-        }
-        
-        if (_mapToggleController != null)
-        {
-            _mapToggleController.CloseMap();
-        }
-        else
-        {
-            Debug.LogWarning("CloseAllPanels: _mapToggleController null");
-        }
+        _rewardPanel?.SetActive(false);
+        _mapToggleController?.CloseMap();
     }
 }
