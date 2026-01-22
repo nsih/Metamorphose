@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5acb78d5f6b58444a8487f4526d9ba5d, type: 3}
+  m_Name: TestMapGenerationConfig
+  m_EditorClassIdentifier: 
+  LayerCount: 15
+  NodesPerLayer: 5
+  PathCount: 8
+  RoomTypeChances:
+  - Type: 1
+    Probability: 0.5
+  - Type: 3
+    Probability: 0.15
+  - Type: 2
+    Probability: 0.2
+  - Type: 5
+    Probability: 0.15
+  RoomPrefabs:
+  - Type: 0
+    Prefab: {fileID: 3579561120315236603, guid: 2eab0f967d902034892cd6f547d0993a, type: 3}
+  - Type: 1
+    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
+  - Type: 2
+    Prefab: {fileID: 3579561120315236603, guid: 275c5ca002a9c4c4cabe698b4ce8c559, type: 3}
+  - Type: 3
+    Prefab: {fileID: 3579561120315236603, guid: 2eab0f967d902034892cd6f547d0993a, type: 3}
+  - Type: 4
+    Prefab: {fileID: 3579561120315236603, guid: 275c5ca002a9c4c4cabe698b4ce8c559, type: 3}
+  - Type: 5
+    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
+  Constraints:
+  - Layer: 5
+    HasRequiredType: 1
+    RequiredType: 2
+    BannedTypes: 
+  - Layer: 10
+    HasRequiredType: 1
+    RequiredType: 2
+    BannedTypes: 
+  - Layer: 1
+    HasRequiredType: 0
+    RequiredType: 0
+    BannedTypes: 03000000
+  - Layer: 2
+    HasRequiredType: 0
+    RequiredType: 0
+    BannedTypes: 03000000
+  - Layer: 3
+    HasRequiredType: 0
+    RequiredType: 0
+    BannedTypes: 03000000
+  - Layer: 4
+    HasRequiredType: 0
+    RequiredType: 0
+    BannedTypes: 03000000
+  - Layer: 5
+    HasRequiredType: 0
+    RequiredType: 0
+    BannedTypes: 03000000
+  - Layer: 6
+    HasRequiredType: 0
+    RequiredType: 0
+    BannedTypes: 03000000

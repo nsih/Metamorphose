@@ -7,7 +7,6 @@ public class PlayerAim : MonoBehaviour
 
     [Header("Components")]
     [SerializeField] private Transform _weaponPivot;
-    [SerializeField] private SpriteRenderer _weaponSprite;
 
     private Camera _mainCam;
 
@@ -28,15 +27,6 @@ public class PlayerAim : MonoBehaviour
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
         _weaponPivot.rotation = Quaternion.Euler(0, 0, angle);
-
-        if (Mathf.Abs(angle) > 90)
-        {
-            _weaponSprite.flipY = true; // Y축 반전 (총이 똑바로 보임)
-        }
-        else
-        {
-            _weaponSprite.flipY = false;
-        }
     }
 
     public Vector3 GetAimDirection()

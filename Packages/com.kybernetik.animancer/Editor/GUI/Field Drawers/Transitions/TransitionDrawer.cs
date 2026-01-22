@@ -14,6 +14,7 @@ namespace Animancer.Editor
     /// <summary>[Editor-Only] Draws the Inspector GUI for an <see cref="ITransition"/>.</summary>
     /// https://kybernetik.com.au/animancer/api/Animancer.Editor/TransitionDrawer
     [CustomPropertyDrawer(typeof(ITransition), true)]
+    [CustomPropertyDrawer(typeof(TransitionAssetBase), true)]
     public class TransitionDrawer : PropertyDrawer,
         IPolymorphic
     {
@@ -33,8 +34,8 @@ namespace Animancer.Editor
         /************************************************************************************************************************/
 
         /// <summary>
-        /// If set, the field with this name will be drawn on the header line with the foldout arrow instead of in its
-        /// regular place.
+        /// If set, the field with this name will be drawn on the header line
+        /// with the foldout arrow instead of in its regular place.
         /// </summary>
         protected readonly string MainPropertyName;
 

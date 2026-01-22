@@ -8,6 +8,7 @@
         "UniTask",
         "BulletPro.Runtime",
         "UniTask.Linq",
+        "Kybernetik.Animancer"
         "Common"
     ],
     "includePlatforms": [],

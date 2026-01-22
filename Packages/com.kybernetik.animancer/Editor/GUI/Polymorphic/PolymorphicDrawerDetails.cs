@@ -2,7 +2,6 @@
 
 #if UNITY_EDITOR
 
-using Animancer.Editor;
 using System;
 using System.Collections.Generic;
 
