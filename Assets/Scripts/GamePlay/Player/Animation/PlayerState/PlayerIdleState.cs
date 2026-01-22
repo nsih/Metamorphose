@@ -8,7 +8,6 @@ namespace GamePlay
         public PlayerIdleState(PlayerAnimationController playerAnimationController, AnimancerComponent animancer) : base(playerAnimationController, animancer) { }
         public override void OnEnter()
         {
-            Debug.Log("OnEnterIdle");
             var v = playerAnimationController.GetLastLinearVelocity();
             animancer.Play(playerAnimationController.IdleAnimationSet.Get(v));
         }

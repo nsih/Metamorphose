@@ -12,7 +12,6 @@ namespace GamePlay
 
         public override void OnEnter()
         {
-            Debug.Log("OnEnterWalk");
             var v = playerAnimationController.GetLinearVelocity();
             animancer.Play(playerAnimationController.WalkAnimationSet.Get(v));
             flipX = v.x < 0;
@@ -23,7 +22,6 @@ namespace GamePlay
         {
             var v = playerAnimationController.GetLinearVelocity();
             animancer.Play(playerAnimationController.WalkAnimationSet.Get(v));
-            Debug.Log(v);
 
             if(flipX == false && v.x < 0)
             {
