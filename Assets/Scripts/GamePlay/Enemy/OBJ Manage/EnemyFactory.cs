@@ -11,14 +11,14 @@ public class EnemyFactory
         _poolManager = poolManager;
     }
 
-    public Enemy Create(Vector3 position, EnemyDataSO data)
+    public Enemy Create(Vector3 position, EnemyBrainSO brain)
     {
         Enemy enemy = _poolManager.Get();
 
         enemy.transform.position = position;
         enemy.transform.rotation = Quaternion.identity;
 
-        enemy.Initialize(data);
+        enemy.Initialize(brain);
         enemy.SetTarget(_playerTransform);
         enemy.SetReleaseAction(() => _poolManager.Release(enemy));
 
