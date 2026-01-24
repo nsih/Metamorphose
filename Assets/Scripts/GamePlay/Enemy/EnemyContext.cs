@@ -3,10 +3,10 @@ using BulletPro;
 
 public class EnemyContext
 {
-    public EnemyDataSO Data { get; private set; }
+    public EnemyBrainSO Brain { get; private set; }
     
     public int CurrentHP { get; set; }
-    public int MaxHP => Data.MaxHp;
+    public int MaxHP => Brain.MaxHP;
     public bool IsEnraged { get; private set; }
     public bool IsDead { get; set; }
     public float LastAttackTime { get; set; }
@@ -31,17 +31,14 @@ public class EnemyContext
             _originalColor = spriteRenderer.color;
     }
 
-    public void Initialize(EnemyDataSO data, Transform target)
+    public void Initialize(EnemyBrainSO brain, Transform target)
     {
-        Data = data;
+        Brain = brain;
         Target = target;
-        CurrentHP = data.MaxHp;
+        CurrentHP = brain.MaxHP;
         IsDead = false;
         IsEnraged = false;
         LastAttackTime = 0f;
-        
-        if (Movement != null)
-            Movement.Initialize(target, data);
     }
 
     public float DistanceToTarget
@@ -53,33 +50,13 @@ public class EnemyContext
         }
     }
 
-    public EnemyMoveStrategySO CurrentMoveStrategy
-    {
-        get
-        {
-            if (IsEnraged && Data.EnragedMoveStrategy != null)
-                return Data.EnragedMoveStrategy;
-            return Data.MoveStrategy;
-        }
-    }
-
-    public EnemyAttackStrategySO CurrentAttackStrategy
-    {
-        get
-        {
-            if (IsEnraged && Data.EnragedAttackStrategy != null)
-                return Data.EnragedAttackStrategy;
-            return Data.AttackStrategy;
-        }
-    }
-
     public float CurrentMoveSpeed
     {
         get
         {
-            if (IsEnraged && Data.HasEnragedPhase)
-                return Data.EnragedMoveSpeed;
-            return Data.MoveSpeed;
+            if (IsEnraged && Brain.HasEnragedPhase)
+                return Brain.EnragedMoveSpeed;
+            return Brain.MoveSpeed;
         }
     }
 
@@ -87,17 +64,17 @@ public class EnemyContext
     {
         get
         {
-            if (IsEnraged && Data.HasEnragedPhase)
-                return Data.EnragedAttackCoolTime;
-            return Data.AttackCoolTime;
+            if (IsEnraged && Brain.HasEnragedPhase)
+                return Brain.EnragedAttackCoolTime;
+            return Brain.AttackCoolTime;
         }
     }
 
     public void CheckEnrage()
     {
-        if (IsEnraged || !Data.HasEnragedPhase) return;
+        if (IsEnraged || !Brain.HasEnragedPhase) return;
         
-        if (CurrentHP <= MaxHP * Data.EnrageThreshold)
+        if (CurrentHP <= MaxHP * Brain.EnrageThreshold)
         {
             IsEnraged = true;
         }
@@ -105,7 +82,7 @@ public class EnemyContext
 
     public void Reset()
     {
-        CurrentHP = Data != null ? Data.MaxHp : 0;
+        CurrentHP = Brain != null ? Brain.MaxHP : 0;
         IsDead = false;
         IsEnraged = false;
         LastAttackTime = 0f;
