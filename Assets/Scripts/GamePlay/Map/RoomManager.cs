@@ -139,12 +139,11 @@ public class RoomManager : MonoBehaviour
             for (int k = 0; k < entry.Count; k++)
             {
                 Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
-                Enemy enemy = _factory.Create(spawnTr.position + offset, entry.EnemyData);
+                Enemy enemy = _factory.Create(spawnTr.position + offset, entry.EnemyBrain);
                 _activeEnemies.Add(enemy);
             }
         }
     }
-
     private void CompleteRoom()
     {
         _roomState.Value = RoomState.Complete;

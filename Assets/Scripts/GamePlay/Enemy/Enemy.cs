@@ -4,20 +4,18 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 
 [RequireComponent(typeof(BulletReceiver))]
-[RequireComponent(typeof(EnemyMovement))]
 [RequireComponent(typeof(EnemyFSM))]
 public class Enemy : MonoBehaviour, IDamageable
 {
-    [SerializeField] private EnemyDataSO _defaultData;
+    [SerializeField] private EnemyBrainSO _defaultBrain;
 
     private BulletReceiver _receiver;
-    private EnemyMovement _movement;
     private EnemyFSM _fsm;
     private SpriteRenderer _spriteRenderer;
     private BulletEmitter _emitter;
 
     private EnemyContext _ctx;
-    private EnemyDataSO _currentData;
+    private EnemyBrainSO _currentBrain;
 
     public event System.Action OnHit;
     public event System.Action OnDeath;
@@ -30,7 +28,6 @@ public class Enemy : MonoBehaviour, IDamageable
     private void Awake()
     {
         _receiver = GetComponent<BulletReceiver>();
-        _movement = GetComponent<EnemyMovement>();
         _fsm = GetComponent<EnemyFSM>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _emitter = GetComponent<BulletEmitter>();
@@ -38,7 +35,7 @@ public class Enemy : MonoBehaviour, IDamageable
         if (_spriteRenderer != null)
             _originalColor = _spriteRenderer.color;
 
-        _ctx = new EnemyContext(transform, _movement, _spriteRenderer, _emitter);
+        _ctx = new EnemyContext(transform, _spriteRenderer, _emitter);
     }
 
     private void OnEnable()
@@ -55,20 +52,20 @@ public class Enemy : MonoBehaviour, IDamageable
         CancelFlash();
     }
 
-    public void Initialize(EnemyDataSO data)
+    public void Initialize(EnemyBrainSO brain)
     {
-        _currentData = data != null ? data : _defaultData;
+        _currentBrain = brain != null ? brain : _defaultBrain;
         
-        if (_currentData == null)
+        if (_currentBrain == null)
         {
-            Debug.LogError("Enemy: data null");
+            Debug.LogError("Enemy: brain null");
             return;
         }
 
         ResetState();
         
-        _ctx.Initialize(_currentData, null);
-        _fsm.Initialize(_ctx);
+        _ctx.Initialize(_currentBrain, null);
+        _fsm.Initialize(_currentBrain, _ctx);
     }
 
     private void ResetState()
@@ -87,12 +84,7 @@ public class Enemy : MonoBehaviour, IDamageable
     public void SetTarget(Transform target)
     {
         if (_ctx != null)
-        {
             _ctx.Target = target;
-            
-            if (_movement != null)
-                _movement.Initialize(target, _currentData);
-        }
     }
 
     public void SetReleaseAction(System.Action returnToPool)
@@ -173,51 +165,4 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         CancelFlash();
     }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
-    {
-        if (_currentData == null) return;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, _currentData.AggroRange);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _currentData.AttackRange);
-    }
-
-    private void OnGUI()
-    {
-        if (_ctx == null || _ctx.Target == null || _ctx.IsDead) return;
-        if (_fsm == null) return;
-
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 0.8f);
-        if (screenPos.z < 0) return;
-
-        GUIStyle style = new GUIStyle();
-        style.fontSize = 15;
-        style.fontStyle = FontStyle.Bold;
-        style.alignment = TextAnchor.MiddleCenter;
-
-        switch (_fsm.CurrentStateType)
-        {
-            case Common.EnemyState.Idle:
-                style.normal.textColor = Color.green;
-                break;
-            case Common.EnemyState.Chase:
-                style.normal.textColor = Color.yellow;
-                break;
-            case Common.EnemyState.Attack:
-                style.normal.textColor = Color.red;
-                break;
-        }
-
-        screenPos.y = Screen.height - screenPos.y;
-
-        string enragedText = _ctx.IsEnraged ? " [ENRAGED]" : "";
-        string text = $"{_fsm.CurrentStateType}{enragedText}\nHP: {_ctx.CurrentHP}/{_ctx.MaxHP}";
-        
-        GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 25, 100, 50), text, style);
-    }
-#endif
 }

@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 7264249612656455438}
   - component: {fileID: 6674657361345093260}
   - component: {fileID: 8330267057039541680}
-  - component: {fileID: 6688459884827929541}
   - component: {fileID: 101416943244610006}
   - component: {fileID: 2258271427247582439}
   - component: {fileID: 6392302996635045383}
@@ -179,19 +178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10f3a6e179d14ac4081b36268b81e433, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _data: {fileID: 11400000, guid: f04cec566e155034c80875e13a0dd54e, type: 2}
---- !u!114 &6688459884827929541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1415287814724296997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0de87f058cf57d4084ea1a6868c3550, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _defaultBrain: {fileID: 11400000, guid: a5fd579e0740f9249ac0170d83a730c4, type: 2}
 --- !u!114 &101416943244610006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +251,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df2e1a9fe56c6344cac7e3345cd3821f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _idleState: {fileID: 11400000, guid: 99aa5c0da2624914c9cfeb5841f4ab55, type: 2}
-  _chaseState: {fileID: 11400000, guid: f18e86f893492864d875147fa236565c, type: 2}
-  _attackState: {fileID: 11400000, guid: c4a19aedd6f756f45896ed0b8f6cba5c, type: 2}

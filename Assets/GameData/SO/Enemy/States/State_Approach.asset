@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 640d7aca0d6b1ac42b455b131dd6ac92, type: 3}
+  m_Name: State_Approach
+  m_EditorClassIdentifier: 
+  MoveBehavior: {fileID: 11400000, guid: 8072d7106bee8c245b297e22c7328f7a, type: 2}
+  AttackBehavior: {fileID: 0}
+  UtilityBehaviors: []
+  StopEmitterOnEnter: 0
+  StopEmitterOnExit: 1
