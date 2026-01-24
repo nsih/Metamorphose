@@ -1,6 +1,6 @@
-// Assets/Scripts/GamePlay/Enemy/EnemyContext.cs
 using UnityEngine;
 using BulletPro;
+using System.Collections.Generic;
 
 public class EnemyContext
 {
@@ -19,6 +19,10 @@ public class EnemyContext
     public BulletEmitter Emitter { get; private set; }
     
     private Color _originalColor;
+
+    
+    private Dictionary<int, float> _floatData = new Dictionary<int, float>();
+    private Dictionary<int, int> _intData = new Dictionary<int, int>();
 
     public EnemyContext(Transform self, SpriteRenderer spriteRenderer, BulletEmitter emitter)
     {
@@ -69,6 +73,26 @@ public class EnemyContext
         }
     }
 
+    public float GetFloat(int key, float defaultValue = 0f)
+    {
+        return _floatData.TryGetValue(key, out float val) ? val : defaultValue;
+    }
+
+    public void SetFloat(int key, float value)
+    {
+        _floatData[key] = value;
+    }
+
+    public int GetInt(int key, int defaultValue = 0)
+    {
+        return _intData.TryGetValue(key, out int val) ? val : defaultValue;
+    }
+
+    public void SetInt(int key, int value)
+    {
+        _intData[key] = value;
+    }
+
     public void CheckEnrage()
     {
         if (IsEnraged || !Brain.HasEnragedPhase) return;
@@ -85,6 +109,9 @@ public class EnemyContext
         IsDead = false;
         IsEnraged = false;
         LastAttackTime = 0f;
+        
+        _floatData.Clear();
+        _intData.Clear();
         
         if (SpriteRenderer != null)
             SpriteRenderer.color = _originalColor;
