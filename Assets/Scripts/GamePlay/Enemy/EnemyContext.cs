@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Enemy/EnemyContext.cs
 using UnityEngine;
 using BulletPro;
 
@@ -14,16 +15,14 @@ public class EnemyContext
     public Transform Target { get; set; }
     public Transform Self { get; private set; }
     
-    public EnemyMovement Movement { get; private set; }
     public SpriteRenderer SpriteRenderer { get; private set; }
     public BulletEmitter Emitter { get; private set; }
     
     private Color _originalColor;
 
-    public EnemyContext(Transform self, EnemyMovement movement, SpriteRenderer spriteRenderer, BulletEmitter emitter)
+    public EnemyContext(Transform self, SpriteRenderer spriteRenderer, BulletEmitter emitter)
     {
         Self = self;
-        Movement = movement;
         SpriteRenderer = spriteRenderer;
         Emitter = emitter;
         

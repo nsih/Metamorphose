@@ -35,7 +35,7 @@ public class Enemy : MonoBehaviour, IDamageable
         if (_spriteRenderer != null)
             _originalColor = _spriteRenderer.color;
 
-        _ctx = new EnemyContext(transform, null, _spriteRenderer, _emitter);
+        _ctx = new EnemyContext(transform, _spriteRenderer, _emitter);
     }
 
     private void OnEnable()
