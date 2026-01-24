@@ -165,40 +165,4 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         CancelFlash();
     }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
-    {
-        if (_currentBrain == null) return;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, _currentBrain.AggroRange);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _currentBrain.AttackRange);
-    }
-
-    private void OnGUI()
-    {
-        if (_ctx == null || _ctx.Target == null || _ctx.IsDead) return;
-        if (_fsm == null || _fsm.CurrentState == null) return;
-
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 0.8f);
-        if (screenPos.z < 0) return;
-
-        GUIStyle style = new GUIStyle();
-        style.fontSize = 15;
-        style.fontStyle = FontStyle.Bold;
-        style.alignment = TextAnchor.MiddleCenter;
-        style.normal.textColor = Color.white;
-
-        screenPos.y = Screen.height - screenPos.y;
-
-        string enragedText = _ctx.IsEnraged ? " [ENRAGED]" : "";
-        string stateName = _fsm.CurrentState.name;
-        string text = $"{stateName}{enragedText}\nHP: {_ctx.CurrentHP}/{_ctx.MaxHP}";
-        
-        GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 25, 100, 50), text, style);
-    }
-#endif
 }

@@ -15,10 +15,6 @@ public class EnemyBrainSO : ScriptableObject
     public float MoveSpeed = 5f;
     public float AttackCoolTime = 1f;
     
-    [Header("Range Settings")]
-    public float AggroRange = 10f;
-    public float AttackRange = 7.5f;
-    
     [Header("Enrage (Optional)")]
     public bool HasEnragedPhase;
     [Range(0f, 1f)]
