@@ -19,9 +19,9 @@ MonoBehaviour:
   MaxHP: 5
   MoveSpeed: 5
   AttackCoolTime: 3
-  AggroRange: 10
-  AttackRange: 7.5
   HasEnragedPhase: 0
   EnrageThreshold: 0.3
   EnragedMoveSpeed: 7
-  EnragedAttackCoolTime: 0.5
+  EnragedAttackCoolTime: 0.1
+  DeathEffect: {fileID: 11400000, guid: aecbc0d97c6dace428a3ac9593041dd2, type: 2}
+  DeathDelay: 0

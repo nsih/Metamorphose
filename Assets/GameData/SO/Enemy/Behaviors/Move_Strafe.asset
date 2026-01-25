@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e5c42df36ff21e4c99f5cd814347f05, type: 3}
-  m_Name: Cond_DistGreater7
+  m_Script: {fileID: 11500000, guid: a3207b1d6e4dcf4478c4be9541c50e0d, type: 3}
+  m_Name: Move_Strafe
   m_EditorClassIdentifier: 
-  Compare: 1
-  Distance: 15
+  DirectionChangeInterval: 5
+  StopDurationAfterAttack: 1

@@ -1,6 +1,7 @@
 using UnityEngine;
 using BulletPro;
 
+
 [CreateAssetMenu(fileName = "Attack_Shoot", menuName = "SO/Enemy/Behaviors/Attack/Shoot")]
 public class ShootBehaviorSO : EnemyAttackBehaviorSO
 {
@@ -8,6 +9,7 @@ public class ShootBehaviorSO : EnemyAttackBehaviorSO
     
     public override void Execute(EnemyContext ctx)
     {
+        if (ctx.IsDead) return;
         if (ctx.Target == null) return;
         if (ctx.Emitter == null) return;
         

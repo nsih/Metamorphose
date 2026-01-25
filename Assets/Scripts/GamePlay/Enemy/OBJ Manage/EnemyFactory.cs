@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Enemy/OBJ Manage/EnemyFactory.cs
 using UnityEngine;
 
 public class EnemyFactory
@@ -21,6 +22,7 @@ public class EnemyFactory
         enemy.Initialize(brain);
         enemy.SetTarget(_playerTransform);
         enemy.SetReleaseAction(() => _poolManager.Release(enemy));
+        enemy.SetSpawnAction((pos, b) => Create(pos, b));
 
         return enemy;
     }
