@@ -37,4 +37,4 @@ MonoBehaviour:
   foldoutSpaceImGui: 13
   getComponentByPathExp: 76
   findComponentExp: 72
-  setupWindowPopOnce: 1
+  setupWindowPopOnce: 0
