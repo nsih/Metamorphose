@@ -12,6 +12,7 @@ public class MapNode
     public int NodeID;          
     public RoomType Type;       
     public GameObject RoomPrefab;
+    public List<int> NextNodeIds = new();
     public List<MapNode> NextNodes = new List<MapNode>();
 
     // 추상 좌표
