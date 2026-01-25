@@ -166,14 +166,17 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         _fsm.Stop();
         
-        if (_currentBrain.DeathEffect != null)
-        {
-            await _currentBrain.DeathEffect.Execute(_ctx);
-        }
+        if (_emitter != null)
+            _emitter.Stop();
         
         if (_currentBrain.DeathDelay > 0)
         {
             await UniTask.Delay(TimeSpan.FromSeconds(_currentBrain.DeathDelay));
+        }
+        
+        if (_currentBrain.DeathEffect != null)
+        {
+            await _currentBrain.DeathEffect.Execute(_ctx);
         }
         
         OnDeath?.Invoke();

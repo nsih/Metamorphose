@@ -24,4 +24,4 @@ MonoBehaviour:
   EnragedMoveSpeed: 7
   EnragedAttackCoolTime: 0.1
   DeathEffect: {fileID: 11400000, guid: aecbc0d97c6dace428a3ac9593041dd2, type: 2}
-  DeathDelay: 0
+  DeathDelay: 3
