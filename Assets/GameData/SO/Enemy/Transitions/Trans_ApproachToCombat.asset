@@ -16,3 +16,4 @@ MonoBehaviour:
   ToState: {fileID: 11400000, guid: 2d9a4a70fcc1d3848869baf859fed219, type: 2}
   Conditions:
   - {fileID: 11400000, guid: 93dd908cd7b8fba498e9bc7c3406947e, type: 2}
+  - {fileID: 11400000, guid: 9f31fc2a878476545bd74738ad853129, type: 2}

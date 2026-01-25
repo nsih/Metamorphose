@@ -7,8 +7,9 @@ public class ChaseBehaviorSO : EnemyMoveBehaviorSO
     {
         if (ctx.IsDead) return;
         if (ctx.Target == null) return;
+        if (ctx.Rigidbody == null) return;
         
-        Vector3 dir = (ctx.Target.position - ctx.Self.position).normalized;
-        ctx.Self.position += dir * ctx.CurrentMoveSpeed * Time.deltaTime;
+        Vector2 dir = (ctx.Target.position - ctx.Self.position).normalized;
+        ctx.Rigidbody.linearVelocity = dir * ctx.CurrentMoveSpeed;
     }
 }

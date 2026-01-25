@@ -28,17 +28,20 @@ public class Enemy : MonoBehaviour, IDamageable
     private Color _originalColor;
     private CancellationTokenSource _flashCts;
 
+    private Rigidbody2D _rigidbody;
+
     private void Awake()
     {
         _receiver = GetComponent<BulletReceiver>();
         _fsm = GetComponent<EnemyFSM>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _emitter = GetComponent<BulletEmitter>();
+        _rigidbody = GetComponent<Rigidbody2D>();
 
         if (_spriteRenderer != null)
             _originalColor = _spriteRenderer.color;
 
-        _ctx = new EnemyContext(transform, _spriteRenderer, _emitter);
+        _ctx = new EnemyContext(transform, _spriteRenderer, _emitter, _rigidbody);
     }
 
     private void OnEnable()
