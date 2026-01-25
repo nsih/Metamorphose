@@ -1,7 +1,9 @@
+// Assets/Scripts/GamePlay/Enemy/Enemy.cs
 using UnityEngine;
 using BulletPro;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using System;
 
 [RequireComponent(typeof(BulletReceiver))]
 [RequireComponent(typeof(EnemyFSM))]
@@ -21,6 +23,7 @@ public class Enemy : MonoBehaviour, IDamageable
     public event System.Action OnDeath;
 
     private System.Action _returnToPool;
+    private System.Action<Vector3, EnemyBrainSO> _spawnAction;
 
     private Color _originalColor;
     private CancellationTokenSource _flashCts;
@@ -65,6 +68,7 @@ public class Enemy : MonoBehaviour, IDamageable
         ResetState();
         
         _ctx.Initialize(_currentBrain, null);
+        _ctx.SpawnAction = _spawnAction;
         _fsm.Initialize(_currentBrain, _ctx);
     }
 
@@ -92,6 +96,13 @@ public class Enemy : MonoBehaviour, IDamageable
         _returnToPool = returnToPool;
     }
 
+    public void SetSpawnAction(System.Action<Vector3, EnemyBrainSO> spawnAction)
+    {
+        _spawnAction = spawnAction;
+        if (_ctx != null)
+            _ctx.SpawnAction = spawnAction;
+    }
+
     public void OnBulletHit(Bullet bullet, Vector3 hitPoint)
     {
         if (_ctx == null || _ctx.IsDead) return;
@@ -115,8 +126,9 @@ public class Enemy : MonoBehaviour, IDamageable
         OnHit?.Invoke();
         PlayFlashEffect().Forget();
 
-        if (_ctx.CurrentHP <= 0)
+        if (_ctx.CurrentHP <= 0 && !_ctx.IsDead)
         {
+            _ctx.IsDead = true;
             DieSequence().Forget();
         }
     }
@@ -149,20 +161,23 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private async UniTaskVoid DieSequence()
     {
-        _ctx.IsDead = true;
         _fsm.Stop();
+        
+        if (_currentBrain.DeathEffect != null)
+        {
+            await _currentBrain.DeathEffect.Execute(_ctx);
+        }
+        
+        if (_currentBrain.DeathDelay > 0)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(_currentBrain.DeathDelay));
+        }
+        
         OnDeath?.Invoke();
-
-        await UniTask.Yield();
 
         if (_returnToPool != null)
             _returnToPool.Invoke();
         else
             gameObject.SetActive(false);
-    }
-
-    private void OnDestroy()
-    {
-        CancelFlash();
     }
 }

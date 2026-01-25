@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Enemy/Brain/EnemyBrainSO.cs
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -21,6 +22,12 @@ public class EnemyBrainSO : ScriptableObject
     public float EnrageThreshold = 0.3f;
     public float EnragedMoveSpeed = 7f;
     public float EnragedAttackCoolTime = 0.5f;
+    
+    [Header("Death")]
+    public DeathEffectSO DeathEffect;
+    
+    [Tooltip("죽음 연출 후 사라지기까지 딜레이")]
+    public float DeathDelay = 0f;
     
     public EnemyStateSO EvaluateTransitions(EnemyStateSO currentState, EnemyContext ctx)
     {

@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e5c42df36ff21e4c99f5cd814347f05, type: 3}
-  m_Name: Cond_DistGreater7
+  m_Script: {fileID: 11500000, guid: 17510265ac1c0984886c5783c25e38b7, type: 3}
+  m_Name: Death_Shoot
   m_EditorClassIdentifier: 
-  Compare: 1
-  Distance: 15
+  Pattern: {fileID: 11400000, guid: eb16429a39330004abe3f784ff5557bd, type: 2}
+  DelayBeforeDisable: 0.1

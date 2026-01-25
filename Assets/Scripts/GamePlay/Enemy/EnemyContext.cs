@@ -1,6 +1,8 @@
+// Assets/Scripts/GamePlay/Enemy/EnemyContext.cs
 using UnityEngine;
 using BulletPro;
 using System.Collections.Generic;
+using System;
 
 public class EnemyContext
 {
@@ -18,9 +20,9 @@ public class EnemyContext
     public SpriteRenderer SpriteRenderer { get; private set; }
     public BulletEmitter Emitter { get; private set; }
     
-    private Color _originalColor;
-
+    public Action<Vector3, EnemyBrainSO> SpawnAction { get; set; }
     
+    private Color _originalColor;
     private Dictionary<int, float> _floatData = new Dictionary<int, float>();
     private Dictionary<int, int> _intData = new Dictionary<int, int>();
 

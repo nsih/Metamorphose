@@ -16,6 +16,7 @@ public class StrafeBehaviorSO : EnemyMoveBehaviorSO
     
     public override void Execute(EnemyContext ctx)
     {
+        if (ctx.IsDead) return;
         if (ctx.Target == null) return;
         
         float timeSinceAttack = Time.time - ctx.LastAttackTime;

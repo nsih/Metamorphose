@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Cond_DistLess7
   m_EditorClassIdentifier: 
   Compare: 0
-  Distance: 7
+  Distance: 15
