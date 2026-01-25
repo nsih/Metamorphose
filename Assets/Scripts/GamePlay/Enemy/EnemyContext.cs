@@ -25,12 +25,15 @@ public class EnemyContext
     private Color _originalColor;
     private Dictionary<int, float> _floatData = new Dictionary<int, float>();
     private Dictionary<int, int> _intData = new Dictionary<int, int>();
+    
+    public Rigidbody2D Rigidbody { get; private set; }
 
-    public EnemyContext(Transform self, SpriteRenderer spriteRenderer, BulletEmitter emitter)
+    public EnemyContext(Transform self, SpriteRenderer spriteRenderer, BulletEmitter emitter, Rigidbody2D rigidbody)
     {
         Self = self;
         SpriteRenderer = spriteRenderer;
         Emitter = emitter;
+        Rigidbody = rigidbody;
         
         if (spriteRenderer != null)
             _originalColor = spriteRenderer.color;
