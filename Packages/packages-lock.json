@@ -9,7 +9,7 @@
         "com.unity.collections": "1.5.1",
         "com.unity.mathematics": "1.0.1"
       },
-      "hash": "b651c5866fe0e3fba065ce2e56dfdfcd59d3d109"
+      "hash": "a174f0ace85831bc6790d497d2d683a64fc513dd"
     },
     "com.boxqkrtm.ide.cursor": {
       "version": "git+https://github.com/boxqkrtm/com.unity.ide.cursor.git",
@@ -25,14 +25,14 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "d2759a9b77f09516d4b11821711ff2a4c1c03a2e"
+      "hash": "0c93083e7968e5d2a7746b38d6d5a477d2b5b3ac"
     },
     "com.gitamend.unityutils": {
       "version": "git+https://github.com/adammyhre/Unity-Utils.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "d162ee909541875f1cb786a832ed819596910bd2"
+      "hash": "ee927cd3f735f5c5b08572b4df5ba2aab03bf5ce"
     },
     "com.github-glitchenzo.nugetforunity": {
       "version": "git+https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
@@ -46,7 +46,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "3d382e6e1d479380685887ef0c7a7a5492911b99"
+      "hash": "a855f992ab888d2e92027dc38b4db3ab42e5f679"
     },
     "com.kybernetik.animancer": {
       "version": "file:com.kybernetik.animancer",
@@ -158,13 +158,6 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.unity.collab-proxy": {
-      "version": "2.9.3",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
     "com.unity.collections": {
       "version": "2.6.2",
       "depth": 1,
@@ -232,14 +225,6 @@
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
-    },
-    "com.unity.multiplayer.center": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.uielements": "1.0.0"
-      }
     },
     "com.unity.nuget.mono-cecil": {
       "version": "1.11.5",
@@ -309,7 +294,7 @@
     },
     "com.unity.test-framework": {
       "version": "1.6.0",
-      "depth": 0,
+      "depth": 1,
       "source": "builtin",
       "dependencies": {
         "com.unity.ext.nunit": "2.0.3",

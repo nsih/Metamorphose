@@ -1,7 +1,6 @@
 using System;
 using Reflex.Core;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
 
 public class GlobalInstaller : MonoBehaviour, IInstaller
 {
@@ -12,8 +11,8 @@ public class GlobalInstaller : MonoBehaviour, IInstaller
     {
         //Debug.Log("Global Install Start");
 
-        builder.AddSingleton(_playerStatSO, typeof(PlayerStat));
-        builder.AddSingleton(new PlayerModel(_playerStatSO, _startWeapon));
-        builder.AddSingleton(typeof(PlayerInputService), typeof(IInputService));
+        builder.RegisterValue(_playerStatSO, new Type[] { typeof(PlayerStat) });
+        builder.RegisterValue(new PlayerModel(_playerStatSO, _startWeapon));
+        builder.RegisterValue(new PlayerInputService(), new Type[] { typeof(IInputService) });
     }
 }

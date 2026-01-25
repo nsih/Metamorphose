@@ -1,6 +1,7 @@
 using Reflex.Core;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using System;
 
 public class SceneInstaller : MonoBehaviour, IInstaller
 {
@@ -11,22 +12,21 @@ public class SceneInstaller : MonoBehaviour, IInstaller
 
     public void InstallBindings(ContainerBuilder builder)
     {
-        builder.AddSingleton(_playerSpawner);
+        builder.RegisterValue(_playerSpawner);
 
         var roomProperty = new AsyncReactiveProperty<RoomManager>(null);
-        builder.AddSingleton(
+        builder.RegisterValue(
             roomProperty, 
-            typeof(AsyncReactiveProperty<RoomManager>),
-            typeof(IReadOnlyAsyncReactiveProperty<RoomManager>)
+            new Type[] { typeof(AsyncReactiveProperty<RoomManager>), typeof(IReadOnlyAsyncReactiveProperty<RoomManager>) }
         );
 
         if (_mapUIManager != null)
-            builder.AddSingleton(_mapUIManager);
+            builder.RegisterValue(_mapUIManager);
 
         if (_mapManager != null)
-            builder.AddSingleton(_mapManager);
+            builder.RegisterValue(_mapManager);
 
         if (_enemyPoolManager != null)
-            builder.AddSingleton(_enemyPoolManager);
+            builder.RegisterValue(_enemyPoolManager);
     }
 }
