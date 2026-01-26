@@ -14,13 +14,13 @@ public class MapGeneratorTest : MonoBehaviour
             return;
         }
 
-        TestMapGenerationRefactored();
+        TestMapGeneration();
     }
 
-    void TestMapGenerationRefactored()
+    void TestMapGeneration()
     {
         MapGenerator generator = new MapGenerator(_config);
-        Map map = generator.GenerateMapRefactored();
+        Map map = generator.GenerateMap();
 
         ValidateConstraints(map);
         ValidatePaths(map);

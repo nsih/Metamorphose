@@ -14,11 +14,11 @@ public class MapManager : MonoBehaviour
     [Inject] private Container _container;
 
     public MapNode CurrentNode { get; private set; }
-    public Map CurrentMap => _currentMapRefactored;
+    public Map CurrentMap => _currentMap;
     
     private GameObject _currentRoomInstance;
     private bool _isTransitioning = false;
-    [SerializeField] private Map _currentMapRefactored;
+    [SerializeField] private Map _currentMap;
 
     private void Start()
     {
@@ -34,12 +34,12 @@ public class MapManager : MonoBehaviour
         }
 
         MapGenerator generator = new MapGenerator(_config);
-        _currentMapRefactored = generator.GenerateMapRefactored();
+        _currentMap = generator.GenerateMap();
 
-        if (_currentMapRefactored.StartNode != null)
+        if (_currentMap.StartNode != null)
         {
-            _currentMapRefactored.StartNode.Unlock();
-            LoadNode(_currentMapRefactored.StartNode).Forget();
+            _currentMap.StartNode.Unlock();
+            LoadNode(_currentMap.StartNode).Forget();
         }
     }
 
@@ -63,12 +63,12 @@ public class MapManager : MonoBehaviour
 
     private void LockOtherNodesInLayer(MapNode selectedNode)
     {
-        if (_currentMapRefactored == null) return;
+        if (_currentMap == null) return;
 
         int targetLayer = selectedNode.Layer;
-        if (targetLayer < 0 || targetLayer >= _currentMapRefactored.LayerCount) return;
+        if (targetLayer < 0 || targetLayer >= _currentMap.LayerCount) return;
 
-        var layerNodes = _currentMapRefactored.GetNodesInLayer(targetLayer);
+        var layerNodes = _currentMap.GetNodesInLayer(targetLayer);
         
         foreach (var node in layerNodes)
         {

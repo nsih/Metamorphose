@@ -16,7 +16,7 @@ public class MapGenerator
         _config = config;
     }
 
-    public Map GenerateMapRefactored()
+    public Map GenerateMap()
     {
         Map map;
 
@@ -25,8 +25,8 @@ public class MapGenerator
             _nodeIdCounter = 0;
             _allConnections.Clear();
 
-            map = CreateGridRefactored();
-            HashSet<MapNode> usedNodes = GeneratePathsRefactored(map);
+            map = CreateMap();
+            HashSet<MapNode> usedNodes = GeneratePaths(map);
 
             if (usedNodes.Count == 0)
             {
@@ -41,10 +41,10 @@ public class MapGenerator
 
 
         Debug.Log("Create fallback map...");
-        return CreateFallbackMapRefactored();
+        return CreateFallbackMap();
     }
 
-    Map CreateFallbackMapRefactored()
+    Map CreateFallbackMap()
     {
         Map map = new Map();
 
@@ -71,7 +71,7 @@ public class MapGenerator
         return map;
     }
 
-    private Map CreateGridRefactored()
+    private Map CreateMap()
     {
         Map map = new Map();
 
@@ -119,7 +119,7 @@ public class MapGenerator
         return map;
     }
 
-    private HashSet<MapNode> GeneratePathsRefactored(Map map)
+    private HashSet<MapNode> GeneratePaths(Map map)
     {
         HashSet<MapNode> usedNodes = new HashSet<MapNode>();
         int failedPaths = 0;
@@ -127,7 +127,7 @@ public class MapGenerator
 
         for (int i = 0; i < _config.PathCount; i++)
         {
-            List<MapNode> path = GenerateSinglePathRefactored(map);
+            List<MapNode> path = GenerateSinglePath(map);
 
             if(path == null || path.Count < map.LayerCount)
             {
@@ -152,7 +152,7 @@ public class MapGenerator
         return usedNodes;
     }
 
-    private List<MapNode> GenerateSinglePathRefactored(Map map)
+    private List<MapNode> GenerateSinglePath(Map map)
     {
         List<MapNode> path = new List<MapNode>();
 
