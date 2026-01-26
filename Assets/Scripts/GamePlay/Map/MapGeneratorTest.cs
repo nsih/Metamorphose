@@ -22,6 +22,12 @@ public class MapGeneratorTest : MonoBehaviour
         MapGenerator generator = new MapGenerator(_config);
         Map map = generator.GenerateMapRefactored();
 
+        ValidateConstraints(map);
+        ValidatePaths(map);
+    }
+
+    void ValidatePaths(Map map)
+    {
         MapNode start = map.GetNode(0);
         MapNode boss = map.GetNode(map.Nodes.Count - 1);
 
@@ -38,30 +44,10 @@ public class MapGeneratorTest : MonoBehaviour
         }
     }
 
-    void TestMapGeneration()
-    {
-        MapGenerator generator = new MapGenerator(_config);
-        List<List<MapNode>> finalMap = generator.GenerateMap();
-
-        //generator.PrintGrid(finalMap); //디버깅용
-        ValidateConstraints(finalMap);
-        //generator.PrintConnections(finalMap); //디버깅용
-        ValidatePaths(finalMap);
-    }
-
-    void ValidatePaths(List<List<MapNode>> grid)
-    {
-        MapNode start = grid[0][0];
-        MapNode boss = grid[grid.Count - 1][0];
-
-        HashSet<MapNode> visited = new HashSet<MapNode>();
-        bool canReachBoss = DFS(start, boss, visited);
-    }
-
-    void ValidateConstraints(List<List<MapNode>> grid)
+    void ValidateConstraints(Map map)
     {
         if (_config.Constraints.Count == 0)
-        {
+        {   
             Debug.Log("제약 조건 없음");
             return;
         }
@@ -70,12 +56,12 @@ public class MapGeneratorTest : MonoBehaviour
 
         foreach (var constraint in _config.Constraints)
         {
-            if (constraint.Layer >= grid.Count || constraint.Layer < 0)
+            if (constraint.Layer >= map.LayerCount || constraint.Layer < 0)
             {
                 continue;
             }
 
-            var layer = grid[constraint.Layer];
+            var layer = map.GetNodesInLayer(constraint.Layer);
 
             // 필수 타입 검증
             if (constraint.HasRequiredType)

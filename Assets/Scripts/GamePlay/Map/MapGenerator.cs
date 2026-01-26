@@ -17,27 +17,29 @@ public class MapGenerator
 
     public Map GenerateMapRefactored()
     {
-        // Map map = new Map();
+        Map map;
 
-        // for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
-        // {
-        //     _nodeIdCounter = 0;
-        //     _allConnections.Clear();
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
+        {
+            _nodeIdCounter = 0;
+            _allConnections.Clear();
 
-        //     List<List<MapNode>> grid = CreateGrid();
-        //     HashSet<MapNode> usedNodes = GeneratePaths(grid);
+            map = CreateGridRefactored();
+            HashSet<MapNode> usedNodes = GeneratePathsRefactored(map);
 
-        //     if (usedNodes.Count == 0)
-        //     {
-        //         continue;
-        //     }
+            if (usedNodes.Count == 0)
+            {
+                continue;
+            }
 
-        //     RemoveOrphanNodes(grid, usedNodes);
-        //     InitializeStartNode(grid);
+            RemoveOrphanNodes(map, usedNodes);
+            map.StartNode.State = NodeState.Available;
 
-        //     return map;
-        // }
+            return map;
+        }
 
+
+        Debug.Log("Create fallback map...");
         return CreateFallbackMapRefactored();
     }
 
@@ -88,7 +90,7 @@ public class MapGenerator
         map.Nodes.Add(bossNode);
         current.NextNodes.Add(bossNode);
 
-        startNode.State = NodeState.Available;
+        map.StartNode.State = NodeState.Available;
         return map;
     }
 
@@ -126,6 +128,54 @@ public class MapGenerator
             MapNode startNode = grid[0][0];
             startNode.State = NodeState.Available;
         }
+    }
+
+    private Map CreateGridRefactored()
+    {
+        Map map = new Map();
+
+        for (int layer = 0; layer < _config.LayerCount; layer++)
+        {
+            List<MapNode> currentLayer = new List<MapNode>();
+
+            if (layer == 0)
+            {
+                MapNode startNode = CreateNode(layer, 0, RoomType.Start);
+                currentLayer.Add(startNode);
+            }
+            else if (layer == _config.LayerCount - 1)
+            {
+                MapNode bossNode = CreateNode(layer, 0, RoomType.Boss);
+                currentLayer.Add(bossNode);
+            }
+            else
+            {
+                PathConstraint constraint = _config.GetConstraintForLayer(layer);
+
+                if(constraint != null && constraint.HasRequiredType)
+                {
+                    for(int index = 0; index < _config.NodesPerLayer; index++)
+                    {
+                        MapNode node = CreateNode(layer, index, constraint.RequiredType);
+                        currentLayer.Add(node);
+                    }
+                }
+                else
+                {
+                    for(int index = 0; index < _config.NodesPerLayer; index++)
+                    {
+                        RoomType type = _config.RollRoomTypeWithConstraint(layer);
+                        MapNode node = CreateNode(layer, index, type);
+                        currentLayer.Add(node);
+                    }
+                }
+            }
+
+            map.Nodes.AddRange(currentLayer);
+            map.LayerCount++;
+        }
+
+        return map;
     }
 
     private List<List<MapNode>> CreateGrid()
@@ -173,6 +223,64 @@ public class MapGenerator
         }
 
         return grid;
+    }
+
+    private HashSet<MapNode> GeneratePathsRefactored(Map map)
+    {
+        HashSet<MapNode> usedNodes = new HashSet<MapNode>();
+        int failedPaths = 0;
+        int maxFailures = _config.PathCount * 2;
+
+        for (int i = 0; i < _config.PathCount; i++)
+        {
+            List<MapNode> path = GenerateSinglePathRefactored(map);
+
+            if(path == null || path.Count < map.LayerCount)
+            {
+                failedPaths++;
+                i--;
+
+                if(failedPaths >= maxFailures)
+                {
+                    return new HashSet<MapNode>();
+                }
+                continue;
+            }
+
+            foreach (var node in path)
+            {
+                usedNodes.Add(node);
+            }
+
+            ConnectPath(path);
+        }
+
+        return usedNodes;
+    }
+
+    private List<MapNode> GenerateSinglePathRefactored(Map map)
+    {
+        List<MapNode> path = new List<MapNode>();
+
+        MapNode current = map.GetNode(0);
+        path.Add(current);
+
+        for (int layer = 1; layer < map.LayerCount; layer++)
+        {
+            List<MapNode> nextLayer = map.GetNodesInLayer(layer);
+            List<MapNode> validNodes = GetNonCrossingAdjacentNodes(current, nextLayer);
+
+            if(validNodes.Count == 0)
+            {
+                return null;
+            }
+
+            int randomIndex = Random.Range(0, validNodes.Count);
+            current = validNodes[randomIndex];
+            path.Add(current);
+        }
+
+        return path;
     }
 
     private HashSet<MapNode> GeneratePaths(List<List<MapNode>> grid)
@@ -352,6 +460,15 @@ public class MapGenerator
         }
 
         return adjacentNodes;
+    }
+
+    private void RemoveOrphanNodes(Map map, HashSet<MapNode> usedNodes)
+    {
+        for(int layer = 0; layer < map.LayerCount; layer++)
+        {
+            List<MapNode> currentLayer = map.GetNodesInLayer(layer);
+            currentLayer.RemoveAll(node => !usedNodes.Contains(node));
+        }
     }
 
     private void RemoveOrphanNodes(List<List<MapNode>> grid, HashSet<MapNode> usedNodes)
