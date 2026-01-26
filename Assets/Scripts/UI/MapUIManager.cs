@@ -28,7 +28,7 @@ public class MapUIManager : MonoBehaviour
 
     private Dictionary<MapNode, MapNodeUI> _nodeUIMap = new Dictionary<MapNode, MapNodeUI>();
     private Dictionary<MapNode, RectTransform> _nodePositions = new Dictionary<MapNode, RectTransform>();
-    private List<List<MapNode>> _currentGrid;
+    private Map _currentMap;
     private MapNode _currentNode;
     private int _maxNodesPerLayer;
 
@@ -42,21 +42,21 @@ public class MapUIManager : MonoBehaviour
         }
     }
 
-    public void RenderMap(List<List<MapNode>> grid, MapNode currentNode)
+    public void RenderMap(Map map, MapNode currentNode)
     {
-        _currentGrid = grid;
+        _currentMap = map;
         _currentNode = currentNode;
         ClearMap();
 
-        _maxNodesPerLayer = CalculateMaxNodesPerLayer(grid);
+        _maxNodesPerLayer = CalculateMaxNodesPerLayer(map);
 
         _contentRect.anchorMin = new Vector2(0.5f, 0.5f);
         _contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         _contentRect.pivot = new Vector2(0.5f, 0.5f);
         _contentRect.anchoredPosition = Vector2.zero;
 
-        CalculateContentSize(grid);
-        CreateNodeUIs(grid, currentNode);
+        CalculateContentSize(map);
+        CreateNodeUIs(map, currentNode);
         DrawConnections();
 
         Canvas.ForceUpdateCanvases();
@@ -64,19 +64,18 @@ public class MapUIManager : MonoBehaviour
         ScrollToCurrentNode();
     }
 
-    private int CalculateMaxNodesPerLayer(List<List<MapNode>> grid)
+    private int CalculateMaxNodesPerLayer(Map map)
     {
         int maxNodes = 0;
-        foreach (var layer in grid)
+        for(int layer = 0; layer < map.LayerCount; layer++)
         {
-            foreach (var node in layer)
+            List<MapNode> nodes = map.GetNodesInLayer(layer);
+            if(nodes.Count > maxNodes)
             {
-                if (node.IndexInLayer + 1 > maxNodes)
-                {
-                    maxNodes = node.IndexInLayer + 1;
-                }
+                maxNodes = nodes.Count;
             }
         }
+
         return maxNodes;
     }
 
@@ -112,19 +111,20 @@ public class MapUIManager : MonoBehaviour
         _scrollRect.horizontalNormalizedPosition = normalizedPosition;
     }
 
-    private void CalculateContentSize(List<List<MapNode>> grid)
+    void CalculateContentSize(Map map)
     {
-        float width = grid.Count * _horizontalSpacing + _padding * 2;
+        float width = map.LayerCount * _horizontalSpacing + _padding * 2;
         float height = _maxNodesPerLayer * _verticalSpacing + _padding * 2;
 
         _contentRect.sizeDelta = new Vector2(width, height);
     }
 
-    private void CreateNodeUIs(List<List<MapNode>> grid, MapNode currentNode)
+    void CreateNodeUIs(Map map, MapNode currentNode)
     {
-        foreach (var layer in grid)
+        for(int layer = 0; layer < map.LayerCount; layer++)
         {
-            foreach (var node in layer)
+            List<MapNode> nodes = map.GetNodesInLayer(layer);
+            foreach (var node in nodes)
             {
                 Vector2 position = CalculateNodePosition(node.Layer, node.IndexInLayer, node.NodeID, node.Type);
 
@@ -143,7 +143,7 @@ public class MapUIManager : MonoBehaviour
 
     private Vector2 CalculateNodePosition(int layer, int indexInLayer, int nodeId, RoomType type)
     {
-        float totalWidth = (_currentGrid.Count - 1) * _horizontalSpacing;
+        float totalWidth = (_currentMap.LayerCount - 1) * _horizontalSpacing;
         float startX = -totalWidth / 2f;
         float x = startX + (layer * _horizontalSpacing);
         
@@ -171,15 +171,15 @@ public class MapUIManager : MonoBehaviour
     {
         if (_lineRenderer != null)
         {
-            _lineRenderer.DrawLines(_nodePositions, _currentGrid);
+            _lineRenderer.DrawLines(_nodePositions, _currentMap);
         }
     }
 
-    public void HighlightAvailableNodes(List<MapNode> availableNodes)
+    public void HighlightAvailableNodes(List<int> availableNodeIds)
     {
         foreach (var kvp in _nodeUIMap)
         {
-            bool isAvailable = availableNodes.Contains(kvp.Key);
+            bool isAvailable = availableNodeIds.Contains(kvp.Key.NodeID);
             kvp.Value.SetHighlight(isAvailable);
         }
     }
@@ -194,7 +194,7 @@ public class MapUIManager : MonoBehaviour
             return;
         }
 
-        if (_currentNode != null && !_currentNode.NextNodes.Contains(node))
+        if (!_currentMap.IsNodeConnected(_currentNode.NodeID, node.NodeID))
         {
             Debug.LogWarning($"직접 연결되지 않은 노드: {node}");
             return;
@@ -218,7 +218,7 @@ public class MapUIManager : MonoBehaviour
 
         if (_lineRenderer != null)
         {
-            _lineRenderer.DrawLines(new Dictionary<MapNode, RectTransform>(), new List<List<MapNode>>());
+            _lineRenderer.ClearLines();
         }
     }
 

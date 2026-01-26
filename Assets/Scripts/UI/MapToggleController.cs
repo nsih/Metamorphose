@@ -61,16 +61,16 @@ public class MapToggleController : MonoBehaviour
     {
         if (_mapUIManager == null || _mapManager == null) return;
         
-        var currentMap = _mapManager.GetCurrentMap();
+        var currentMap = _mapManager.CurrentMap;
         var currentNode = _mapManager.CurrentNode;
         
         if (currentMap == null || currentNode == null) return;
         
         _mapUIManager.RenderMap(currentMap, currentNode);
         
-        if (currentNode.NextNodes != null && currentNode.NextNodes.Count > 0)
+        if (currentNode.NextNodeIds != null && currentNode.NextNodeIds.Count > 0)
         {
-            _mapUIManager.HighlightAvailableNodes(currentNode.NextNodes);
+            _mapUIManager.HighlightAvailableNodes(currentNode.NextNodeIds);
         }
     }
 

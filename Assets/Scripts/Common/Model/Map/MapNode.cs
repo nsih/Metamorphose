@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using Common;
 
@@ -6,13 +7,13 @@ using Common;
 /// 맵의 개별 노드
 /// 추상 좌표(Layer, IndexInLayer)로 위치 표현
 /// </summary>
-[System.Serializable]
+[Serializable]
 public class MapNode
 {
     public int NodeID;          
     public RoomType Type;       
     public GameObject RoomPrefab;
-    public List<MapNode> NextNodes = new List<MapNode>();
+    public List<int> NextNodeIds = new();
 
     // 추상 좌표
     public int Layer;           
@@ -42,15 +43,6 @@ public class MapNode
     public void Complete()
     {
         State = NodeState.Completed;
-    }
-
-    public void CompleteAndUnlockNext()
-    {
-        Complete();
-        foreach (var next in NextNodes)
-        {
-            next.Unlock();
-        }
     }
 
     public bool IsAccessible()
