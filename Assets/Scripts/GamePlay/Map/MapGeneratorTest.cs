@@ -112,7 +112,7 @@ public class MapGeneratorTest : MonoBehaviour
 
         if (allSatisfied)
         {
-            Debug.Log("모든 제약 조건 만족");
+            //Debug.Log("모든 제약 조건 만족");
         }
         else
         {
