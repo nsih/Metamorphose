@@ -30,13 +30,19 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private Rigidbody2D _rigidbody;
 
+    private EnemyMuzzleAim _muzzleAim;
+
     private void Awake()
     {
         _receiver = GetComponent<BulletReceiver>();
         _fsm = GetComponent<EnemyFSM>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        _emitter = GetComponent<BulletEmitter>();
+        _emitter = GetComponentInChildren<BulletEmitter>();
         _rigidbody = GetComponent<Rigidbody2D>();
+        _muzzleAim = GetComponentInChildren<EnemyMuzzleAim>();
+
+        if (_rigidbody != null)
+            _rigidbody.freezeRotation = true;
 
         if (_spriteRenderer != null)
             _originalColor = _spriteRenderer.color;
@@ -92,6 +98,9 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         if (_ctx != null)
             _ctx.Target = target;
+        
+        if (_muzzleAim != null)
+            _muzzleAim.SetTarget(target);
     }
 
     public void SetReleaseAction(System.Action returnToPool)

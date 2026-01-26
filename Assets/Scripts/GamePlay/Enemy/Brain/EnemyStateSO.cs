@@ -20,6 +20,9 @@ public class EnemyStateSO : ScriptableObject
     {
         if (StopEmitterOnEnter && ctx.Emitter != null)
             ctx.Emitter.Stop();
+        
+        if (ctx.Rigidbody != null)
+            ctx.Rigidbody.linearVelocity = Vector2.zero;
     }
 
     public virtual void Execute(EnemyContext ctx)
@@ -40,5 +43,8 @@ public class EnemyStateSO : ScriptableObject
     {
         if (StopEmitterOnExit && ctx.Emitter != null)
             ctx.Emitter.Stop();
+        
+        if (ctx.Rigidbody != null)
+            ctx.Rigidbody.linearVelocity = Vector2.zero;
     }
 }
