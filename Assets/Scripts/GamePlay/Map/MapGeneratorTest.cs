@@ -28,11 +28,11 @@ public class MapGeneratorTest : MonoBehaviour
 
     void ValidatePaths(Map map)
     {
-        MapNode start = map.GetNode(0);
-        MapNode boss = map.GetNode(map.Nodes.Count - 1);
+        MapNode start = map.StartNode;
+        MapNode boss = map.BossNode;
 
         HashSet<MapNode> visited = new HashSet<MapNode>();
-        bool canReachBoss = DFS(start, boss, visited);
+        bool canReachBoss = DFS(map,start, boss, visited);
 
         if (canReachBoss)
         {
@@ -128,7 +128,7 @@ public class MapGeneratorTest : MonoBehaviour
         }
     }
 
-    bool DFS(MapNode current, MapNode target, HashSet<MapNode> visited)
+    bool DFS(Map map, MapNode current, MapNode target, HashSet<MapNode> visited)
     {
         if (current == target)
         {
@@ -137,11 +137,12 @@ public class MapGeneratorTest : MonoBehaviour
 
         visited.Add(current);
 
-        foreach (var next in current.NextNodes)
+        foreach (var nextId in current.NextNodeIds)
         {
+            MapNode next = map.GetNode(nextId);
             if (!visited.Contains(next))
             {
-                if (DFS(next, target, visited))
+                if (DFS(map, next, target, visited))
                 {
                     return true;
                 }

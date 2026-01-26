@@ -18,8 +18,7 @@ public class MapManager : MonoBehaviour
     
     private GameObject _currentRoomInstance;
     private bool _isTransitioning = false;
-    private List<List<MapNode>> _currentMap;
-    private Map _currentMapRefactored;
+    [SerializeField] private Map _currentMapRefactored;
 
     private void Start()
     {
@@ -64,14 +63,14 @@ public class MapManager : MonoBehaviour
 
     private void LockOtherNodesInLayer(MapNode selectedNode)
     {
-        if (_currentMap == null) return;
+        if (_currentMapRefactored == null) return;
 
         int targetLayer = selectedNode.Layer;
-        if (targetLayer < 0 || targetLayer >= _currentMap.Count) return;
+        if (targetLayer < 0 || targetLayer >= _currentMapRefactored.LayerCount) return;
 
-        var layer = _currentMap[targetLayer];
+        var layerNodes = _currentMapRefactored.GetNodesInLayer(targetLayer);
         
-        foreach (var node in layer)
+        foreach (var node in layerNodes)
         {
             if (node != selectedNode && node.State == NodeState.Available)
             {

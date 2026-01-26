@@ -14,7 +14,6 @@ public class MapNode
     public RoomType Type;       
     public GameObject RoomPrefab;
     public List<int> NextNodeIds = new();
-    public List<MapNode> NextNodes = new List<MapNode>();
 
     // 추상 좌표
     public int Layer;           
@@ -44,15 +43,6 @@ public class MapNode
     public void Complete()
     {
         State = NodeState.Completed;
-    }
-
-    public void CompleteAndUnlockNext()
-    {
-        Complete();
-        foreach (var next in NextNodes)
-        {
-            next.Unlock();
-        }
     }
 
     public bool IsAccessible()

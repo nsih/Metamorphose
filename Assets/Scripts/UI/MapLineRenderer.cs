@@ -24,15 +24,17 @@ public class MapLineRenderer : MonoBehaviour
             var layerNodes = map.GetNodesInLayer(layer);
             foreach (var node in layerNodes)
             {
-                if (node.NextNodes == null || node.NextNodes.Count == 0) continue;
+                if (node.NextNodeIds == null || node.NextNodeIds.Count == 0) continue;
                 if (!nodePositions.ContainsKey(node)) continue;
 
                 RectTransform fromRect = nodePositions[node];
                 Vector3 fromPos = fromRect.anchoredPosition;
 
-                foreach (var nextNode in node.NextNodes)
+                foreach (var nextNodeId in node.NextNodeIds)
                 {
-                    if (!nodePositions.ContainsKey(nextNode)) continue;
+                    MapNode nextNode = map.GetNode(nextNodeId);
+
+                    if (nextNode == null || !nodePositions.ContainsKey(nextNode)) continue;
 
                     RectTransform toRect = nodePositions[nextNode];
                     Vector3 toPos = toRect.anchoredPosition;

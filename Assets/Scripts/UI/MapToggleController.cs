@@ -68,9 +68,9 @@ public class MapToggleController : MonoBehaviour
         
         _mapUIManager.RenderMap(currentMap, currentNode);
         
-        if (currentNode.NextNodes != null && currentNode.NextNodes.Count > 0)
+        if (currentNode.NextNodeIds != null && currentNode.NextNodeIds.Count > 0)
         {
-            _mapUIManager.HighlightAvailableNodes(currentNode.NextNodes);
+            _mapUIManager.HighlightAvailableNodes(currentNode.NextNodeIds);
         }
     }
 

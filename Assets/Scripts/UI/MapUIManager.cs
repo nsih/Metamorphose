@@ -64,22 +64,6 @@ public class MapUIManager : MonoBehaviour
         ScrollToCurrentNode();
     }
 
-    private int CalculateMaxNodesPerLayer(List<List<MapNode>> grid)
-    {
-        int maxNodes = 0;
-        foreach (var layer in grid)
-        {
-            foreach (var node in layer)
-            {
-                if (node.IndexInLayer + 1 > maxNodes)
-                {
-                    maxNodes = node.IndexInLayer + 1;
-                }
-            }
-        }
-        return maxNodes;
-    }
-
     private int CalculateMaxNodesPerLayer(Map map)
     {
         int maxNodes = 0;
@@ -135,41 +119,12 @@ public class MapUIManager : MonoBehaviour
         _contentRect.sizeDelta = new Vector2(width, height);
     }
 
-    private void CalculateContentSize(List<List<MapNode>> grid)
-    {
-        float width = grid.Count * _horizontalSpacing + _padding * 2;
-        float height = _maxNodesPerLayer * _verticalSpacing + _padding * 2;
-
-        _contentRect.sizeDelta = new Vector2(width, height);
-    }
-
     void CreateNodeUIs(Map map, MapNode currentNode)
     {
         for(int layer = 0; layer < map.LayerCount; layer++)
         {
             List<MapNode> nodes = map.GetNodesInLayer(layer);
             foreach (var node in nodes)
-            {
-                Vector2 position = CalculateNodePosition(node.Layer, node.IndexInLayer, node.NodeID, node.Type);
-
-                MapNodeUI nodeUI = Instantiate(_nodeUIPrefab, _contentRect);
-                RectTransform rect = nodeUI.GetComponent<RectTransform>();
-                rect.anchoredPosition = position;
-
-                bool isCurrent = (node == currentNode);
-                nodeUI.Initialize(node, isCurrent, this);
-
-                _nodeUIMap[node] = nodeUI;
-                _nodePositions[node] = rect;
-            }
-        }
-    }
-
-    private void CreateNodeUIs(List<List<MapNode>> grid, MapNode currentNode)
-    {
-        foreach (var layer in grid)
-        {
-            foreach (var node in layer)
             {
                 Vector2 position = CalculateNodePosition(node.Layer, node.IndexInLayer, node.NodeID, node.Type);
 
@@ -220,11 +175,11 @@ public class MapUIManager : MonoBehaviour
         }
     }
 
-    public void HighlightAvailableNodes(List<MapNode> availableNodes)
+    public void HighlightAvailableNodes(List<int> availableNodeIds)
     {
         foreach (var kvp in _nodeUIMap)
         {
-            bool isAvailable = availableNodes.Contains(kvp.Key);
+            bool isAvailable = availableNodeIds.Contains(kvp.Key.NodeID);
             kvp.Value.SetHighlight(isAvailable);
         }
     }
@@ -239,7 +194,7 @@ public class MapUIManager : MonoBehaviour
             return;
         }
 
-        if (_currentNode != null && !_currentNode.NextNodes.Contains(node))
+        if (!_currentMap.IsNodeConnected(_currentNode.NodeID, node.NodeID))
         {
             Debug.LogWarning($"직접 연결되지 않은 노드: {node}");
             return;
