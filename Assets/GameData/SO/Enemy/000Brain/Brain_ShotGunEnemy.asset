@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DefaultState: {fileID: 11400000, guid: 854c68357f935974f96ee3ceb114f322, type: 2}
   Transitions:
-  - {fileID: 11400000, guid: 426efad2042463a428f6d4005eeb1bd9, type: 2}
-  - {fileID: 11400000, guid: 913193c1215c09f4b80b06dd0ad7f294, type: 2}
+  - {fileID: 11400000, guid: e7400eca2dbbb66428a442e37c20e20c, type: 2}
+  - {fileID: 11400000, guid: 871294e7956b6df4eb9e7910763cc437, type: 2}
   MaxHP: 5
-  MoveSpeed: 5
+  MoveSpeed: 10
   AttackCoolTime: 3
   HasEnragedPhase: 0
   EnrageThreshold: 0.3
