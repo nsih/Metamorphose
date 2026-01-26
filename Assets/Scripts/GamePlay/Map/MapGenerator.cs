@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Common;
+using System.Linq;
 
 public class MapGenerator
 {
@@ -286,7 +287,11 @@ public class MapGenerator
         for(int layer = 0; layer < map.LayerCount; layer++)
         {
             List<MapNode> currentLayer = map.GetNodesInLayer(layer);
-            currentLayer.RemoveAll(node => !usedNodes.Contains(node));
+            var orphanNodes = currentLayer.Where(node => !usedNodes.Contains(node));
+            foreach (var node in orphanNodes)
+            {
+                map.Nodes.Remove(node);
+            }
         }
     }
 
