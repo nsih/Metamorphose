@@ -14,6 +14,7 @@ public class MapManager : MonoBehaviour
     [Inject] private Container _container;
 
     public MapNode CurrentNode { get; private set; }
+    public Map CurrentMap => _currentMapRefactored;
     
     private GameObject _currentRoomInstance;
     private bool _isTransitioning = false;
@@ -41,11 +42,6 @@ public class MapManager : MonoBehaviour
             _currentMapRefactored.StartNode.Unlock();
             LoadNode(_currentMapRefactored.StartNode).Forget();
         }
-    }
-
-    public List<List<MapNode>> GetCurrentMap()
-    {
-        return _currentMap;
     }
 
     public void MoveToNode(MapNode nextNode)

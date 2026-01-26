@@ -28,7 +28,7 @@ public class MapUIManager : MonoBehaviour
 
     private Dictionary<MapNode, MapNodeUI> _nodeUIMap = new Dictionary<MapNode, MapNodeUI>();
     private Dictionary<MapNode, RectTransform> _nodePositions = new Dictionary<MapNode, RectTransform>();
-    private List<List<MapNode>> _currentGrid;
+    private Map _currentMap;
     private MapNode _currentNode;
     private int _maxNodesPerLayer;
 
@@ -42,21 +42,21 @@ public class MapUIManager : MonoBehaviour
         }
     }
 
-    public void RenderMap(List<List<MapNode>> grid, MapNode currentNode)
+    public void RenderMap(Map map, MapNode currentNode)
     {
-        _currentGrid = grid;
+        _currentMap = map;
         _currentNode = currentNode;
         ClearMap();
 
-        _maxNodesPerLayer = CalculateMaxNodesPerLayer(grid);
+        _maxNodesPerLayer = CalculateMaxNodesPerLayer(map);
 
         _contentRect.anchorMin = new Vector2(0.5f, 0.5f);
         _contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         _contentRect.pivot = new Vector2(0.5f, 0.5f);
         _contentRect.anchoredPosition = Vector2.zero;
 
-        CalculateContentSize(grid);
-        CreateNodeUIs(grid, currentNode);
+        CalculateContentSize(map);
+        CreateNodeUIs(map, currentNode);
         DrawConnections();
 
         Canvas.ForceUpdateCanvases();
@@ -77,6 +77,21 @@ public class MapUIManager : MonoBehaviour
                 }
             }
         }
+        return maxNodes;
+    }
+
+    private int CalculateMaxNodesPerLayer(Map map)
+    {
+        int maxNodes = 0;
+        for(int layer = 0; layer < map.LayerCount; layer++)
+        {
+            List<MapNode> nodes = map.GetNodesInLayer(layer);
+            if(nodes.Count > maxNodes)
+            {
+                maxNodes = nodes.Count;
+            }
+        }
+
         return maxNodes;
     }
 
@@ -112,12 +127,42 @@ public class MapUIManager : MonoBehaviour
         _scrollRect.horizontalNormalizedPosition = normalizedPosition;
     }
 
+    void CalculateContentSize(Map map)
+    {
+        float width = map.LayerCount * _horizontalSpacing + _padding * 2;
+        float height = _maxNodesPerLayer * _verticalSpacing + _padding * 2;
+
+        _contentRect.sizeDelta = new Vector2(width, height);
+    }
+
     private void CalculateContentSize(List<List<MapNode>> grid)
     {
         float width = grid.Count * _horizontalSpacing + _padding * 2;
         float height = _maxNodesPerLayer * _verticalSpacing + _padding * 2;
 
         _contentRect.sizeDelta = new Vector2(width, height);
+    }
+
+    void CreateNodeUIs(Map map, MapNode currentNode)
+    {
+        for(int layer = 0; layer < map.LayerCount; layer++)
+        {
+            List<MapNode> nodes = map.GetNodesInLayer(layer);
+            foreach (var node in nodes)
+            {
+                Vector2 position = CalculateNodePosition(node.Layer, node.IndexInLayer, node.NodeID, node.Type);
+
+                MapNodeUI nodeUI = Instantiate(_nodeUIPrefab, _contentRect);
+                RectTransform rect = nodeUI.GetComponent<RectTransform>();
+                rect.anchoredPosition = position;
+
+                bool isCurrent = (node == currentNode);
+                nodeUI.Initialize(node, isCurrent, this);
+
+                _nodeUIMap[node] = nodeUI;
+                _nodePositions[node] = rect;
+            }
+        }
     }
 
     private void CreateNodeUIs(List<List<MapNode>> grid, MapNode currentNode)
@@ -143,7 +188,7 @@ public class MapUIManager : MonoBehaviour
 
     private Vector2 CalculateNodePosition(int layer, int indexInLayer, int nodeId, RoomType type)
     {
-        float totalWidth = (_currentGrid.Count - 1) * _horizontalSpacing;
+        float totalWidth = (_currentMap.LayerCount - 1) * _horizontalSpacing;
         float startX = -totalWidth / 2f;
         float x = startX + (layer * _horizontalSpacing);
         
@@ -171,7 +216,7 @@ public class MapUIManager : MonoBehaviour
     {
         if (_lineRenderer != null)
         {
-            _lineRenderer.DrawLines(_nodePositions, _currentGrid);
+            _lineRenderer.DrawLines(_nodePositions, _currentMap);
         }
     }
 
@@ -218,7 +263,7 @@ public class MapUIManager : MonoBehaviour
 
         if (_lineRenderer != null)
         {
-            _lineRenderer.DrawLines(new Dictionary<MapNode, RectTransform>(), new List<List<MapNode>>());
+            _lineRenderer.ClearLines();
         }
     }
 
