@@ -4,6 +4,8 @@ using Common;
 
 public class MapGenerator
 {
+    const int MAX_ATTEMPTS = 10;
+
     private MapGenerationConfig _config;
     private int _nodeIdCounter = 0;
     private List<(MapNode from, MapNode to)> _allConnections = new List<(MapNode, MapNode)>();
@@ -13,11 +15,35 @@ public class MapGenerator
         _config = config;
     }
 
+    public Map GenerateMapRefactored()
+    {
+        // Map map = new Map();
+
+        // for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
+        // {
+        //     _nodeIdCounter = 0;
+        //     _allConnections.Clear();
+
+        //     List<List<MapNode>> grid = CreateGrid();
+        //     HashSet<MapNode> usedNodes = GeneratePaths(grid);
+
+        //     if (usedNodes.Count == 0)
+        //     {
+        //         continue;
+        //     }
+
+        //     RemoveOrphanNodes(grid, usedNodes);
+        //     InitializeStartNode(grid);
+
+        //     return map;
+        // }
+
+        return CreateFallbackMapRefactored();
+    }
+
     public List<List<MapNode>> GenerateMap()
     {
-        int maxAttempts = 10;
-        
-        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
         {
             _nodeIdCounter = 0;
             _allConnections.Clear();
@@ -37,6 +63,33 @@ public class MapGenerator
         }
 
         return CreateFallbackMap();
+    }
+
+    Map CreateFallbackMapRefactored()
+    {
+        Map map = new Map();
+
+        _nodeIdCounter = 0;
+        _allConnections.Clear();
+
+        MapNode startNode = CreateNode(0, 0, RoomType.Start);
+        map.Nodes.Add(startNode);
+
+        MapNode current = startNode;
+        for (int layer = 1; layer < _config.LayerCount - 1; layer++)
+        {
+            MapNode node = CreateNode(layer, 0, RoomType.Battle);
+            map.Nodes.Add(node);
+            current.NextNodes.Add(node);
+            current = node;
+        }
+
+        MapNode bossNode = CreateNode(_config.LayerCount - 1, 0, RoomType.Boss);
+        map.Nodes.Add(bossNode);
+        current.NextNodes.Add(bossNode);
+
+        startNode.State = NodeState.Available;
+        return map;
     }
 
     private List<List<MapNode>> CreateFallbackMap()
@@ -251,6 +304,7 @@ public class MapGenerator
 
             if (!from.NextNodes.Contains(to))
             {
+                from.NextNodeIds.Add(to.NodeID);
                 from.NextNodes.Add(to);
                 _allConnections.Add((from, to));
             }

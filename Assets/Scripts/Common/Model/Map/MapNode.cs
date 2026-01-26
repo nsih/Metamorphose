@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using Common;
 
@@ -6,7 +7,7 @@ using Common;
 /// 맵의 개별 노드
 /// 추상 좌표(Layer, IndexInLayer)로 위치 표현
 /// </summary>
-[System.Serializable]
+[Serializable]
 public class MapNode
 {
     public int NodeID;          

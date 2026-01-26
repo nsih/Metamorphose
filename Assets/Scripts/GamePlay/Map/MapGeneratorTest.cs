@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Common;
 
 public class MapGeneratorTest : MonoBehaviour
 {
@@ -13,7 +14,28 @@ public class MapGeneratorTest : MonoBehaviour
             return;
         }
 
-        TestMapGeneration();
+        TestMapGenerationRefactored();
+    }
+
+    void TestMapGenerationRefactored()
+    {
+        MapGenerator generator = new MapGenerator(_config);
+        Map map = generator.GenerateMapRefactored();
+
+        MapNode start = map.GetNode(0);
+        MapNode boss = map.GetNode(map.Nodes.Count - 1);
+
+        HashSet<MapNode> visited = new HashSet<MapNode>();
+        bool canReachBoss = DFS(start, boss, visited);
+
+        if (canReachBoss)
+        {
+            Debug.Log("Can reach boss");
+        }
+        else
+        {
+            Debug.Log("Cannot reach boss");
+        }
     }
 
     void TestMapGeneration()
