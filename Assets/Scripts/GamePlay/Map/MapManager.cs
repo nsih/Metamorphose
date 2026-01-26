@@ -18,6 +18,7 @@ public class MapManager : MonoBehaviour
     private GameObject _currentRoomInstance;
     private bool _isTransitioning = false;
     private List<List<MapNode>> _currentMap;
+    private Map _currentMapRefactored;
 
     private void Start()
     {
@@ -33,17 +34,12 @@ public class MapManager : MonoBehaviour
         }
 
         MapGenerator generator = new MapGenerator(_config);
-        _currentMap = generator.GenerateMap();
+        _currentMapRefactored = generator.GenerateMapRefactored();
 
-        //generator.PrintGrid(_currentMap);
-        //generator.PrintConnections(_currentMap);
-        //generator.PrintConnectionsDetailed(_currentMap);
-
-        if (_currentMap.Count > 0 && _currentMap[0].Count > 0)
+        if (_currentMapRefactored.StartNode != null)
         {
-            MapNode startNode = _currentMap[0][0];
-            startNode.Unlock();
-            LoadNode(startNode).Forget();
+            _currentMapRefactored.StartNode.Unlock();
+            LoadNode(_currentMapRefactored.StartNode).Forget();
         }
     }
 
