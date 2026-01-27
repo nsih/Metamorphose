@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 449ad33e43a184f41bd5709b2c09ad81, type: 3}
-  m_Name: Cond_PlayerVisible
+  m_Name: Cond_PlayerInVisible
   m_EditorClassIdentifier: 
   Target: 0
   ObstacleLayer:
     serializedVersion: 2
     m_Bits: 64
-  RequiredResult: 0
+  RequiredResult: 1
   MaxDistance: 20
   OriginOffset: 0.5
   ShowDebugRay: 1

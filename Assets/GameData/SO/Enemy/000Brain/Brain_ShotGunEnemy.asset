@@ -13,15 +13,23 @@ MonoBehaviour:
   m_Name: Brain_ShotGunEnemy
   m_EditorClassIdentifier: 
   DefaultState: {fileID: 11400000, guid: 854c68357f935974f96ee3ceb114f322, type: 2}
+  GlobalTransitions: []
   Transitions:
-  - {fileID: 11400000, guid: e7400eca2dbbb66428a442e37c20e20c, type: 2}
-  - {fileID: 11400000, guid: 871294e7956b6df4eb9e7910763cc437, type: 2}
-  MaxHP: 5
+  - FromState: {fileID: 11400000, guid: 854c68357f935974f96ee3ceb114f322, type: 2}
+    ToState: {fileID: 11400000, guid: c1a8dc7398dc6bd45a3a4c902c80bb0d, type: 2}
+    Conditions:
+    - {fileID: 11400000, guid: 9f31fc2a878476545bd74738ad853129, type: 2}
+    - {fileID: 11400000, guid: 93dd908cd7b8fba498e9bc7c3406947e, type: 2}
+  - FromState: {fileID: 11400000, guid: c1a8dc7398dc6bd45a3a4c902c80bb0d, type: 2}
+    ToState: {fileID: 11400000, guid: 854c68357f935974f96ee3ceb114f322, type: 2}
+    Conditions:
+    - {fileID: 11400000, guid: f8c71c663a0e07e44833d034b8c2520b, type: 2}
+  MaxHP: 8
   MoveSpeed: 10
   AttackCoolTime: 3
   HasEnragedPhase: 0
-  EnrageThreshold: 0.3
-  EnragedMoveSpeed: 7
-  EnragedAttackCoolTime: 0.1
+  EnrageThreshold: 0
+  EnragedMoveSpeed: 0
+  EnragedAttackCoolTime: 0
   DeathEffect: {fileID: 11400000, guid: aecbc0d97c6dace428a3ac9593041dd2, type: 2}
   DeathDelay: 1.5
