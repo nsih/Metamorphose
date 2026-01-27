@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 703ed7ef908d8194aadac8746bce93f4, type: 3}
-  m_Name: Attack_Shoot
+  m_Name: Attack_10Pattern_Shoot
   m_EditorClassIdentifier: 
   Pattern: {fileID: 11400000, guid: eb16429a39330004abe3f784ff5557bd, type: 2}

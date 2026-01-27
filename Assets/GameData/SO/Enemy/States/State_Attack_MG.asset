@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 640d7aca0d6b1ac42b455b131dd6ac92, type: 3}
-  m_Name: State_Attack_ShotGun
+  m_Name: State_Attack_MG
   m_EditorClassIdentifier: 
-  MoveBehavior: {fileID: 11400000, guid: 7e954efd8a175dd41bb74182fda748a4, type: 2}
-  AttackBehavior: {fileID: 11400000, guid: 40b15d18fa943af4993d065eff776ef2, type: 2}
+  MoveBehavior: {fileID: 11400000, guid: 8072d7106bee8c245b297e22c7328f7a, type: 2}
+  AttackBehavior: {fileID: 11400000, guid: 496d69b3cf7310f4ba9eb996a36d9235, type: 2}
   UtilityBehaviors: []
   StopEmitterOnEnter: 0
   StopEmitterOnExit: 1

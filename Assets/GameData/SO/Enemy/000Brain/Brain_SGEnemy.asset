@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0e66446a22ecd24a8f6ed5db7d43030, type: 3}
-  m_Name: Brain_ShotGunEnemy
+  m_Name: Brain_SGEnemy
   m_EditorClassIdentifier: 
   DefaultState: {fileID: 11400000, guid: 854c68357f935974f96ee3ceb114f322, type: 2}
   GlobalTransitions: []

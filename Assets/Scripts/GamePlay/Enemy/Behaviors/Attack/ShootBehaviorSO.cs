@@ -1,7 +1,6 @@
 using UnityEngine;
 using BulletPro;
 
-
 [CreateAssetMenu(fileName = "Attack_Shoot", menuName = "SO/Enemy/Behaviors/Attack/Shoot")]
 public class ShootBehaviorSO : EnemyAttackBehaviorSO
 {
@@ -19,6 +18,7 @@ public class ShootBehaviorSO : EnemyAttackBehaviorSO
         if (ctx.Emitter.emitterProfile != Pattern)
             ctx.Emitter.emitterProfile = Pattern;
         
+        ctx.Emitter.Stop();
         ctx.Emitter.Play();
         ctx.LastAttackTime = Time.time;
     }
