@@ -6,6 +6,8 @@ public class ShootBehaviorSO : EnemyAttackBehaviorSO
 {
     public EmitterProfile Pattern;
     
+    private static readonly int ShootCountKey = "ShootCount".GetHashCode();
+    
     public override void Execute(EnemyContext ctx)
     {
         if (ctx.IsDead) return;
@@ -21,5 +23,8 @@ public class ShootBehaviorSO : EnemyAttackBehaviorSO
         ctx.Emitter.Stop();
         ctx.Emitter.Play();
         ctx.LastAttackTime = Time.time;
+        
+        int count = ctx.GetInt(ShootCountKey);
+        ctx.SetInt(ShootCountKey, count + 1);
     }
 }

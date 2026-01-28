@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 640d7aca0d6b1ac42b455b131dd6ac92, type: 3}
-  m_Name: State_Attack_1Shot
+  m_Script: {fileID: 11500000, guid: feda6a21bebb1dd459ee56ae7891d4aa, type: 3}
+  m_Name: State_Combat_Basic
   m_EditorClassIdentifier: 
   MoveBehavior: {fileID: 11400000, guid: 7e954efd8a175dd41bb74182fda748a4, type: 2}
   AttackBehavior: {fileID: 11400000, guid: 496d69b3cf7310f4ba9eb996a36d9235, type: 2}
   UtilityBehaviors: []
   StopEmitterOnEnter: 0
   StopEmitterOnExit: 1
+  ResetShootCount: 1
+  ResetTeleportComplete: 0
