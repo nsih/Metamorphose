@@ -18,6 +18,6 @@ MonoBehaviour:
     - EnemyBrain: {fileID: 11400000, guid: a5fd579e0740f9249ac0170d83a730c4, type: 2}
       SpawnPointIndex: 0
       Count: 1
-    - EnemyBrain: {fileID: 11400000, guid: 390f87b85e626f747b1d84f5b41e15c8, type: 2}
+    - EnemyBrain: {fileID: 11400000, guid: a2487e4b9d433d74881625d56ebded5d, type: 2}
       SpawnPointIndex: 1
       Count: 1

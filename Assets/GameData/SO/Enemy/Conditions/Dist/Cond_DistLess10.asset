@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e5c42df36ff21e4c99f5cd814347f05, type: 3}
-  m_Name: Cond_DistLess7
+  m_Name: Cond_DistLess10
   m_EditorClassIdentifier: 
   Compare: 0
-  Distance: 15
+  Distance: 7

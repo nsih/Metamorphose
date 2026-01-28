@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e66446a22ecd24a8f6ed5db7d43030, type: 3}
+  m_Name: Brain_HollowPoint
+  m_EditorClassIdentifier: 
+  DefaultState: {fileID: 11400000, guid: 6c25d09ae3c017b42b470e8aa0793f3f, type: 2}
+  GlobalTransitions:
+  - FromState: {fileID: 0}
+    ToState: {fileID: 0}
+    Conditions: []
+  Transitions:
+  - FromState: {fileID: 11400000, guid: 6c25d09ae3c017b42b470e8aa0793f3f, type: 2}
+    ToState: {fileID: 11400000, guid: a71da94d0e4dcdb46a778b54c3b6cbd8, type: 2}
+    Conditions:
+    - {fileID: 11400000, guid: 991e67438f7f608448b5b3142c04c361, type: 2}
+  - FromState: {fileID: 11400000, guid: a71da94d0e4dcdb46a778b54c3b6cbd8, type: 2}
+    ToState: {fileID: 11400000, guid: 1f0bcf5c42e64614a9320e57ed18f82f, type: 2}
+    Conditions:
+    - {fileID: 11400000, guid: ec1b8b2ed36faf8488af3dfe4b9d092c, type: 2}
+  - FromState: {fileID: 11400000, guid: 1f0bcf5c42e64614a9320e57ed18f82f, type: 2}
+    ToState: {fileID: 11400000, guid: 6c25d09ae3c017b42b470e8aa0793f3f, type: 2}
+    Conditions:
+    - {fileID: 11400000, guid: 9cea374f0cf194145a1b8f8df08d506c, type: 2}
+  MaxHP: 8
+  MoveSpeed: 3
+  AttackCoolTime: 0.3
+  HasEnragedPhase: 0
+  EnrageThreshold: 0
+  EnragedMoveSpeed: 0
+  EnragedAttackCoolTime: 0
+  DeathEffect: {fileID: 11400000, guid: aecbc0d97c6dace428a3ac9593041dd2, type: 2}
+  DeathDelay: 1
