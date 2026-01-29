@@ -4,45 +4,52 @@ using UnityEngine;
 public class StrafeBehaviorSO : EnemyMoveBehaviorSO
 {
     [Header("Strafe Settings")]
-    [Tooltip("방향 전환 간격")]
-    public float DirectionChangeInterval = 1.5f;
+    public float StrafeRange = 3f;
     
-    [Tooltip("공격 후 정지 시간")]
-    public float StopDurationAfterAttack = 0.5f;
+    public float StrafeSpeed = 1f;
     
-    private static readonly int DirXKey = "StrafeDirX".GetHashCode();
-    private static readonly int DirYKey = "StrafeDirY".GetHashCode();
-    private static readonly int TimerKey = "StrafeDirTimer".GetHashCode();
+    [Header("Distance Control")]
+    [Tooltip("유지하려는 거리")]
+    public float PreferredDistance = 15;
+    
+    [Tooltip("거리 허용 오차")]
+    public float DistanceTolerance = 5f;
+    
+    [Tooltip("전후 이동 강도")]
+    [Range(0f, 1f)]
+    public float DistanceCorrectionStrength = 0.3f;
+    
+    private static readonly int TimeKey = "StrafeTime".GetHashCode();
     
     public override void Execute(EnemyContext ctx)
     {
         if (ctx.IsDead) return;
         if (ctx.Target == null) return;
+        if (ctx.Rigidbody == null) return;
         
-        float timeSinceAttack = Time.time - ctx.LastAttackTime;
+        float time = ctx.GetFloat(TimeKey);
+        time += Time.deltaTime;
+        ctx.SetFloat(TimeKey, time);
         
-        if (timeSinceAttack < StopDurationAfterAttack) return;
-        if (timeSinceAttack >= ctx.CurrentAttackCoolTime) return;
+        Vector2 toPlayer = ctx.Target.position - ctx.Self.position;
+        float currentDistance = toPlayer.magnitude;
+        Vector2 dirToPlayer = toPlayer.normalized;
         
-        float timer = ctx.GetFloat(TimerKey);
-        timer += Time.deltaTime;
+        // 플레이어 기준 로컬 좌표
+        Vector2 right = new Vector2(-dirToPlayer.y, dirToPlayer.x);
         
-        float dirX = ctx.GetFloat(DirXKey);
-        float dirY = ctx.GetFloat(DirYKey);
+        float strafeOffset = Mathf.Sin(time * StrafeSpeed) * StrafeRange;
+        Vector2 strafeVelocity = right * strafeOffset;
         
-        if ((dirX == 0 && dirY == 0) || timer >= DirectionChangeInterval)
+        float distanceError = currentDistance - PreferredDistance;
+        Vector2 distanceCorrection = Vector2.zero;
+        
+        if (Mathf.Abs(distanceError) > DistanceTolerance)
         {
-            timer = 0f;
-            float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-            dirX = Mathf.Cos(angle);
-            dirY = Mathf.Sin(angle);
+            distanceCorrection = -dirToPlayer * distanceError * DistanceCorrectionStrength;
         }
         
-        ctx.SetFloat(TimerKey, timer);
-        ctx.SetFloat(DirXKey, dirX);
-        ctx.SetFloat(DirYKey, dirY);
-        
-        Vector3 moveDir = new Vector3(dirX, dirY, 0).normalized;
-        ctx.Self.position += moveDir * ctx.CurrentMoveSpeed * Time.deltaTime;
+        Vector2 finalVelocity = strafeVelocity + distanceCorrection;
+        ctx.Rigidbody.linearVelocity = finalVelocity;
     }
 }

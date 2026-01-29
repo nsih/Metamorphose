@@ -25,6 +25,9 @@ public class ShootBehaviorSO : EnemyAttackBehaviorSO
         ctx.LastAttackTime = Time.time;
         
         int count = ctx.GetInt(ShootCountKey);
-        ctx.SetInt(ShootCountKey, count + 1);
+        count++;
+        ctx.SetInt(ShootCountKey, count);
+        
+        Debug.Log($"Shoot count: {count}");
     }
 }
