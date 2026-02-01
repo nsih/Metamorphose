@@ -152,7 +152,8 @@ public class RoomManager : MonoBehaviour
         
         if (_mapManager != null && _mapManager.CurrentNode != null)
         {
-            _mapManager.CurrentNode.CompleteAndUnlockNext();
+            var currentNode = _mapManager.CurrentNode;
+            _mapManager.CurrentMap.CompleteAndUnlockNextNode(currentNode.NodeID);
         }
     }
 

@@ -13,25 +13,28 @@ public class MapLineRenderer : MonoBehaviour
 
     private List<GameObject> _lineObjects = new List<GameObject>();
 
-    public void DrawLines(Dictionary<MapNode, RectTransform> nodePositions, List<List<MapNode>> grid)
+    public void DrawLines(Dictionary<MapNode, RectTransform> nodePositions, Map map)
     {
         ClearLines();
 
-        if (grid == null || grid.Count == 0) return;
+        if (map == null || map.LayerCount == 0) return;
 
-        foreach (var layer in grid)
+        for(int layer = 0; layer < map.LayerCount; layer++)
         {
-            foreach (var node in layer)
+            var layerNodes = map.GetNodesInLayer(layer);
+            foreach (var node in layerNodes)
             {
-                if (node.NextNodes == null || node.NextNodes.Count == 0) continue;
+                if (node.NextNodeIds == null || node.NextNodeIds.Count == 0) continue;
                 if (!nodePositions.ContainsKey(node)) continue;
 
                 RectTransform fromRect = nodePositions[node];
                 Vector3 fromPos = fromRect.anchoredPosition;
 
-                foreach (var nextNode in node.NextNodes)
+                foreach (var nextNodeId in node.NextNodeIds)
                 {
-                    if (!nodePositions.ContainsKey(nextNode)) continue;
+                    MapNode nextNode = map.GetNode(nextNodeId);
+
+                    if (nextNode == null || !nodePositions.ContainsKey(nextNode)) continue;
 
                     RectTransform toRect = nodePositions[nextNode];
                     Vector3 toPos = toRect.anchoredPosition;
@@ -93,7 +96,7 @@ public class MapLineRenderer : MonoBehaviour
         _lineObjects.Add(lineObj);
     }
 
-    private void ClearLines()
+    public void ClearLines()
     {
         foreach (var lineObj in _lineObjects)
         {

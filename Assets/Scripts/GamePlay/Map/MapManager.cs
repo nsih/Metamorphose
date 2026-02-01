@@ -14,10 +14,11 @@ public class MapManager : MonoBehaviour
     [Inject] private Container _container;
 
     public MapNode CurrentNode { get; private set; }
+    public Map CurrentMap => _currentMap;
     
     private GameObject _currentRoomInstance;
     private bool _isTransitioning = false;
-    private List<List<MapNode>> _currentMap;
+    [SerializeField] private Map _currentMap;
 
     private void Start()
     {
@@ -35,21 +36,11 @@ public class MapManager : MonoBehaviour
         MapGenerator generator = new MapGenerator(_config);
         _currentMap = generator.GenerateMap();
 
-        //generator.PrintGrid(_currentMap);
-        //generator.PrintConnections(_currentMap);
-        //generator.PrintConnectionsDetailed(_currentMap);
-
-        if (_currentMap.Count > 0 && _currentMap[0].Count > 0)
+        if (_currentMap.StartNode != null)
         {
-            MapNode startNode = _currentMap[0][0];
-            startNode.Unlock();
-            LoadNode(startNode).Forget();
+            _currentMap.StartNode.Unlock();
+            LoadNode(_currentMap.StartNode).Forget();
         }
-    }
-
-    public List<List<MapNode>> GetCurrentMap()
-    {
-        return _currentMap;
     }
 
     public void MoveToNode(MapNode nextNode)
@@ -75,11 +66,11 @@ public class MapManager : MonoBehaviour
         if (_currentMap == null) return;
 
         int targetLayer = selectedNode.Layer;
-        if (targetLayer < 0 || targetLayer >= _currentMap.Count) return;
+        if (targetLayer < 0 || targetLayer >= _currentMap.LayerCount) return;
 
-        var layer = _currentMap[targetLayer];
+        var layerNodes = _currentMap.GetNodesInLayer(targetLayer);
         
-        foreach (var node in layer)
+        foreach (var node in layerNodes)
         {
             if (node != selectedNode && node.State == NodeState.Available)
             {

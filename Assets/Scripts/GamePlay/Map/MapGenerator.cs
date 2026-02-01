@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Common;
+using System.Linq;
 
 public class MapGenerator
 {
+    const int MAX_ATTEMPTS = 10;
+
     private MapGenerationConfig _config;
     private int _nodeIdCounter = 0;
     private List<(MapNode from, MapNode to)> _allConnections = new List<(MapNode, MapNode)>();
@@ -13,71 +16,64 @@ public class MapGenerator
         _config = config;
     }
 
-    public List<List<MapNode>> GenerateMap()
+    public Map GenerateMap()
     {
-        int maxAttempts = 10;
-        
-        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        Map map;
+
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
         {
             _nodeIdCounter = 0;
             _allConnections.Clear();
 
-            List<List<MapNode>> grid = CreateGrid();
-            HashSet<MapNode> usedNodes = GeneratePaths(grid);
-            
+            map = CreateMap();
+            HashSet<MapNode> usedNodes = GeneratePaths(map);
+
             if (usedNodes.Count == 0)
             {
                 continue;
             }
-            
-            RemoveOrphanNodes(grid, usedNodes);
-            InitializeStartNode(grid);
 
-            return grid;
+            RemoveOrphanNodes(map, usedNodes);
+            map.StartNode.State = NodeState.Available;
+
+            return map;
         }
 
+
+        Debug.Log("Create fallback map...");
         return CreateFallbackMap();
     }
 
-    private List<List<MapNode>> CreateFallbackMap()
+    Map CreateFallbackMap()
     {
+        Map map = new Map();
+
         _nodeIdCounter = 0;
         _allConnections.Clear();
-        
-        List<List<MapNode>> grid = new List<List<MapNode>>();
-        
+
         MapNode startNode = CreateNode(0, 0, RoomType.Start);
-        grid.Add(new List<MapNode> { startNode });
-        
+        map.Nodes.Add(startNode);
+
         MapNode current = startNode;
         for (int layer = 1; layer < _config.LayerCount - 1; layer++)
         {
             MapNode node = CreateNode(layer, 0, RoomType.Battle);
-            grid.Add(new List<MapNode> { node });
-            current.NextNodes.Add(node);
+            map.Nodes.Add(node);
+            current.NextNodeIds.Add(node.NodeID);
             current = node;
         }
-        
+
         MapNode bossNode = CreateNode(_config.LayerCount - 1, 0, RoomType.Boss);
-        grid.Add(new List<MapNode> { bossNode });
-        current.NextNodes.Add(bossNode);
-        
-        InitializeStartNode(grid);
-        return grid;
+        map.Nodes.Add(bossNode);
+        current.NextNodeIds.Add(bossNode.NodeID);
+
+        map.StartNode.State = NodeState.Available;
+        return map;
     }
 
-    private void InitializeStartNode(List<List<MapNode>> grid)
+    private Map CreateMap()
     {
-        if (grid.Count > 0 && grid[0].Count > 0)
-        {
-            MapNode startNode = grid[0][0];
-            startNode.State = NodeState.Available;
-        }
-    }
-
-    private List<List<MapNode>> CreateGrid()
-    {
-        List<List<MapNode>> grid = new List<List<MapNode>>();
+        Map map = new Map();
 
         for (int layer = 0; layer < _config.LayerCount; layer++)
         {
@@ -95,11 +91,11 @@ public class MapGenerator
             }
             else
             {
-                var constraint = _config.GetConstraintForLayer(layer);
-                
-                if (constraint != null && constraint.HasRequiredType)
+                PathConstraint constraint = _config.GetConstraintForLayer(layer);
+
+                if(constraint != null && constraint.HasRequiredType)
                 {
-                    for (int index = 0; index < _config.NodesPerLayer; index++)
+                    for(int index = 0; index < _config.NodesPerLayer; index++)
                     {
                         MapNode node = CreateNode(layer, index, constraint.RequiredType);
                         currentLayer.Add(node);
@@ -107,7 +103,7 @@ public class MapGenerator
                 }
                 else
                 {
-                    for (int index = 0; index < _config.NodesPerLayer; index++)
+                    for(int index = 0; index < _config.NodesPerLayer; index++)
                     {
                         RoomType type = _config.RollRoomTypeWithConstraint(layer);
                         MapNode node = CreateNode(layer, index, type);
@@ -116,13 +112,14 @@ public class MapGenerator
                 }
             }
 
-            grid.Add(currentLayer);
+            map.Nodes.AddRange(currentLayer);
+            map.LayerCount++;
         }
 
-        return grid;
+        return map;
     }
 
-    private HashSet<MapNode> GeneratePaths(List<List<MapNode>> grid)
+    private HashSet<MapNode> GeneratePaths(Map map)
     {
         HashSet<MapNode> usedNodes = new HashSet<MapNode>();
         int failedPaths = 0;
@@ -130,20 +127,20 @@ public class MapGenerator
 
         for (int i = 0; i < _config.PathCount; i++)
         {
-            List<MapNode> path = GenerateSinglePath(grid);
-            
-            if (path == null || path.Count < grid.Count)
+            List<MapNode> path = GenerateSinglePath(map);
+
+            if(path == null || path.Count < map.LayerCount)
             {
                 failedPaths++;
                 i--;
-                
-                if (failedPaths >= maxFailures)
+
+                if(failedPaths >= maxFailures)
                 {
                     return new HashSet<MapNode>();
                 }
                 continue;
             }
-            
+
             foreach (var node in path)
             {
                 usedNodes.Add(node);
@@ -155,19 +152,19 @@ public class MapGenerator
         return usedNodes;
     }
 
-    private List<MapNode> GenerateSinglePath(List<List<MapNode>> grid)
+    private List<MapNode> GenerateSinglePath(Map map)
     {
         List<MapNode> path = new List<MapNode>();
 
-        MapNode current = grid[0][0];
+        MapNode current = map.StartNode;
         path.Add(current);
 
-        for (int layer = 1; layer < grid.Count; layer++)
+        for (int layer = 1; layer < map.LayerCount; layer++)
         {
-            List<MapNode> nextLayer = grid[layer];
+            List<MapNode> nextLayer = map.GetNodesInLayer(layer);
             List<MapNode> validNodes = GetNonCrossingAdjacentNodes(current, nextLayer);
 
-            if (validNodes.Count == 0)
+            if(validNodes.Count == 0)
             {
                 return null;
             }
@@ -180,16 +177,16 @@ public class MapGenerator
         return path;
     }
 
-    private List<MapNode> GetNonCrossingAdjacentNodes(MapNode from, List<MapNode> nextLayer)
+    private List<MapNode> GetNonCrossingAdjacentNodes(MapNode from, List<MapNode> nextLayerNodes)
     {
         List<MapNode> validNodes = new List<MapNode>();
 
-        foreach (var node in nextLayer)
+        foreach (var node in nextLayerNodes)
         {
             if (!IsAdjacent(from, node))
                 continue;
             
-            if (from.NextNodes.Contains(node))
+            if (from.NextNodeIds.Contains(node.NodeID))
             {
                 validNodes.Add(node);
                 continue;
@@ -249,9 +246,9 @@ public class MapGenerator
             MapNode from = path[i];
             MapNode to = path[i + 1];
 
-            if (!from.NextNodes.Contains(to))
+            if (!from.NextNodeIds.Contains(to.NodeID))
             {
-                from.NextNodes.Add(to);
+                from.NextNodeIds.Add(to.NodeID);
                 _allConnections.Add((from, to));
             }
         }
@@ -285,26 +282,16 @@ public class MapGenerator
         return indexDiff <= 1;
     }
 
-    public List<MapNode> GetAdjacentNodes(MapNode from, List<MapNode> nextLayer)
+    private void RemoveOrphanNodes(Map map, HashSet<MapNode> usedNodes)
     {
-        List<MapNode> adjacentNodes = new List<MapNode>();
-
-        foreach (var node in nextLayer)
+        for(int layer = 0; layer < map.LayerCount; layer++)
         {
-            if (IsAdjacent(from, node))
+            List<MapNode> currentLayer = map.GetNodesInLayer(layer);
+            var orphanNodes = currentLayer.Where(node => !usedNodes.Contains(node));
+            foreach (var node in orphanNodes)
             {
-                adjacentNodes.Add(node);
+                map.Nodes.Remove(node);
             }
-        }
-
-        return adjacentNodes;
-    }
-
-    private void RemoveOrphanNodes(List<List<MapNode>> grid, HashSet<MapNode> usedNodes)
-    {
-        foreach (var layer in grid)
-        {
-            layer.RemoveAll(node => !usedNodes.Contains(node));
         }
     }
 
@@ -331,26 +318,28 @@ public class MapGenerator
         Debug.Log(sb.ToString());
     }
 
-    public void PrintConnections(List<List<MapNode>> grid)
+    public void PrintConnections(Map map)
     {
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
         sb.AppendLine("=== Connections ===");
 
         int totalConnections = 0;
 
-        foreach (var layer in grid)
+        for(int layer = 0; layer < map.LayerCount; layer++)
         {
-            foreach (var node in layer)
+            var layerNodes = map.GetNodesInLayer(layer);
+            foreach (var node in layerNodes)
             {
-                if (node.NextNodes.Count > 0)
+                if (node.NextNodeIds.Count > 0)
                 {
                     sb.Append($"{node} -> ");
-                    foreach (var next in node.NextNodes)
+                    foreach (var nextId in node.NextNodeIds)
                     {
+                        MapNode next = map.GetNode(nextId);
                         sb.Append($"{next} ");
                     }
                     sb.AppendLine();
-                    totalConnections += node.NextNodes.Count;
+                    totalConnections += node.NextNodeIds.Count;
                 }
             }
         }
@@ -359,21 +348,23 @@ public class MapGenerator
         Debug.Log(sb.ToString());
     }
 
-    public void PrintConnectionsDetailed(List<List<MapNode>> grid)
+    public void PrintConnectionsDetailed(Map map)
     {
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
         sb.AppendLine("=== Connection Details ===");
 
-        for (int layer = 0; layer < grid.Count - 1; layer++)
+        for (int layer = 0; layer < map.LayerCount - 1; layer++)
         {
             sb.AppendLine($"Layer {layer} -> {layer + 1}:");
             
             List<(int from, int to)> connections = new List<(int, int)>();
             
-            foreach (var node in grid[layer])
+            var layerNodes = map.GetNodesInLayer(layer);
+            foreach (var node in layerNodes)
             {
-                foreach (var next in node.NextNodes)
+                foreach (var nextId in node.NextNodeIds)
                 {
+                    MapNode next = map.GetNode(nextId);
                     connections.Add((node.IndexInLayer, next.IndexInLayer));
                     sb.AppendLine($"  {node.IndexInLayer} -> {next.IndexInLayer}");
                 }
