@@ -25,6 +25,7 @@ public class EnemyContext
     private Color _originalColor;
     private Dictionary<int, float> _floatData = new Dictionary<int, float>();
     private Dictionary<int, int> _intData = new Dictionary<int, int>();
+    public float TimeInCurrentState { get; set; } 
     
     public Rigidbody2D Rigidbody { get; private set; }
 

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: RoomWaveData
   m_EditorClassIdentifier: 
   Waves:
-  - PostWaveDelay: 1
+  - PostWaveDelay: 0
     SpawnGroups:
-    - EnemyData: {fileID: 11400000, guid: f04cec566e155034c80875e13a0dd54e, type: 2}
+    - EnemyBrain: {fileID: 11400000, guid: a5fd579e0740f9249ac0170d83a730c4, type: 2}
       SpawnPointIndex: 0
       Count: 1
-    - EnemyData: {fileID: 11400000, guid: f04cec566e155034c80875e13a0dd54e, type: 2}
+    - EnemyBrain: {fileID: 11400000, guid: a2487e4b9d433d74881625d56ebded5d, type: 2}
       SpawnPointIndex: 1
       Count: 1

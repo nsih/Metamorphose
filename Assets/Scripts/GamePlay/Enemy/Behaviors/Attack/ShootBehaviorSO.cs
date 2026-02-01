@@ -1,11 +1,12 @@
 using UnityEngine;
 using BulletPro;
 
-
 [CreateAssetMenu(fileName = "Attack_Shoot", menuName = "SO/Enemy/Behaviors/Attack/Shoot")]
 public class ShootBehaviorSO : EnemyAttackBehaviorSO
 {
     public EmitterProfile Pattern;
+    
+    private static readonly int ShootCountKey = "ShootCount".GetHashCode();
     
     public override void Execute(EnemyContext ctx)
     {
@@ -19,7 +20,14 @@ public class ShootBehaviorSO : EnemyAttackBehaviorSO
         if (ctx.Emitter.emitterProfile != Pattern)
             ctx.Emitter.emitterProfile = Pattern;
         
+        ctx.Emitter.Stop();
         ctx.Emitter.Play();
         ctx.LastAttackTime = Time.time;
+        
+        int count = ctx.GetInt(ShootCountKey);
+        count++;
+        ctx.SetInt(ShootCountKey, count);
+        
+        Debug.Log($"Shoot count: {count}");
     }
 }

@@ -130,6 +130,8 @@ public class RoomManager : MonoBehaviour
     {
         foreach (var entry in wave.SpawnGroups)
         {
+            //Debug.Log($"SpawnEntry Brain: {entry.EnemyBrain}");
+            
             int index = 0;
             if (_spawnPoints.Count > 0)
                 index = entry.SpawnPointIndex % _spawnPoints.Count;

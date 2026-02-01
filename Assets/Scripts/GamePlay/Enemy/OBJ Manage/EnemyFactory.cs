@@ -14,6 +14,7 @@ public class EnemyFactory
 
     public Enemy Create(Vector3 position, EnemyBrainSO brain)
     {
+        
         Enemy enemy = _poolManager.Get();
 
         enemy.transform.position = position;

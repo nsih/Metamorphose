@@ -30,6 +30,9 @@ public class EnemyFSM : MonoBehaviour
         if (!_isInitialized) return;
         if (_ctx == null || _ctx.IsDead) return;
         
+        // 상태 진입 시간 추적
+        _ctx.TimeInCurrentState += Time.deltaTime;
+        
         _ctx.CheckEnrage();
         _currentState?.Execute(_ctx);
         EvaluateTransitions();
@@ -51,6 +54,7 @@ public class EnemyFSM : MonoBehaviour
     {
         _currentState?.Exit(_ctx);
         _currentState = newState;
+        _ctx.TimeInCurrentState = 0f;
         _currentState?.Enter(_ctx);
     }
 
