@@ -1,4 +1,3 @@
-// Assets/Scripts/GamePlay/Enemy/Enemy.cs
 using UnityEngine;
 using BulletPro;
 using Cysharp.Threading.Tasks;
@@ -19,18 +18,19 @@ public class Enemy : MonoBehaviour, IDamageable
     private EnemyContext _ctx;
     private EnemyBrainSO _currentBrain;
 
-    public event System.Action OnHit;
-    public event System.Action OnDeath;
+    public event Action OnHit;
+    public event Action OnDeath;
 
-    private System.Action _returnToPool;
-    private System.Action<Vector3, EnemyBrainSO> _spawnAction;
+    private Action _returnToPool;
+    private Action<Vector3, EnemyBrainSO> _spawnAction;
 
     private Color _originalColor;
     private CancellationTokenSource _flashCts;
 
     private Rigidbody2D _rigidbody;
-
     private EnemyMuzzleAim _muzzleAim;
+    
+    private Vector3 _defaultScale;
 
     private void Awake()
     {
@@ -46,6 +46,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
         if (_spriteRenderer != null)
             _originalColor = _spriteRenderer.color;
+        
+        _defaultScale = transform.localScale;
 
         _ctx = new EnemyContext(transform, _spriteRenderer, _emitter, _rigidbody);
     }
@@ -75,10 +77,29 @@ public class Enemy : MonoBehaviour, IDamageable
         }
 
         ResetState();
+        ApplyVisual(_currentBrain);
         
         _ctx.Initialize(_currentBrain, null);
         _ctx.SpawnAction = _spawnAction;
         _fsm.Initialize(_currentBrain, _ctx);
+    }
+
+    private void ApplyVisual(EnemyBrainSO brain)
+    {
+        if (_spriteRenderer != null)
+        {
+            if (brain.Sprite != null)
+                _spriteRenderer.sprite = brain.Sprite;
+            
+            _spriteRenderer.color = brain.Color;
+            _originalColor = brain.Color;
+        }
+        
+        transform.localScale = new Vector3(
+            _defaultScale.x * brain.Scale.x,
+            _defaultScale.y * brain.Scale.y,
+            _defaultScale.z
+        );
     }
 
     private void ResetState()
@@ -103,12 +124,12 @@ public class Enemy : MonoBehaviour, IDamageable
             _muzzleAim.SetTarget(target);
     }
 
-    public void SetReleaseAction(System.Action returnToPool)
+    public void SetReleaseAction(Action returnToPool)
     {
         _returnToPool = returnToPool;
     }
 
-    public void SetSpawnAction(System.Action<Vector3, EnemyBrainSO> spawnAction)
+    public void SetSpawnAction(Action<Vector3, EnemyBrainSO> spawnAction)
     {
         _spawnAction = spawnAction;
         if (_ctx != null)
@@ -158,7 +179,7 @@ public class Enemy : MonoBehaviour, IDamageable
             await UniTask.Delay(100, cancellationToken: _flashCts.Token);
             _spriteRenderer.color = _originalColor;
         }
-        catch (System.OperationCanceledException) { }
+        catch (OperationCanceledException) { }
     }
 
     private void CancelFlash()

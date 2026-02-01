@@ -1,3 +1,5 @@
+// Assets/Scripts/GamePlay/Enemy/Brain/EnemyBrainSO.cs
+
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +25,11 @@ public class StateTransition
 [CreateAssetMenu(fileName = "Brain_", menuName = "SO/Enemy/Brain")]
 public class EnemyBrainSO : ScriptableObject
 {
+    [Header("Visual")]
+    public Sprite Sprite;
+    public Color Color = Color.white;
+    public Vector2 Scale = Vector2.one;
+    
     [Header("States")]
     public EnemyStateSO DefaultState;
     
@@ -48,12 +55,10 @@ public class EnemyBrainSO : ScriptableObject
     [Header("Death")]
     public DeathEffectSO DeathEffect;
     
-    [Tooltip("죽음 연출 후 사라지기까지 딜레이")]
     public float DeathDelay = 0f;
     
     public EnemyStateSO EvaluateTransitions(EnemyStateSO currentState, EnemyContext ctx)
     {
-        // 1. Global Transitions 먼저 체크 (우선순위 높음)
         if (GlobalTransitions != null)
         {
             foreach (var trans in GlobalTransitions)
@@ -63,7 +68,6 @@ public class EnemyBrainSO : ScriptableObject
             }
         }
         
-        // 2. 현재 상태의 전환 체크
         if (Transitions == null) return null;
         
         foreach (var trans in Transitions)
