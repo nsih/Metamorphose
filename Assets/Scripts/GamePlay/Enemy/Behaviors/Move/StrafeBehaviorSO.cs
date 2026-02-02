@@ -5,7 +5,6 @@ public class StrafeBehaviorSO : EnemyMoveBehaviorSO
 {
     [Header("Strafe Settings")]
     public float StrafeRange = 3f;
-    
     public float StrafeSpeed = 1f;
     
     [Header("Distance Control")]
@@ -19,23 +18,20 @@ public class StrafeBehaviorSO : EnemyMoveBehaviorSO
     [Range(0f, 1f)]
     public float DistanceCorrectionStrength = 0.3f;
     
-    private static readonly int TimeKey = "StrafeTime".GetHashCode();
-    
     public override void Execute(EnemyContext ctx)
     {
         if (ctx.IsDead) return;
         if (ctx.Target == null) return;
         if (ctx.Rigidbody == null) return;
         
-        float time = ctx.GetFloat(TimeKey);
+        float time = ctx.GetFloat(EnemyContextKeys.StrafeTime);
         time += Time.deltaTime;
-        ctx.SetFloat(TimeKey, time);
+        ctx.SetFloat(EnemyContextKeys.StrafeTime, time);
         
         Vector2 toPlayer = ctx.Target.position - ctx.Self.position;
         float currentDistance = toPlayer.magnitude;
         Vector2 dirToPlayer = toPlayer.normalized;
         
-        // 플레이어 기준 로컬 좌표
         Vector2 right = new Vector2(-dirToPlayer.y, dirToPlayer.x);
         
         float strafeOffset = Mathf.Sin(time * StrafeSpeed) * StrafeRange;

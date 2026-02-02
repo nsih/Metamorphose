@@ -18,21 +18,18 @@ public class TeleportNearPlayerSO : EnemyUtilityBehaviorSO
     [Header("Visual")]
     public float DisappearAlpha = 0f;
     
-    private static readonly int IsTeleportingKey = "IsTeleporting".GetHashCode();
-    private static readonly int TeleportCompleteKey = "TeleportComplete".GetHashCode();
-    
     public override void Execute(EnemyContext ctx)
     {
         if (ctx.IsDead) return;
         if (ctx.Target == null) return;
         
-        bool isTeleporting = ctx.GetInt(IsTeleportingKey) == 1;
+        bool isTeleporting = ctx.GetInt(EnemyContextKeys.IsTeleporting) == 1;
         if (isTeleporting) return;
         
-        int complete = ctx.GetInt(TeleportCompleteKey);
+        int complete = ctx.GetInt(EnemyContextKeys.TeleportComplete);
         if (complete == 1) return;
         
-        ctx.SetInt(IsTeleportingKey, 1);
+        ctx.SetInt(EnemyContextKeys.IsTeleporting, 1);
         TeleportAsync(ctx).Forget();
     }
     
@@ -76,11 +73,11 @@ public class TeleportNearPlayerSO : EnemyUtilityBehaviorSO
                 ctx.SpriteRenderer.color = c;
             }
             
-            ctx.SetInt(TeleportCompleteKey, 1);
+            ctx.SetInt(EnemyContextKeys.TeleportComplete, 1);
         }
         finally
         {
-            ctx.SetInt(IsTeleportingKey, 0);
+            ctx.SetInt(EnemyContextKeys.IsTeleporting, 0);
             linkedCts.Dispose();
         }
     }
