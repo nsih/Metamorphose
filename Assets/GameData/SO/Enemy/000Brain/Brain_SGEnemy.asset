@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0e66446a22ecd24a8f6ed5db7d43030, type: 3}
   m_Name: Brain_SGEnemy
   m_EditorClassIdentifier: 
+  Sprite: {fileID: -7676032709383778154, guid: 69c9208967d8b9a4b9649255ec9643ec, type: 3}
+  Color: {r: 1, g: 1, b: 1, a: 1}
+  Scale: {x: 1, y: 1}
   DefaultState: {fileID: 11400000, guid: 854c68357f935974f96ee3ceb114f322, type: 2}
   GlobalTransitions: []
   Transitions:
