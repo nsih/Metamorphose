@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0e66446a22ecd24a8f6ed5db7d43030, type: 3}
   m_Name: Brain_HollowPoint
   m_EditorClassIdentifier: 
+  Sprite: {fileID: 2754024177977005464, guid: 6755f1e71c8470c46bba23810ce4d9a3, type: 3}
+  Color: {r: 1, g: 1, b: 1, a: 1}
+  Scale: {x: 1, y: 1}
   DefaultState: {fileID: 11400000, guid: f05069a4ac0a2e44c8896148863743aa, type: 2}
   GlobalTransitions: []
   Transitions:

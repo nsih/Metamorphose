@@ -1,5 +1,3 @@
-// Assets/Scripts/GamePlay/Enemy/Brain/EnemyBrainSO.cs
-
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +43,11 @@ public class EnemyBrainSO : ScriptableObject
     public float MoveSpeed = 5f;
     public float AttackCoolTime = 1f;
     
+    [Header("AI Settings")]
+    [Tooltip("시야 체크 간격. 높을수록 반응 둔함")]
+    [Range(0.1f, 1f)]
+    public float VisibilityCheckInterval = 0.1f;
+    
     [Header("Enrage (Optional)")]
     public bool HasEnragedPhase;
     [Range(0f, 1f)]
@@ -54,7 +57,6 @@ public class EnemyBrainSO : ScriptableObject
     
     [Header("Death")]
     public DeathEffectSO DeathEffect;
-    
     public float DeathDelay = 0f;
     
     public EnemyStateSO EvaluateTransitions(EnemyStateSO currentState, EnemyContext ctx)

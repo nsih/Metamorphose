@@ -3,9 +3,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "State_", menuName = "SO/Enemy/State/Resettable")]
 public class ResettableStateSO : EnemyStateSO
 {
-    private static readonly int ShootCountKey = "ShootCount".GetHashCode();
-    private static readonly int TeleportCompleteKey = "TeleportComplete".GetHashCode();
-    
     [Header("Reset Options")]
     public bool ResetShootCount;
     public bool ResetTeleportComplete;
@@ -15,9 +12,9 @@ public class ResettableStateSO : EnemyStateSO
         base.Enter(ctx);
         
         if (ResetShootCount)
-            ctx.SetInt(ShootCountKey, 0);
+            ctx.SetInt(EnemyContextKeys.ShootCount, 0);
         
         if (ResetTeleportComplete)
-            ctx.SetInt(TeleportCompleteKey, 0);
+            ctx.SetInt(EnemyContextKeys.TeleportComplete, 0);
     }
 }
