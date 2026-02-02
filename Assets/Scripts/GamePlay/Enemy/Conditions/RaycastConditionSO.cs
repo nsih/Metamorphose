@@ -26,20 +26,54 @@ public class RaycastConditionSO : TransitionConditionSO
         if (Target == RaycastTarget.Player && ctx.Target == null)
             return false;
         
+        bool isVisible;
+        
+        if (Target == RaycastTarget.Player)
+        {
+            isVisible = ctx.CheckTargetVisibility(ObstacleLayer, MaxDistance, OriginOffset);
+        }
+        else
+        {
+            isVisible = CheckForward(ctx);
+        }
+        
+        if (ShowDebugRay)
+        {
+            DrawDebugRay(ctx, isVisible);
+        }
+        
+        return RequiredResult == ResultType.Clear ? isVisible : !isVisible;
+    }
+    
+    private bool CheckForward(EnemyContext ctx)
+    {
+        Vector2 origin = ctx.Self.position;
+        Vector2 direction = ctx.Self.right;
+        float distance = MaxDistance > 0 ? MaxDistance : 10f;
+        
+        Vector2 offsetOrigin = origin + direction * OriginOffset;
+        float adjustedDistance = distance - OriginOffset;
+        
+        if (adjustedDistance <= 0)
+            return true;
+        
+        RaycastHit2D hit = Physics2D.Raycast(offsetOrigin, direction, adjustedDistance, ObstacleLayer);
+        return hit.collider == null;
+    }
+    
+    private void DrawDebugRay(EnemyContext ctx, bool isVisible)
+    {
         Vector2 origin = ctx.Self.position;
         Vector2 direction;
         float distance;
         
-        if (Target == RaycastTarget.Player)
+        if (Target == RaycastTarget.Player && ctx.Target != null)
         {
             Vector2 targetPos = ctx.Target.position;
             direction = (targetPos - origin).normalized;
-            float distToTarget = Vector2.Distance(origin, targetPos);
-            
+            distance = Vector2.Distance(origin, targetPos);
             if (MaxDistance > 0)
-                distance = Mathf.Min(MaxDistance, distToTarget);
-            else
-                distance = distToTarget;
+                distance = Mathf.Min(MaxDistance, distance);
         }
         else
         {
@@ -50,18 +84,7 @@ public class RaycastConditionSO : TransitionConditionSO
         Vector2 offsetOrigin = origin + direction * OriginOffset;
         float adjustedDistance = distance - OriginOffset;
         
-        if (adjustedDistance <= 0)
-            return RequiredResult == ResultType.Clear;
-        
-        RaycastHit2D hit = Physics2D.Raycast(offsetOrigin, direction, adjustedDistance, ObstacleLayer);
-        bool isBlocked = hit.collider != null;
-        
-        if (ShowDebugRay)
-        {
-            Color rayColor = isBlocked ? Color.red : Color.green;
-            Debug.DrawRay(offsetOrigin, direction * adjustedDistance, rayColor, 0.1f);
-        }
-        
-        return RequiredResult == ResultType.Blocked ? isBlocked : !isBlocked;
+        Color rayColor = isVisible ? Color.green : Color.red;
+        Debug.DrawRay(offsetOrigin, direction * adjustedDistance, rayColor, 0.1f);
     }
 }

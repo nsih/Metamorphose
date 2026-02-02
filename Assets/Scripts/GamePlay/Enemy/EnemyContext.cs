@@ -1,4 +1,3 @@
-// Assets/Scripts/GamePlay/Enemy/EnemyContext.cs
 using UnityEngine;
 using BulletPro;
 using System.Collections.Generic;
@@ -25,9 +24,14 @@ public class EnemyContext
     private Color _originalColor;
     private Dictionary<int, float> _floatData = new Dictionary<int, float>();
     private Dictionary<int, int> _intData = new Dictionary<int, int>();
-    public float TimeInCurrentState { get; set; } 
+    public float TimeInCurrentState { get; set; }
     
     public Rigidbody2D Rigidbody { get; private set; }
+    
+    // 시야 캐싱
+    private float _lastVisibilityCheckTime;
+    private bool _cachedVisibility;
+    private LayerMask _lastObstacleLayer;
 
     public EnemyContext(Transform self, SpriteRenderer spriteRenderer, BulletEmitter emitter, Rigidbody2D rigidbody)
     {
@@ -48,6 +52,9 @@ public class EnemyContext
         IsDead = false;
         IsEnraged = false;
         LastAttackTime = 0f;
+        
+        _lastVisibilityCheckTime = -999f;
+        _cachedVisibility = false;
     }
 
     public float DistanceToTarget
@@ -77,6 +84,48 @@ public class EnemyContext
                 return Brain.EnragedAttackCoolTime;
             return Brain.AttackCoolTime;
         }
+    }
+
+    public bool CheckTargetVisibility(LayerMask obstacleLayer, float maxDistance, float originOffset)
+    {
+        float interval = Brain?.VisibilityCheckInterval ?? 0.1f;
+        
+        bool sameLayer = obstacleLayer.value == _lastObstacleLayer.value;
+        bool withinInterval = Time.time - _lastVisibilityCheckTime < interval;
+        
+        if (sameLayer && withinInterval)
+            return _cachedVisibility;
+        
+        _lastVisibilityCheckTime = Time.time;
+        _lastObstacleLayer = obstacleLayer;
+        
+        if (Target == null)
+        {
+            _cachedVisibility = false;
+            return false;
+        }
+        
+        Vector2 origin = Self.position;
+        Vector2 targetPos = Target.position;
+        Vector2 direction = (targetPos - origin).normalized;
+        float distance = Vector2.Distance(origin, targetPos);
+        
+        if (maxDistance > 0)
+            distance = Mathf.Min(maxDistance, distance);
+        
+        Vector2 offsetOrigin = origin + direction * originOffset;
+        float adjustedDistance = distance - originOffset;
+        
+        if (adjustedDistance <= 0)
+        {
+            _cachedVisibility = true;
+            return true;
+        }
+        
+        RaycastHit2D hit = Physics2D.Raycast(offsetOrigin, direction, adjustedDistance, obstacleLayer);
+        _cachedVisibility = hit.collider == null;
+        
+        return _cachedVisibility;
     }
 
     public float GetFloat(int key, float defaultValue = 0f)
@@ -118,6 +167,9 @@ public class EnemyContext
         
         _floatData.Clear();
         _intData.Clear();
+        
+        _lastVisibilityCheckTime = -999f;
+        _cachedVisibility = false;
         
         if (SpriteRenderer != null)
             SpriteRenderer.color = _originalColor;
