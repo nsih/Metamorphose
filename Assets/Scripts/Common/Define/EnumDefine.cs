@@ -96,4 +96,11 @@ namespace Common
         Epic,
     }
     #endregion
+
+    public enum ExplosionOwner
+    {
+        Player,
+        Enemy,
+        Environment
+    }
 }
