@@ -9,7 +9,8 @@
         "UniTask.Linq",
         "Kybernetik.Animancer",
         "Common",
-        "FMODUnity"
+        "FMODUnity",
+        "TJR.Core.Interface"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

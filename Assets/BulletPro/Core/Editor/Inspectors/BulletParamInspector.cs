@@ -33,7 +33,7 @@ namespace BulletPro.EditorScripts
 		SerializedProperty homing, homingAngularSpeed, lookAtTargetAtSpawn, spawnOnTarget, targetRefreshInterval, preferredTarget, homingAngleThreshold;
 		SerializedProperty chaseMode, homingTags, useSameTagsAsCollision, homingTagsFoldout;
 		SerializedProperty behaviourPrefabs;
-		SerializedProperty delaySpawn, timeBeforeSpawn, playAudioAtSpawn, audioClip;
+		SerializedProperty delaySpawn, timeBeforeSpawn, playAudioAtSpawn, audioEvent;
 		SerializedProperty animFoldout, animationClip, animationMovementSpace;
 		SerializedProperty xMoveFromAnim, yMoveFromAnim, rotationFromAnim, scaleFromAnim;
 		SerializedProperty enableCustomParameters, customParameters;
@@ -191,7 +191,7 @@ namespace BulletPro.EditorScripts
 			delaySpawn = serializedObject.FindProperty("delaySpawn");
 			timeBeforeSpawn = serializedObject.FindProperty("timeBeforeSpawn");
 			playAudioAtSpawn = serializedObject.FindProperty("playAudioAtSpawn");
-			audioClip = serializedObject.FindProperty("audioClip");
+			audioEvent = serializedObject.FindProperty("audioEvent").FindPropertyRelative("defaultValue");
 
 			customParameters = serializedObject.FindProperty("customParameters");
 
@@ -1301,7 +1301,7 @@ namespace BulletPro.EditorScripts
 			if (canPlayAudio)
 			{
 				EditorGUI.indentLevel += 1;
-				EditorGUILayout.PropertyField(audioClip);
+				EditorGUILayout.PropertyField(audioEvent);
 				string audioWarning = "For performance reasons, when possible, try playing audio from Patterns rather than Bullets.";
 				EditorGUILayout.HelpBox(audioWarning, MessageType.Info);
 				EditorGUI.indentLevel -= 1;

@@ -1,6 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TJR.Core.Interface;
+using Reflex.Core;
+
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -67,11 +71,13 @@ namespace BulletPro
 		[System.NonSerialized]
 		public BulletPoolManager poolManager;
 		[System.NonSerialized]
-		public BulletAudioManager audioManager;
-		[System.NonSerialized]
 		public BulletVFXManager vfxManager;
 		[System.NonSerialized]
 		public BulletBehaviourManager behaviourManager;
+
+		// Services singleton references, assigned at frame 2
+		[System.NonSerialized]
+		public IAudioService audioService;
 
 		// script reference is accessed and set by the BulletBehaviour itself, at its start, so we only call GetComponent<> once.
 		[System.NonSerialized]
@@ -179,6 +185,7 @@ namespace BulletPro
 
 			// Get references to managers
 			GetManagers();
+			GetServices();
 
 			// Mark all bullets as available for pooling and not alive yet
 			Die(false);
@@ -190,7 +197,6 @@ namespace BulletPro
 			sceneSetup = BulletProSceneSetup.instance;
 			poolManager = BulletPoolManager.instance;
 			collisionManager = BulletCollisionManager.instance;
-			audioManager = BulletAudioManager.instance;
 			vfxManager = BulletVFXManager.instance;
 			behaviourManager = BulletBehaviourManager.instance;
 			globalParamManager = BulletGlobalParamManager.instance;
@@ -204,6 +210,21 @@ namespace BulletPro
 			moduleSpawn.GetManagers();
 			moduleParameters.GetManagers();
 			moduleVFX.GetManagers();
+		}
+
+		void GetServices()
+		{
+			audioService = Container.RootContainer.Single<IAudioService>();
+
+			moduleMovement.GetServices();
+			moduleCollision.GetServices();
+			moduleRenderer.GetServices();
+			modulePatterns.GetServices();
+			moduleHoming.GetServices();
+			moduleLifespan.GetServices();
+			moduleSpawn.GetServices();
+			moduleParameters.GetServices();
+			moduleVFX.GetServices();
 		}
 
 		// Update is divided into a few sub-updates, depending on the intended behaviour.

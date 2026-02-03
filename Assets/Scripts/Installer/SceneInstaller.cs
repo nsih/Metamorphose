@@ -5,6 +5,7 @@ using System;
 using Reflex.Extensions;
 using GamePlay;
 using FMODUnity;
+using TJR.Core.Interface;
 
 public class SceneInstaller : MonoBehaviour, IInstaller
 {
@@ -40,6 +41,6 @@ public class SceneInstaller : MonoBehaviour, IInstaller
 
     void OnBuilt(Container container)
     {
-        container.Single<AudioService>().PlayMusic(_musicEventReference);
+        // container.Single<IAudioService>().PlayMusic(_musicEventReference);
     }
 }

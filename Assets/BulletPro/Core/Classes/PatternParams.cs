@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FMODUnity;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -215,7 +217,10 @@ namespace BulletPro
 		SetCustomObject,
 		SetCustomQuaternion,
 		SetCustomRect,
-		SetCustomBounds
+		SetCustomBounds,
+
+		// Additional Custom Parameters
+		PlayAudioEvent,
 	}
 
 	// enums used as arguments in an instruction
@@ -260,6 +265,7 @@ namespace BulletPro
 		public VFXPlayType vfxPlayType; // deprecated, but used for updating EmitterProfiles to 1.2
 		public VFXFilterType vfxFilterType;
 		public DynamicObjectReference audioClip;
+		public DynamicAudioEventValue audioEvent;
 		public DynamicObjectReference vfxToPlay; // deprecated, but used for updating EmitterProfiles to 1.2
 		public DynamicInt vfxIndex;
 		public DynamicString vfxTag;
@@ -367,6 +373,7 @@ namespace BulletPro
 				
 				instructions[i].audioClip = new DynamicObjectReference(null);
 				instructions[i].audioClip.SetNarrowType(typeof(AudioClip));
+				instructions[i].audioEvent = new DynamicAudioEventValue(new EventReference());
 				instructions[i].vfxToPlay = new DynamicObjectReference(null);
 				instructions[i].vfxToPlay.SetNarrowType(typeof(ParticleSystem));
 				instructions[i].vfxFilterType = VFXFilterType.Index;

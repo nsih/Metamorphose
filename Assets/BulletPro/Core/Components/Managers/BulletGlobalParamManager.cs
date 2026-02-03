@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 // This script is part of the BulletPro package for Unity.
@@ -34,6 +35,7 @@ namespace BulletPro
         public Rect rectValue;
         public Bounds boundsValue;
         public Object objectReferenceValue;
+        public EventReference audioEventValue;
 
         public CustomParameter(ParameterType pType, string pName)
         {
@@ -55,6 +57,7 @@ namespace BulletPro
             rectValue = new Rect(0,0,1,1);
             boundsValue = new Bounds();
             objectReferenceValue = null;
+            audioEventValue = new EventReference();
         }
     }
 
@@ -116,6 +119,7 @@ namespace BulletPro
         public Rect GetRect(string paramName) { return GetParam(paramName).rectValue; }
         public Bounds GetBounds(string paramName) { return GetParam(paramName).boundsValue; }
         public Object GetObjectReference(string paramName) { return GetParam(paramName).objectReferenceValue; }
+        public EventReference GetAudioEvent(string paramName) { return GetParam(paramName).audioEventValue; }
 
         #endregion
 

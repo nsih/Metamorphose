@@ -3,10 +3,11 @@ using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 using System.Collections.Generic;
+using TJR.Core.Interface;
 
 namespace GamePlay
 {
-    public class AudioService : IDisposable
+    public class AudioService : IDisposable, IAudioService
     {
         EventInstance _musicEventInstance;
 

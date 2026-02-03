@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 // This script is part of the BulletPro package for Unity.
@@ -29,6 +30,7 @@ namespace BulletPro
 		public Vector2 globalMovement, localMovement;
 		public float rotation;
 		public AudioClip audioClip;
+		public EventReference audioEvent;
 		public float speedValue;
 		public float scaleValue;
 		public float factor;
