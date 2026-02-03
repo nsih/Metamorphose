@@ -2,14 +2,14 @@
     "name": "GamePlay",
     "rootNamespace": "",
     "references": [
-        "Package",
         "Reflex",
         "Unity.InputSystem",
         "UniTask",
         "BulletPro.Runtime",
         "UniTask.Linq",
         "Kybernetik.Animancer",
-        "Common"
+        "Common",
+        "FMODUnity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
