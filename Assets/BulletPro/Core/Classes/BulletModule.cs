@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Reflex.Core;
+using TJR.Core.Interface;
 using UnityEngine;
 
 // This script is part of the BulletPro package for Unity.
@@ -25,12 +27,14 @@ namespace BulletPro
 		protected BulletModuleVFX moduleVFX;
 		protected DynamicParameterSolver solver;
 
+		// services
+		protected IAudioService audioService;
+
 		// managers
 		protected BulletProSceneSetup bulletCanvas;
 		protected BulletCollisionManager collisionManager;
 		protected BulletGlobalParamManager globalParamManager;
 		protected BulletPoolManager poolManager;
-		protected BulletAudioManager audioManager;
 		protected BulletVFXManager vfxManager;
 		protected BulletBehaviourManager behaviourManager;
 
@@ -59,6 +63,11 @@ namespace BulletPro
 			meshFilter = bullet.meshFilter;
 		}
 
+		public void GetServices()
+		{
+			audioService = Container.RootContainer.Single<IAudioService>();
+		}
+
 		public void GetManagers()
 		{
 			bulletCanvas = bullet.sceneSetup;
@@ -66,7 +75,6 @@ namespace BulletPro
 			poolManager = bullet.poolManager;
 			collisionManager = bullet.collisionManager;
 			globalParamManager = bullet.globalParamManager;
-			audioManager = bullet.audioManager;
 			vfxManager = bullet.vfxManager;
 			behaviourManager = bullet.behaviourManager;
 

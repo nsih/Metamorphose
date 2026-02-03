@@ -208,7 +208,7 @@ namespace BulletPro
 				if (IsRerollNecessary(ip, 0))
 					ip.audioEvent = bullet.dynamicSolver.SolveDynamicAudioEvent(rawInst.audioEvent, 6330581 * (numberOfRerolls++), ParameterOwner.Pattern);
 				
-				Debug.Log("PlayAudioEvent: " + ip.audioEvent.Path);
+				if (!ip.audioEvent.IsNull) bullet.audioService.PlayOneShot(ip.audioEvent, bullet.self.position);
 			}
 
 			// Play VFX

@@ -801,16 +801,7 @@ namespace BulletPro.EditorScripts
 
         public static void SetFixedAudioEvent(SerializedProperty prop, EventReference newVal, bool initializeIfNeeded=false)
         {
-            SerializedProperty valueTree = null;
-            if (!IsInitialized(prop))
-            {
-                if (initializeIfNeeded) valueTree = InitializeTree(prop);
-                else return;
-            }
-            else valueTree = prop.FindPropertyRelative("valueTree");
-            SerializedProperty rootValue = valueTree.GetArrayElementAtIndex(1);
-            rootValue.FindPropertyRelative("settings").FindPropertyRelative("valueType").enumValueIndex = (int)DynamicParameterSorting.Fixed;
-            SerializedProperty eventReferenceProp = rootValue.FindPropertyRelative("defaultValue");
+            SerializedProperty eventReferenceProp = prop.FindPropertyRelative("defaultValue");
             SerializedProperty guidProp = eventReferenceProp.FindPropertyRelative("Guid");
 
             SerializedProperty data1 = guidProp.FindPropertyRelative("Data1");
@@ -821,7 +812,6 @@ namespace BulletPro.EditorScripts
             data2.intValue = newVal.Guid.Data2;
             data3.intValue = newVal.Guid.Data3;
             data4.intValue = newVal.Guid.Data4;
-
 
             #if UNITY_EDITOR
             #if !FMOD_SERIALIZE_GUID_ONLY

@@ -277,23 +277,6 @@ namespace BulletPro.EditorScripts
 			tr.position = Vector3.zero;
 			tr.eulerAngles = Vector3.zero;
 			tr.localScale = Vector3.one;
-			BulletAudioManager bam = go.AddComponent<BulletAudioManager>();
-
-			int audioAmount = 3;
-			AudioSource[] aa = new AudioSource[audioAmount];
-			for (int i=0; i<audioAmount; i++)
-			{
-				GameObject s = new GameObject("Audio Source "+i.ToString());
-				Transform t = s.transform;
-				t.SetParent(tr);
-				t.localPosition = Vector3.zero;
-				t.localEulerAngles = Vector3.zero;
-				t.localScale = Vector3.one;
-				AudioSource a = s.AddComponent<AudioSource>();
-				a.playOnAwake = false;
-				aa[i] = a;
-			}
-			bam.sources = aa;
 			
 			Undo.RegisterCreatedObjectUndo(go, "BulletPro Scene Setup");
 

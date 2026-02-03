@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using FMODUnity;
 using UnityEngine;
 
 // This script is part of the BulletPro package for Unity.
@@ -13,7 +12,7 @@ namespace BulletPro
 		// Delayed spawn stats : duration and audio played when shot
 		public float timeBeforeSpawn;
 		public bool playAudio;
-		public AudioClip audioClip;
+		public EventReference audioEvent;
 		// memorizing position/orientation from ShotParams can be necessary if bullet is both homing and delayed
 		private Vector3 deltaFromSpawn;
 
@@ -44,7 +43,7 @@ namespace BulletPro
 			}
 
 			isEnabled = false;
-			if (playAudio && audioClip) audioManager.PlayLocal(audioClip);
+			if (playAudio && !audioEvent.IsNull) audioService.PlayOneShot(audioEvent, self.position);
 			bullet.Prepare(true);
 		}
 
@@ -57,15 +56,15 @@ namespace BulletPro
 				// if this module isn't enabled, before returning, if there's a SFX to be played it must be done now
 				playAudio = solver.SolveDynamicBool(bp.playAudioAtSpawn, 29232405, ParameterOwner.Bullet);
 				if (!playAudio) return;
-				audioClip = solver.SolveDynamicObjectReference(bp.audioClip, 12659374, ParameterOwner.Bullet) as AudioClip;
-				if (audioClip) audioManager.PlayLocal(audioClip);
+				audioEvent = solver.SolveDynamicAudioEvent(bp.audioEvent, 12659374, ParameterOwner.Bullet);
+				if (!audioEvent.IsNull) audioService.PlayOneShot(audioEvent, self.position);
 				return;
 			}
 
 			timeBeforeSpawn = solver.SolveDynamicFloat(bp.timeBeforeSpawn, 30534841, ParameterOwner.Bullet);
 
 			playAudio = solver.SolveDynamicBool(bp.playAudioAtSpawn, 30166684, ParameterOwner.Bullet);
-			audioClip = solver.SolveDynamicObjectReference(bp.audioClip, 1168027, ParameterOwner.Bullet) as AudioClip;
+			audioEvent = solver.SolveDynamicAudioEvent(bp.audioEvent, 1168027, ParameterOwner.Bullet);
 		}
 
 		// Called at Bullet.Die()
@@ -73,7 +72,7 @@ namespace BulletPro
 		{
 			isEnabled = false;
 			playAudio = false;
-			audioClip = null;
+			audioEvent = default;
 			deltaFromSpawn = Vector3.zero;
 		}
 
