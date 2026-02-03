@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 // This script is part of the BulletPro package for Unity.
@@ -202,15 +203,12 @@ namespace BulletPro
 			{
 				EndLoop();
 			}
-
-			// Play Audio
-			else if (ip.instructionType == PatternInstructionType.PlayAudio)
+			else if (ip.instructionType == PatternInstructionType.PlayAudioEvent)
 			{
 				if (IsRerollNecessary(ip, 0))
-					ip.audioClip = bullet.dynamicSolver.SolveDynamicObjectReference(rawInst.audioClip, 6330581 * (numberOfRerolls++), ParameterOwner.Pattern) as AudioClip;
-
-				if (ip.audioClip != null)
-					bullet.audioManager.PlayLocal(ip.audioClip);
+					ip.audioEvent = bullet.dynamicSolver.SolveDynamicAudioEvent(rawInst.audioEvent, 6330581 * (numberOfRerolls++), ParameterOwner.Pattern);
+				
+				Debug.Log("PlayAudioEvent: " + ip.audioEvent.Path);
 			}
 
 			// Play VFX

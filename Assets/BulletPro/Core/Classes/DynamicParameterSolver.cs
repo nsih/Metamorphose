@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 // This script is part of the BulletPro package for Unity.
@@ -1019,6 +1020,46 @@ namespace BulletPro
             else return SolveDynamicRect(dynParameter, operationID, owner, settingsSolved.indexOfChosenBlendElement);
         }
 
+        public EventReference SolveDynamicAudioEvent(DynamicAudioEventValue dynParameter, int operationID, ParameterOwner owner, int valueIndexInTree = 1)
+        {
+            var val = dynParameter;
+
+            // fixed
+            if(val.settings.valueType == DynamicParameterSorting.Fixed)
+                return val.defaultValue;
+
+            // equal to param
+            if(val.settings.valueType == DynamicParameterSorting.EqualToParameter)
+            {
+                UserMadeParameterType paramType = val.settings.parameterType;
+
+                // global param
+                if(paramType == UserMadeParameterType.GlobalParameter)
+                    return BulletGlobalParamManager.instance.GetAudioEvent(val.settings.parameterName);
+
+                // bullet hierarchy
+                Bullet paramHolder = bullet;
+                int parents = val.settings.relativeTo;
+                while(parents > 0)
+                {
+                    paramHolder = paramHolder.subEmitter;
+                    // in case of an error (hierarchy element missing), fallback to fixed value
+                    if(paramHolder == null) return val.defaultValue;
+                    parents--;
+                }
+                return paramHolder.moduleParameters.GetAudioEvent(val.settings.parameterName);
+            }
+
+            DynamicParameterSettingsResult settingsSolved = new DynamicParameterSettingsResult();
+            settingsSolved.sorting = dynParameter.settings.valueType;
+
+            // fixed (because of an error)
+            if (settingsSolved.sorting == DynamicParameterSorting.Fixed)
+                return val.defaultValue;
+            else
+                return SolveDynamicAudioEvent(dynParameter, operationID, owner, settingsSolved.indexOfChosenBlendElement);
+        }
+
         public Object SolveDynamicObjectReference(DynamicObjectReference dynParameter, int operationID, ParameterOwner owner, int valueIndexInTree = 1)
         {
             var val = dynParameter[valueIndexInTree];
@@ -1244,10 +1285,10 @@ namespace BulletPro
                 result.iterations = SolveDynamicInt(pi.iterations, 11599 * operationIDMultiplier, owner);
                 settingsToCheck[0] = pi.iterations[1].settings;
             }
-            else if (pit == PatternInstructionType.PlayAudio)
+            else if (pit == PatternInstructionType.PlayAudioEvent)
             {
-                result.audioClip = SolveDynamicObjectReference(pi.audioClip, 116146 * operationIDMultiplier, owner) as AudioClip;
-                settingsToCheck[0] = pi.audioClip[1].settings;
+                result.audioEvent = SolveDynamicAudioEvent(pi.audioEvent, 116146 * operationIDMultiplier, owner);
+                settingsToCheck[0] = pi.audioEvent.settings;
             }
             else if (pit == PatternInstructionType.PlayVFX)
             {
