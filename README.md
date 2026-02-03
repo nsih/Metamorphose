@@ -3,7 +3,7 @@
 ---
 
 ##  개요
-- **장르:** 2D, Roguelike, Bullet curtain, Shooting, Platformer
+- **장르:** 2D, Roguelike, Bullet curtain, Shooting, TopdownView
 - **플랫폼:** PC 
 
 ---
