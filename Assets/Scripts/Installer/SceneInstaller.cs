@@ -2,45 +2,50 @@ using Reflex.Core;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System;
-using Reflex.Extensions;
-using GamePlay;
 using FMODUnity;
 using TJR.Core.Interface;
+using TJR.Core.GamePlay.Service;
+using Reflex.Enums;
 
-public class SceneInstaller : MonoBehaviour, IInstaller
+namespace TJR.Core.Installer
 {
-    [SerializeField] private PlayerSpawner _playerSpawner;
-    [SerializeField] private MapUIManager _mapUIManager;
-    [SerializeField] private MapManager _mapManager;
-    [SerializeField] private EnemyPoolManager _enemyPoolManager;
-    [SerializeField] private EventReference _musicEventReference;
-
-    ContainerBuilder _builder;
-
-    public void InstallBindings(ContainerBuilder builder)
+    public class SceneInstaller : MonoBehaviour, IInstaller
     {
-        builder.RegisterValue(_playerSpawner);
+        [SerializeField] private PlayerSpawner _playerSpawner;
+        [SerializeField] private MapUIManager _mapUIManager;
+        [SerializeField] private MapManager _mapManager;
+        [SerializeField] private EnemyPoolManager _enemyPoolManager;
+        [SerializeField] private EventReference _musicEventReference;
 
-        var roomProperty = new AsyncReactiveProperty<RoomManager>(null);
-        builder.RegisterValue(
-            roomProperty, 
-            new Type[] { typeof(AsyncReactiveProperty<RoomManager>), typeof(IReadOnlyAsyncReactiveProperty<RoomManager>) }
-        );
+        public void InstallBindings(ContainerBuilder builder)
+        {
+            builder.RegisterType(typeof(PlayerGoldService), Lifetime.Singleton, Reflex.Enums.Resolution.Eager);
 
-        if (_mapUIManager != null)
-            builder.RegisterValue(_mapUIManager);
+            builder.RegisterValue(_playerSpawner);
 
-        if (_mapManager != null)
-            builder.RegisterValue(_mapManager);
+            var roomProperty = new AsyncReactiveProperty<RoomManager>(null);
+            builder.RegisterValue(
+                roomProperty,
+                new Type[] { typeof(AsyncReactiveProperty<RoomManager>), typeof(IReadOnlyAsyncReactiveProperty<RoomManager>) }
+            );
 
-        if (_enemyPoolManager != null)
-            builder.RegisterValue(_enemyPoolManager);
+            if (_mapUIManager != null)
+                builder.RegisterValue(_mapUIManager);
 
-        builder.OnContainerBuilt += OnBuilt;
-    }
+            if (_mapManager != null)
+                builder.RegisterValue(_mapManager);
 
-    void OnBuilt(Container container)
-    {
-        // container.Single<IAudioService>().PlayMusic(_musicEventReference);
+            if (_enemyPoolManager != null)
+                builder.RegisterValue(_enemyPoolManager);
+
+            builder.OnContainerBuilt += OnBuilt;
+        }
+
+        void OnBuilt(Container container)
+        {
+            container.Single<IAudioService>().PlayMusic(_musicEventReference);
+            container.Single<PlayerGoldService>().AddGold(100);
+        }
     }
 }
+
