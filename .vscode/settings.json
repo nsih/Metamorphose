@@ -1,4 +1,5 @@
 {
+    "editor.formatOnSave": true,
     "files.exclude": {
         "**/*.meta": true,
         "**/Library": true,
@@ -26,5 +27,6 @@
         "**/Logs/**": true,
         "**/Build/**": true
     },
-    "dotnet.defaultSolution": "TouhouTJR.sln"
+    "dotnet.defaultSolution": "TouhouTJR.sln",
+    "dotnet.formatting.organizeImportsOnFormat": true
 }
