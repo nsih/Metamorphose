@@ -1,6 +1,6 @@
 {
-    "name": "Installer",
-    "rootNamespace": "",
+    "name": "TJR.Core.Installer",
+    "rootNamespace": "TJR.Core.Installer",
     "references": [
         "GUID:0990295314e7a6740a34c7adb9152c8e",
         "GUID:cf165ab5305718342b88b4e5bd99c535",

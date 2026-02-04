@@ -1,11 +1,11 @@
 using System;
-using UnityEngine;
-using FMODUnity;
-using FMOD.Studio;
 using System.Collections.Generic;
+using FMOD.Studio;
+using FMODUnity;
 using TJR.Core.Interface;
+using UnityEngine;
 
-namespace GamePlay
+namespace TJR.Core.GamePlay.Service
 {
     public class AudioService : IDisposable, IAudioService
     {

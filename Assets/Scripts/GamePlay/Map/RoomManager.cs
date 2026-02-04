@@ -1,13 +1,14 @@
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Common;
 using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq;
 using Reflex.Attributes;
-using System.Linq;
-
+using Reflex.Extensions;
+using TJR.Core.GamePlay.Service;
+using TJR.Core.Interface;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class RoomManager : MonoBehaviour
@@ -25,15 +26,15 @@ public class RoomManager : MonoBehaviour
     private RoomWaveData _currentWaveData;
     private List<Enemy> _activeEnemies = new List<Enemy>();
     private EnemyFactory _factory;
-    
+
     private PlayerSpawner _playerSpawner;
     private Transform _playerTransform;
-    
+
     private CancellationTokenSource _cts;
 
     [Inject]
     public void Construct(
-        AsyncReactiveProperty<RoomManager> globalHandle, 
+        AsyncReactiveProperty<RoomManager> globalHandle,
         PlayerSpawner spawner,
         EnemyPoolManager enemyPoolManager,
         MapManager mapManager)
@@ -108,7 +109,7 @@ public class RoomManager : MonoBehaviour
 
                 SpawnWaveUnits(wave);
 
-                await UniTask.WaitUntil(() => 
+                await UniTask.WaitUntil(() =>
                 {
                     return _activeEnemies.All(x => x == null || !x.gameObject.activeSelf);
                 }, cancellationToken: token);
@@ -121,6 +122,25 @@ public class RoomManager : MonoBehaviour
                 }
             }
 
+            // 코드 정리되면 삭제할 상점 테스트용 코드
+            var playerGoldService = this.gameObject.scene.GetSceneContainer().Single<PlayerGoldService>();
+            if (playerGoldService.Gold.Value < 100)
+            {
+                playerGoldService.AddGold(100);
+            }
+
+            var shopService = this.gameObject.scene.GetSceneContainer().Single<ShopService>();
+            shopService.AddAvailableItem("Item_1");
+            shopService.AddAvailableItem("Item_1");
+            shopService.AddAvailableItem("Item_1");
+
+            var popupService = this.gameObject.scene.GetSceneContainer().Single<IPopupService>();
+            var shopPopupView = popupService.OpenPopup("ShopPopupView");
+            while (popupService.IsPopupOpen("ShopPopupView"))
+            {
+                await UniTask.Yield();
+            }
+
             CompleteRoom();
         }
         catch (OperationCanceledException) { }
@@ -131,11 +151,11 @@ public class RoomManager : MonoBehaviour
         foreach (var entry in wave.SpawnGroups)
         {
             //Debug.Log($"SpawnEntry Brain: {entry.EnemyBrain}");
-            
+
             int index = 0;
             if (_spawnPoints.Count > 0)
                 index = entry.SpawnPointIndex % _spawnPoints.Count;
-            
+
             Transform spawnTr = _spawnPoints[index];
 
             for (int k = 0; k < entry.Count; k++)
@@ -149,7 +169,7 @@ public class RoomManager : MonoBehaviour
     private void CompleteRoom()
     {
         _roomState.Value = RoomState.Complete;
-        
+
         if (_mapManager != null && _mapManager.CurrentNode != null)
         {
             var currentNode = _mapManager.CurrentNode;
