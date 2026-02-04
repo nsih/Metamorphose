@@ -26,13 +26,9 @@ namespace TJR.Core.Installer
         public void InstallBindings(ContainerBuilder builder)
         {
             builder.RegisterFactory<PlayerModel>((container) => new PlayerModel(_playerStatSO, _startWeapon), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
-            builder.RegisterFactory<PlayerInventoryService>((container) =>
-            {
-                var playerModel = container.Single<PlayerModel>();
-                var playerInventoryService = new PlayerInventoryService(_itemDatabase, playerModel);
-                return playerInventoryService;
-            }, Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
+            builder.RegisterFactory<ItemDatabaseService>((container) => new ItemDatabaseService(_itemDatabase), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
 
+            builder.RegisterType(typeof(PlayerInventoryService), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
             builder.RegisterType(typeof(PlayerGoldService), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
 
             builder.RegisterValue(_playerSpawner);
@@ -58,6 +54,7 @@ namespace TJR.Core.Installer
         void OnBuilt(Container container)
         {
             container.Single<IAudioService>().PlayMusic(_musicEventReference);
+            container.Single<PlayerInventoryService>().AddItem("Item_1");
         }
     }
 }

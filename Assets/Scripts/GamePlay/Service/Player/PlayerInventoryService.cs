@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Reflex.Attributes;
 using TJR.Core.Common.Data;
 using TJR.Core.Common.SO;
 using UnityEngine;
@@ -9,22 +10,21 @@ namespace TJR.Core.GamePlay.Service
 {
     public class PlayerInventoryService : IDisposable
     {
-        PlayerModel _player;
+        [Inject] PlayerModel _player;
+        [Inject] ItemDatabaseService _itemDatabaseService;
 
-        Dictionary<string, ItemSO> _itemDatabase;
         List<Item> _items;
 
-        public PlayerInventoryService(ItemDatabaseSO itemDatabase, PlayerModel player)
+        public PlayerInventoryService()
         {
-            _itemDatabase = itemDatabase.items.ToDictionary(item => item.label, item => item);
             _items = new List<Item>();
-            _player = player;
-            Debug.Log($"PlayerInventoryService: {_itemDatabase.Count} items loaded");
         }
 
         public void AddItem(string itemId)
         {
-            if (!_itemDatabase.TryGetValue(itemId, out var item))
+            var item = _itemDatabaseService.GetItem(itemId);
+
+            if (item == null)
             {
                 Debug.LogError($"PlayerInventoryService: Item {itemId} not found");
                 return;
@@ -37,7 +37,7 @@ namespace TJR.Core.GamePlay.Service
         public void Dispose()
         {
             _player = null;
-            _itemDatabase.Clear();
+            _itemDatabaseService = null;
             _items.Clear();
         }
     }

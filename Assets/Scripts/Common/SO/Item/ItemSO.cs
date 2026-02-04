@@ -7,6 +7,7 @@ namespace TJR.Core.Common.SO
     public class ItemSO : ScriptableObject
     {
         public string label;
+        public int price;
         [SerializeReference] public List<ItemAbility> abilities;
 
         public void Apply(PlayerModel player)
