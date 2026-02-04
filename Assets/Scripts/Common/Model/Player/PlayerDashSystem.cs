@@ -1,9 +1,8 @@
-using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class PlayerDashSystem : IDisposable
+public class PlayerDashSystem
 {
     public float DashSpeed { get; private set; }
     public float DashDuration { get; private set; }

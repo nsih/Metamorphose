@@ -18,7 +18,6 @@ namespace TJR.Core.Installer
         {
             //Debug.Log("Global Install Start");
             builder.RegisterValue(new AudioService(), new Type[] { typeof(IAudioService) });
-            builder.RegisterValue(_playerStatSO, new Type[] { typeof(PlayerStat) });
             builder.RegisterValue(new PlayerModel(_playerStatSO, _startWeapon));
             builder.RegisterValue(new PlayerInputService(), new Type[] { typeof(IInputService) });
         }

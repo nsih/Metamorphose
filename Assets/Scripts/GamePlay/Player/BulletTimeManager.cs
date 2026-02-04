@@ -6,7 +6,7 @@ using System;
 
 public class BulletTimeManager : MonoBehaviour
 {
-    [Inject] private PlayerStat _playerStat;
+    [Inject] private PlayerModel _player;
 
     private float _defaultFixedDeltaTime;
     private CancellationTokenSource _cts;
@@ -21,14 +21,14 @@ public class BulletTimeManager : MonoBehaviour
 
     public void TriggerSlowMotion()
     {
-        if (_playerStat == null) return;
+        if (_player == null) return;
 
         // 1. 기존에 실행 중인 불렛타임이 있다면 취소 (타이머 리셋 효과)
         CancelCurrentTask();
 
         // 2. 새로운 토큰 생성 및 실행
         _cts = new CancellationTokenSource();
-        ProcessBulletTime(_playerStat.SlowMotionDuration, _playerStat.TimeSlowFactor, _cts.Token).Forget();
+        ProcessBulletTime(_player.SlowMotionDuration, _player.TimeSlowFactor, _cts.Token).Forget();
     }
 
     private async UniTaskVoid ProcessBulletTime(float duration, float scale, CancellationToken token)
