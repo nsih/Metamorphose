@@ -1,6 +1,6 @@
 using System;
-using GamePlay;
 using Reflex.Core;
+using TJR.Core.GamePlay.Service;
 using TJR.Core.Interface;
 using UnityEngine;
 
