@@ -19,6 +19,8 @@ public class PlayerModel : IDisposable
         Dash = new PlayerDashSystem(stat);
         Stats = new PlayerStatsSystem(stat);
         Reward = new RewardSystem(this);
+
+        Debug.Log("PlayerModel Constructed");
     }
 
     // Health
@@ -64,5 +66,7 @@ public class PlayerModel : IDisposable
         Health?.Dispose();
         Dash?.Dispose();
         Weapon?.Dispose();
+
+        Debug.Log("PlayerModel Disposed");
     }
 }

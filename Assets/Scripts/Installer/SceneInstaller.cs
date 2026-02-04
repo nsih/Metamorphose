@@ -11,6 +11,10 @@ namespace TJR.Core.Installer
 {
     public class SceneInstaller : MonoBehaviour, IInstaller
     {
+        // 플레이어 초기화용 데이터
+        [SerializeField] private PlayerStat _playerStatSO;
+        [SerializeField] private PlayerWeaponData _startWeapon;
+
         [SerializeField] private PlayerSpawner _playerSpawner;
         [SerializeField] private MapUIManager _mapUIManager;
         [SerializeField] private MapManager _mapManager;
@@ -19,7 +23,9 @@ namespace TJR.Core.Installer
 
         public void InstallBindings(ContainerBuilder builder)
         {
-            builder.RegisterType(typeof(PlayerGoldService), Lifetime.Singleton, Reflex.Enums.Resolution.Eager);
+            builder.RegisterFactory((container) => new PlayerModel(_playerStatSO, _startWeapon), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
+
+            builder.RegisterType(typeof(PlayerGoldService), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
 
             builder.RegisterValue(_playerSpawner);
 
