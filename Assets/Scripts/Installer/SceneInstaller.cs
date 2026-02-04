@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using FMODUnity;
 using Reflex.Core;
 using Reflex.Enums;
+using TJR.Core.Common.SO;
 using TJR.Core.GamePlay.Service;
 using TJR.Core.Interface;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace TJR.Core.Installer
         // 플레이어 초기화용 데이터
         [SerializeField] private PlayerStat _playerStatSO;
         [SerializeField] private PlayerWeaponData _startWeapon;
+        [SerializeField] private ItemDatabaseSO _itemDatabase;
 
         [SerializeField] private PlayerSpawner _playerSpawner;
         [SerializeField] private MapUIManager _mapUIManager;
@@ -23,7 +25,13 @@ namespace TJR.Core.Installer
 
         public void InstallBindings(ContainerBuilder builder)
         {
-            builder.RegisterFactory((container) => new PlayerModel(_playerStatSO, _startWeapon), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
+            builder.RegisterFactory<PlayerModel>((container) => new PlayerModel(_playerStatSO, _startWeapon), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
+            builder.RegisterFactory<PlayerInventoryService>((container) =>
+            {
+                var playerModel = container.Single<PlayerModel>();
+                var playerInventoryService = new PlayerInventoryService(_itemDatabase, playerModel);
+                return playerInventoryService;
+            }, Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
 
             builder.RegisterType(typeof(PlayerGoldService), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
 

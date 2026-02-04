@@ -1,9 +1,10 @@
+using System;
 using R3;
 using UnityEngine;
 
 namespace TJR.Core.GamePlay.Service
 {
-    public class PlayerGoldService
+    public class PlayerGoldService : IDisposable
     {
         public ReactiveProperty<int> Gold { get; private set; }
 
@@ -31,6 +32,11 @@ namespace TJR.Core.GamePlay.Service
 
             _gold -= amount;
             Gold.Value = _gold;
+        }
+
+        public void Dispose()
+        {
+            Gold.Dispose();
         }
     }
 }
