@@ -50,7 +50,6 @@ namespace TJR.Core.Installer
         void OnBuilt(Container container)
         {
             container.Single<IAudioService>().PlayMusic(_musicEventReference);
-            container.Single<PlayerGoldService>().AddGold(100);
         }
     }
 }

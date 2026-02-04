@@ -1,25 +1,36 @@
+using R3;
 using UnityEngine;
 
 namespace TJR.Core.GamePlay.Service
 {
     public class PlayerGoldService
     {
-        public int Gold { get; private set; }
+        public ReactiveProperty<int> Gold { get; private set; }
+
+        public int _gold;
+
+        public PlayerGoldService()
+        {
+            _gold = 0;
+            Gold = new ReactiveProperty<int>(_gold);
+        }
 
         public void AddGold(int amount)
         {
-            Gold += amount;
+            _gold += amount;
+            Gold.Value = _gold;
         }
 
         public void RemoveGold(int amount)
         {
-            if (Gold - amount < 0)
+            if (_gold - amount < 0)
             {
                 Debug.LogError("PlayerGoldService: Not enough gold");
                 return;
             }
 
-            Gold -= amount;
+            _gold -= amount;
+            Gold.Value = _gold;
         }
     }
 }
