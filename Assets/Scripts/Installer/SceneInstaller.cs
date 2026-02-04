@@ -17,6 +17,9 @@ namespace TJR.Core.Installer
         [SerializeField] private PlayerWeaponData _startWeapon;
         [SerializeField] private ItemDatabaseSO _itemDatabase;
 
+        // Popup
+        [SerializeField] private GameObject _shopPopupPrefab;
+
         [SerializeField] private PlayerSpawner _playerSpawner;
         [SerializeField] private MapUIManager _mapUIManager;
         [SerializeField] private MapManager _mapManager;
@@ -27,7 +30,9 @@ namespace TJR.Core.Installer
         {
             builder.RegisterFactory<PlayerModel>((container) => new PlayerModel(_playerStatSO, _startWeapon), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
             builder.RegisterFactory<ItemDatabaseService>((container) => new ItemDatabaseService(_itemDatabase), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
+            builder.RegisterFactory<IPopupService>((container) => new PopupService(_shopPopupPrefab), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
 
+            builder.RegisterType(typeof(ShopService), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
             builder.RegisterType(typeof(PlayerInventoryService), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
             builder.RegisterType(typeof(PlayerGoldService), Lifetime.Scoped, Reflex.Enums.Resolution.Eager);
 
@@ -54,7 +59,6 @@ namespace TJR.Core.Installer
         void OnBuilt(Container container)
         {
             container.Single<IAudioService>().PlayMusic(_musicEventReference);
-            container.Single<PlayerInventoryService>().AddItem("Item_1");
         }
     }
 }

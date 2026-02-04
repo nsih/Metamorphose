@@ -1,11 +1,10 @@
+using Cysharp.Threading.Tasks.Linq;
+using R3;
+using Reflex.Attributes;
+using TJR.Core.GamePlay.Service;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI; // Slider용
-using TMPro;
-using Reflex.Attributes;
-using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq;
-using TJR.Core.GamePlay.Service;
-using R3;
 
 public class PlayerStatTestView : MonoBehaviour
 {
@@ -26,19 +25,19 @@ public class PlayerStatTestView : MonoBehaviour
 
         _model.CurrentHP
             .Subscribe(hp => _hpText.text = $"HP: {hp} / {_model.MaxHP}")
-            .AddTo(this.destroyCancellationToken);
+            .AddTo(this);
 
         _model.CurrentDashCount
             .Subscribe(count => _dashCountText.text = $"Dash: {count}")
-            .AddTo(this.destroyCancellationToken);
+            .AddTo(this);
 
         _model.DashCooldownNormalized
             .Subscribe(val => _dashSlider.value = val)
-            .AddTo(this.destroyCancellationToken);
+            .AddTo(this);
 
         _goldService.Gold
             .AsObservable()
             .Subscribe(val => _goldText.text = $"Gold: {val}")
-            .AddTo(this.destroyCancellationToken);
+            .AddTo(this);
     }
 }
