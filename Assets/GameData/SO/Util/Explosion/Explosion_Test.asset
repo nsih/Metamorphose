@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Radius: 3
   Damage: 5
-  Force: 0
+  Force: 5
   TargetLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   VFXPrefab: {fileID: 0}
