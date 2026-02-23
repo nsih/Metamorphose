@@ -29,7 +29,7 @@ MonoBehaviour:
   foldoutExport: 0
   foldoutEmptyBin: 0
   foldoutCompactMode: 0
-  currentParamsSelected: {fileID: 114917193883442684}
+  currentParamsSelected: {fileID: 114027673760526898}
   numberOfSubAssets: 4
 --- !u!114 &114027673760526898
 MonoBehaviour:
@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Name: Bullet
   m_EditorClassIdentifier: 
   parameterType: 0
-  uniqueIndex: 3705181
+  uniqueIndex: 3149212
   profile: {fileID: 11400000}
   parent: {fileID: 114201774248674550}
   children: []
@@ -737,7 +737,7 @@ MonoBehaviour:
     typeName: UnityEngine.Sprite, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
     requiredComponentName: 
-  layer: 0
+  layer: 11
   sortingOrder:
     valueTree:
     - settings:
@@ -2367,7 +2367,7 @@ MonoBehaviour:
   foldoutVFX: 1
   hideSpriteList: 0
   vfxOpened: 0
-  currentlyDisplayedModule: 1
+  currentlyDisplayedModule: 0
   canMove: 1
   canCollide: 1
   isVisible: 1
@@ -8347,7 +8347,7 @@ MonoBehaviour:
   m_Name: Shot
   m_EditorClassIdentifier: 
   parameterType: 1
-  uniqueIndex: 3617345
+  uniqueIndex: 12659675
   profile: {fileID: 11400000}
   parent: {fileID: 114917193883442684}
   children:
@@ -8640,7 +8640,7 @@ MonoBehaviour:
   m_Name: Root Emitter
   m_EditorClassIdentifier: 
   parameterType: 0
-  uniqueIndex: 1389281
+  uniqueIndex: 3751277
   profile: {fileID: 11400000}
   parent: {fileID: 0}
   children:
@@ -16450,7 +16450,7 @@ MonoBehaviour:
   m_Name: Pattern
   m_EditorClassIdentifier: 
   parameterType: 2
-  uniqueIndex: 11344879
+  uniqueIndex: 13522505
   profile: {fileID: 11400000}
   parent: {fileID: 114671512830859702}
   children:

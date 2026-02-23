@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6553abb2fe71c7948b62db9bea9167f6, type: 3}
   m_Name: Explosion_Test
   m_EditorClassIdentifier: 
-  Radius: 3
-  Damage: 5
+  Radius: 10
+  Damage: 10
   Force: 5
   TargetLayer:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 6656
   VFXPrefab: {fileID: 0}
