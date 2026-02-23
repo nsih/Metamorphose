@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 // This script is part of the BulletPro package for Unity.
@@ -756,6 +757,22 @@ namespace BulletPro
         public DynamicParameterSettings settings;
         public DynamicParameterSettings GetSettings() { return settings; }
         public PatternParams defaultValue;
+    }
+
+    [System.Serializable]
+    public struct DynamicAudioEventValue : IDynamicParameterValue
+    {
+        public DynamicParameterSettings settings;
+        public DynamicParameterSettings GetSettings() { return settings; }
+        public EventReference defaultValue;
+
+        public DynamicAudioEventValue (EventReference defaultVal)
+        {
+            settings = new DynamicParameterSettings();
+            settings.index = 1;
+            settings.interpolationValue.repartitionCurve = AnimationCurve.Linear(0, 0, 1, 1);
+            defaultValue = defaultVal;
+        }
     }
 
     #endregion

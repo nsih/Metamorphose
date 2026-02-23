@@ -1,8 +1,7 @@
 using System;
-using UnityEngine;
-using Cysharp.Threading.Tasks;
 using BulletPro;
-using Common;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 public class PlayerModel : IDisposable
 {
@@ -19,6 +18,8 @@ public class PlayerModel : IDisposable
         Dash = new PlayerDashSystem(stat);
         Stats = new PlayerStatsSystem(stat);
         Reward = new RewardSystem(this);
+
+        Debug.Log("PlayerModel Constructed");
     }
 
     // Health
@@ -26,7 +27,7 @@ public class PlayerModel : IDisposable
     public AsyncReactiveProperty<float> CurrentHP => Health.CurrentHP;
     public void TakeDamage(float amount) => Health.TakeDamage(amount);
     public void Heal(float amount) => Health.Heal(amount);
-    
+
     // Weapon
     public EmitterProfile CurrentProfile => Weapon.CurrentProfile;
     public float Damage => Weapon.Damage.Value;
@@ -37,7 +38,7 @@ public class PlayerModel : IDisposable
     public float SpeedScale => Weapon.SpeedScale.Value;
     public float HomingStrength => Weapon.HomingStrength.Value;
     public void SetWeapon(PlayerWeaponData data) => Weapon.SetWeapon(data);
-    
+
     // Dash
     public float DashSpeed => Dash.DashSpeed;
     public float DashDuration => Dash.DashDuration;
@@ -46,7 +47,7 @@ public class PlayerModel : IDisposable
     public AsyncReactiveProperty<int> CurrentDashCount => Dash.CurrentDashCount;
     public AsyncReactiveProperty<float> DashCooldownNormalized => Dash.DashCooldownNormalized;
     public bool TryConsumeDash() => Dash.TryConsumeDash();
-    
+
     // Stats
     public float MoveSpeed => Stats.MoveSpeed;
     public float TimeSlowFactor => Stats.TimeSlowFactor;
@@ -64,5 +65,7 @@ public class PlayerModel : IDisposable
         Health?.Dispose();
         Dash?.Dispose();
         Weapon?.Dispose();
+
+        Debug.Log("PlayerModel Disposed");
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+using FMODUnity;
 
 // This script is part of the BulletPro package for Unity.
 // Author : Simon Albou <albou.simon@gmail.com>
@@ -796,6 +797,28 @@ namespace BulletPro.EditorScripts
             SerializedProperty rootValue = valueTree.GetArrayElementAtIndex(1);
             rootValue.FindPropertyRelative("settings").FindPropertyRelative("valueType").enumValueIndex = (int)DynamicParameterSorting.Fixed;
             rootValue.FindPropertyRelative("defaultValue").colorValue = newVal;
+        }
+
+        public static void SetFixedAudioEvent(SerializedProperty prop, EventReference newVal, bool initializeIfNeeded=false)
+        {
+            SerializedProperty eventReferenceProp = prop.FindPropertyRelative("defaultValue");
+            SerializedProperty guidProp = eventReferenceProp.FindPropertyRelative("Guid");
+
+            SerializedProperty data1 = guidProp.FindPropertyRelative("Data1");
+            SerializedProperty data2 = guidProp.FindPropertyRelative("Data2");
+            SerializedProperty data3 = guidProp.FindPropertyRelative("Data3");
+            SerializedProperty data4 = guidProp.FindPropertyRelative("Data4");
+            data1.intValue = newVal.Guid.Data1;
+            data2.intValue = newVal.Guid.Data2;
+            data3.intValue = newVal.Guid.Data3;
+            data4.intValue = newVal.Guid.Data4;
+
+            #if UNITY_EDITOR
+            #if !FMOD_SERIALIZE_GUID_ONLY
+            SerializedProperty pathProp = eventReferenceProp.FindPropertyRelative("Path");
+            pathProp.stringValue = newVal.Path;
+            #endif
+            #endif
         }
 
         public static void SetFixedString(SerializedProperty prop, string newVal, bool initializeIfNeeded=false)

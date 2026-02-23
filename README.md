@@ -3,7 +3,7 @@
 ---
 
 ##  개요
-- **장르:** 2D, Roguelike, Bullet curtain, Shooting, Platformer
+- **장르:** 2D, Roguelike, Bullet curtain, Shooting, TopdownView
 - **플랫폼:** PC 
 
 ---
@@ -11,8 +11,8 @@
 ## 환경
 - **Engine:** Unity 6000.0.60f1 (C#)  
 - **IDE:** Visual Studio Code
-- **Version Control:** Git / GitHub  / <del>plasticSCM</del>
+- **Version Control:** Git / GitHub
 - **Documentation:** README / Notion  
-- **Assets:** FMOD, BullerPro, Unitask, Animancer
+- **Assets:** FMOD, BullerPro, Unitask, Animancer, [A* Pathfinding Project](https://www.arongranberg.com/astar/docs/getstarted.html)
 
 ---

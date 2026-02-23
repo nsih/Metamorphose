@@ -4,7 +4,7 @@ using Common;
 using Common.Model;
 using System;
 
-public class PlayerWeaponSystem : IDisposable
+public class PlayerWeaponSystem
 {
     public EmitterProfile CurrentProfile { get; private set; }
     

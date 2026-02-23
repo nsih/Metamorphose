@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FMODUnity;
+
 #if UNITY_EDITOR
 using UnityEditor;
 using System;
@@ -151,6 +153,7 @@ namespace BulletPro
 		public DynamicFloat timeBeforeSpawn;
 		public DynamicBool playAudioAtSpawn;
 		public DynamicObjectReference audioClip;
+		public DynamicAudioEventValue audioEvent;
 
 		// custom parameters
 		public DynamicCustomParameter[] customParameters;
@@ -264,10 +267,13 @@ namespace BulletPro
 			lifespan = new DynamicFloat(5.0f);
 			maxTravellableDistance = new DynamicFloat(5.0f);
 			timeBeforeSpawn = new DynamicFloat(0.0f);
+			isChildOfEmitter = new DynamicBool(false);
+
+			// audio
 			playAudioAtSpawn = new DynamicBool(false);
 			audioClip = new DynamicObjectReference(null);
 			audioClip.SetNarrowType(typeof(AudioClip));
-			isChildOfEmitter = new DynamicBool(false);
+			audioEvent = new DynamicAudioEventValue(new EventReference());
 
 			// movement
 			forwardSpeed = new DynamicFloat(5.0f);

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
+using FMODUnity;
 
 // This script is part of the BulletPro package for Unity.
 // Author : Simon Albou <albou.simon@gmail.com>
@@ -608,6 +609,12 @@ namespace BulletPro.EditorScripts
 				EditorGUI.PropertyField(usableSpace, cv, GUIContent.none);
 				forceZeroToOne.boolValue = true;
 			}
+			else if (pit == PatternInstructionType.PlayAudioEvent)
+			{
+				SerializedProperty audioEventProp = inst.FindPropertyRelative("audioEvent");
+				SerializedProperty eventReferenceProp = audioEventProp.FindPropertyRelative("defaultValue");
+				EditorGUI.PropertyField(usableSpace, eventReferenceProp, GUIContent.none);
+			}
 
 			#endregion
 			
@@ -861,6 +868,9 @@ namespace BulletPro.EditorScripts
 			SerializedProperty audioClipProp = inst.FindPropertyRelative("audioClip");
 			DynamicParameterUtility.SetFixedObject(audioClipProp, null, true);
 			DynamicParameterUtility.SetObjectNarrowType(audioClipProp, typeof(AudioClip));
+
+			DynamicParameterUtility.SetFixedAudioEvent(inst.FindPropertyRelative("audioEvent"), new EventReference(), true);
+
 			inst.FindPropertyRelative("vfxPlayType").enumValueIndex = (int)VFXPlayType.Default;
 			SerializedProperty vfxProp = inst.FindPropertyRelative("vfxToPlay");
 			DynamicParameterUtility.SetFixedObject(vfxProp, null, true);
@@ -958,12 +968,14 @@ namespace BulletPro.EditorScripts
 				new StringToEnumInstruction("Most Used/Begin Loop", "Begin Loop", PatternInstructionType.BeginLoop),
 				new StringToEnumInstruction("Most Used/End Loop", "End Loop", PatternInstructionType.EndLoop),
 				new StringToEnumInstruction("Most Used/Play Audio", "Play Audio", PatternInstructionType.PlayAudio),
+				new StringToEnumInstruction("Most Used/Play Audio Event", "Play Audio Event", PatternInstructionType.PlayAudioEvent),
 				new StringToEnumInstruction("Most Used/Die", "Die", PatternInstructionType.Die),
 
 				new StringToEnumInstruction("Effects/Shoot", "Shoot", PatternInstructionType.Shoot),
 				new StringToEnumInstruction("Effects/Play VFX", "Play VFX", PatternInstructionType.PlayVFX),
 				new StringToEnumInstruction("Effects/Stop VFX", "Stop VFX", PatternInstructionType.StopVFX),
 				new StringToEnumInstruction("Effects/Play Audio", "Play Audio", PatternInstructionType.PlayAudio),
+				new StringToEnumInstruction("Effects/Play Audio Event", "Play Audio Event", PatternInstructionType.PlayAudioEvent),
 
 				new StringToEnumInstruction("Transform/Position/Translate (World)", "Translate (World)", PatternInstructionType.TranslateGlobal),
 				new StringToEnumInstruction("Transform/Position/Translate (Local)", "Translate (Local)", PatternInstructionType.TranslateLocal),
