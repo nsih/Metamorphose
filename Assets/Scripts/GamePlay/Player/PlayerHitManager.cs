@@ -4,7 +4,7 @@ using BulletPro;
 using Cysharp.Threading.Tasks;
 
 [RequireComponent(typeof(BulletReceiver))]
-public class PlayerHitManager : MonoBehaviour
+public class PlayerHitManager : MonoBehaviour, IDamageable
 {
     [Inject] private PlayerModel _model;
 
@@ -43,6 +43,20 @@ public class PlayerHitManager : MonoBehaviour
         if (_receiver != null)
         {
             _receiver.OnHitByBullet.AddListener(HandleBulletHit);
+        }
+    }
+
+    public void TakeDamage(int dmg)
+    {
+        if (_model.CurrentHP.Value <= 0) return;
+        if (IsInvincible) return;
+        
+        _model.TakeDamage(dmg);
+        PlayHitFeedback().Forget();
+        
+        if (_model.CurrentHP.Value <= 0)
+        {
+            Die();
         }
     }
 

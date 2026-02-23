@@ -38,9 +38,10 @@ MonoBehaviour:
   MaxHP: 5
   MoveSpeed: 5
   AttackCoolTime: 5
+  VisibilityCheckInterval: 0.1
   HasEnragedPhase: 0
   EnrageThreshold: 0
   EnragedMoveSpeed: 0
   EnragedAttackCoolTime: 0
-  DeathEffect: {fileID: 0}
+  DeathEffect: {fileID: 11400000, guid: 8cfa6c911cc4c1e4aa685f496849a70d, type: 2}
   DeathDelay: 0

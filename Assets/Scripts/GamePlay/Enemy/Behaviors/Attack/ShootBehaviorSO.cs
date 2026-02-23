@@ -26,6 +26,6 @@ public class ShootBehaviorSO : EnemyAttackBehaviorSO
         count++;
         ctx.SetInt(EnemyContextKeys.ShootCount, count);
         
-        Debug.Log($"Shoot count: {count}");
+        //Debug.Log($"Shoot count: {count}");
     }
 }
