@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using Common.Model;
 using Common;
 
-public class PlayerHealthSystem
+public class PlayerHealthSystem : IDisposable
 {
     public ModifiableStat MaxHP { get; private set; }
     public AsyncReactiveProperty<float> CurrentHP { get; private set; }

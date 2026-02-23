@@ -3,9 +3,6 @@ using BulletPro;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using System;
-using Reflex.Core;
-using Reflex.Extensions;
-using TJR.Core.GamePlay.Service;
 
 [RequireComponent(typeof(BulletReceiver))]
 [RequireComponent(typeof(EnemyFSM))]
@@ -53,10 +50,6 @@ public class Enemy : MonoBehaviour, IDamageable
         _defaultScale = transform.localScale;
 
         _ctx = new EnemyContext(transform, _spriteRenderer, _emitter, _rigidbody);
-
-        OnDeath += () => {
-            gameObject.scene.GetSceneContainer().Single<PlayerGoldService>().AddGold(100);
-        };
     }
 
     private void OnEnable()

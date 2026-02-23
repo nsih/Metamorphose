@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Generic;
-using Common;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using Common;
+using System;
 
 public class MapUIManager : MonoBehaviour
 {
@@ -60,17 +60,17 @@ public class MapUIManager : MonoBehaviour
         DrawConnections();
 
         Canvas.ForceUpdateCanvases();
-
+        
         ScrollToCurrentNode();
     }
 
     private int CalculateMaxNodesPerLayer(Map map)
     {
         int maxNodes = 0;
-        for (int layer = 0; layer < map.LayerCount; layer++)
+        for(int layer = 0; layer < map.LayerCount; layer++)
         {
             List<MapNode> nodes = map.GetNodesInLayer(layer);
-            if (nodes.Count > maxNodes)
+            if(nodes.Count > maxNodes)
             {
                 maxNodes = nodes.Count;
             }
@@ -88,10 +88,10 @@ public class MapUIManager : MonoBehaviour
         }
 
         RectTransform currentNodeRect = _nodePositions[_currentNode];
-
+        
         float contentWidth = _contentRect.rect.width;
         float viewportWidth = _scrollRect.viewport.rect.width;
-
+        
         if (contentWidth <= viewportWidth)
         {
             _scrollRect.horizontalNormalizedPosition = 0f;
@@ -99,15 +99,15 @@ public class MapUIManager : MonoBehaviour
         }
 
         float nodeWorldX = currentNodeRect.anchoredPosition.x;
-
+        
         float contentLeftEdge = -contentWidth / 2f;
         float nodePositionInContent = nodeWorldX - contentLeftEdge;
-
+        
         float targetPosition = nodePositionInContent - (viewportWidth / 2f);
-
+        
         float scrollableWidth = contentWidth - viewportWidth;
         float normalizedPosition = Mathf.Clamp01(targetPosition / scrollableWidth);
-
+        
         _scrollRect.horizontalNormalizedPosition = normalizedPosition;
     }
 
@@ -121,7 +121,7 @@ public class MapUIManager : MonoBehaviour
 
     void CreateNodeUIs(Map map, MapNode currentNode)
     {
-        for (int layer = 0; layer < map.LayerCount; layer++)
+        for(int layer = 0; layer < map.LayerCount; layer++)
         {
             List<MapNode> nodes = map.GetNodesInLayer(layer);
             foreach (var node in nodes)
@@ -146,9 +146,9 @@ public class MapUIManager : MonoBehaviour
         float totalWidth = (_currentMap.LayerCount - 1) * _horizontalSpacing;
         float startX = -totalWidth / 2f;
         float x = startX + (layer * _horizontalSpacing);
-
+        
         float y;
-
+        
         if (type == RoomType.Start || type == RoomType.Boss)
         {
             y = 0f;
@@ -163,7 +163,7 @@ public class MapUIManager : MonoBehaviour
         System.Random rng = new System.Random(_layoutSeed + nodeId);
         float jitterX = ((float)rng.NextDouble() * 2f - 1f) * _positionJitter;
         float jitterY = ((float)rng.NextDouble() * 2f - 1f) * _positionJitter;
-
+        
         return new Vector2(x + jitterX, y + jitterY);
     }
 
