@@ -18,4 +18,7 @@ MonoBehaviour:
   TargetLayer:
     serializedVersion: 2
     m_Bits: 6656
-  VFXPrefab: {fileID: 0}
+  ExplosionSprite: {fileID: -2753420034031332769, guid: 403fccb0600678e4598de96743011811, type: 3}
+  VisualDuration: 0.3
+  VisualScale: 1
+  VisualColor: {r: 1, g: 1, b: 1, a: 1}

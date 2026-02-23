@@ -12,7 +12,7 @@ public static class ExplosionUtil
         }
         
         Explode(center, owner, config.Radius, config.Damage, config.Force, config.TargetLayer);
-        SpawnVFX(center, config.VFXPrefab);
+        SpawnVisual(center, config);
     }
     
     public static void Explode(
@@ -104,12 +104,20 @@ public static class ExplosionUtil
         };
     }
     
-    private static void SpawnVFX(Vector3 position, GameObject vfxPrefab)
+    private static void SpawnVisual(Vector3 position, ExplosionConfigSO config)
     {
-        if (vfxPrefab != null)
-        {
-            Object.Instantiate(vfxPrefab, position, Quaternion.identity);
-        }
+        if (config.ExplosionSprite == null) return;
+        
+        var go = new GameObject("ExplosionVisual");
+        go.transform.position = position;
+        go.transform.localScale = Vector3.one * config.VisualScale;
+        
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = config.ExplosionSprite;
+        sr.color = config.VisualColor;
+        sr.sortingOrder = 100;
+        
+        Object.Destroy(go, config.VisualDuration);
     }
     
     private static void DrawDebug(Vector3 center, float radius)
