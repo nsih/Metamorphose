@@ -4,23 +4,29 @@ using BulletPro;
 using Cysharp.Threading.Tasks;
 
 [RequireComponent(typeof(BulletReceiver))]
-public class PlayerHitManager : MonoBehaviour
+public class PlayerHitManager : MonoBehaviour, IDamageable
 {
     [Inject] private PlayerModel _model;
 
     private BulletReceiver _receiver;
     private SpriteRenderer _spriteRenderer;
 
+
+    private PlayerBomb _playerBomb;
     private PlayerDash _playerDash;
     private BulletTimeManager _bulletTimeManager;
 
 
-    public bool IsInvincible => (_playerDash != null && _playerDash.IsDashing);
+    //public bool IsInvincible => (_playerDash != null && _playerDash.IsDashing);
+    public bool IsInvincible => 
+    (_playerDash != null && _playerDash.IsDashing) || 
+    (_playerBomb != null && _playerBomb.IsActive);
 
     void Awake()
     {
         _receiver = GetComponent<BulletReceiver>();
         _playerDash = GetComponent<PlayerDash>();
+        _playerBomb = GetComponent<PlayerBomb>();
         _bulletTimeManager = GetComponent<BulletTimeManager>();
 
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -37,6 +43,20 @@ public class PlayerHitManager : MonoBehaviour
         if (_receiver != null)
         {
             _receiver.OnHitByBullet.AddListener(HandleBulletHit);
+        }
+    }
+
+    public void TakeDamage(int dmg)
+    {
+        if (_model.CurrentHP.Value <= 0) return;
+        if (IsInvincible) return;
+        
+        _model.TakeDamage(dmg);
+        PlayHitFeedback().Forget();
+        
+        if (_model.CurrentHP.Value <= 0)
+        {
+            Die();
         }
     }
 

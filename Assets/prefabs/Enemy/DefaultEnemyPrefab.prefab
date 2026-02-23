@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3829550650607418148}
   - component: {fileID: 2879525213995950634}
   - component: {fileID: 4281887713476803514}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 8330267057039541680}
   - component: {fileID: 101416943244610006}
   - component: {fileID: 6392302996635045383}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: DefaultEnemyPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
