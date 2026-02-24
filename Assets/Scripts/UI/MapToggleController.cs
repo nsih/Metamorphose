@@ -6,12 +6,12 @@ public class MapToggleController : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject _mapScrollView;
     [SerializeField] private MapUIManager _mapUIManager;
-    
+
     [Header("Settings")]
     [SerializeField] private KeyCode _toggleKey = KeyCode.Tab;
 
     private MapManager _mapManager;
-    
+
     private bool _isMapOpen = false;
     private float _previousTimeScale = 1f;
 
@@ -42,32 +42,38 @@ public class MapToggleController : MonoBehaviour
     {
         if (_mapScrollView == null) return;
 
-        _isMapOpen = !_isMapOpen;
-        _mapScrollView.SetActive(_isMapOpen);
-
         if (_isMapOpen)
         {
-            _previousTimeScale = Time.timeScale;
-            Time.timeScale = 0f;
-            RefreshMapUI();
-        }
-        else
-        {
+            _isMapOpen = false;
+            _mapScrollView.SetActive(false);
             Time.timeScale = _previousTimeScale;
+            return;
         }
+
+        if (_mapManager == null || _mapManager.CurrentMap == null || _mapManager.CurrentNode == null)
+        {
+            Debug.LogWarning("MapToggle: map data not ready");
+            return;
+        }
+
+        _isMapOpen = true;
+        _mapScrollView.SetActive(true);
+        _previousTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+        RefreshMapUI();
     }
 
     private void RefreshMapUI()
     {
         if (_mapUIManager == null || _mapManager == null) return;
-        
+
         var currentMap = _mapManager.CurrentMap;
         var currentNode = _mapManager.CurrentNode;
-        
+
         if (currentMap == null || currentNode == null) return;
-        
+
         _mapUIManager.RenderMap(currentMap, currentNode);
-        
+
         if (currentNode.NextNodeIds != null && currentNode.NextNodeIds.Count > 0)
         {
             _mapUIManager.HighlightAvailableNodes(currentNode.NextNodeIds);
@@ -78,12 +84,16 @@ public class MapToggleController : MonoBehaviour
     {
         if (_mapScrollView == null) return;
 
+        if (_mapManager == null || _mapManager.CurrentMap == null || _mapManager.CurrentNode == null)
+        {
+            Debug.LogWarning("MapToggle: map data not ready");
+            return;
+        }
+
         _isMapOpen = true;
         _mapScrollView.SetActive(true);
-        
         _previousTimeScale = Time.timeScale;
         Time.timeScale = 0f;
-        
         RefreshMapUI();
     }
 
@@ -93,7 +103,6 @@ public class MapToggleController : MonoBehaviour
 
         _isMapOpen = false;
         _mapScrollView.SetActive(false);
-        
         Time.timeScale = _previousTimeScale;
     }
 

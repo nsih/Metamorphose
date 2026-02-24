@@ -46,7 +46,7 @@ public class RoomClearFlowUI : MonoBehaviour
 
     private void Awake()
     {
-        CloseAllPanels();
+        _rewardPanel?.SetActive(false);
     }
 
     private void Start()
@@ -106,18 +106,19 @@ public class RoomClearFlowUI : MonoBehaviour
         switch (_currentState)
         {
             case FlowState.Reward:
-                CloseAllPanels();
-                _rewardPanel.SetActive(true);
+                _mapToggleController?.CloseMap();
+                _rewardPanel?.SetActive(true);
                 GenerateRewardButtons();
                 break;
 
             case FlowState.MapSelect:
-                CloseAllPanels();
+                _rewardPanel?.SetActive(false);
                 _mapToggleController?.OpenMap();
                 break;
 
             case FlowState.None:
-                CloseAllPanels();
+                _rewardPanel?.SetActive(false);
+                _mapToggleController?.CloseMap();
                 break;
         }
     }
@@ -138,7 +139,7 @@ public class RoomClearFlowUI : MonoBehaviour
             if (reward == null) continue;
 
             Button btn = Instantiate(_rewardButtonPrefab, _rewardButtonContainer);
-            
+
             var text = btn.GetComponentInChildren<TextMeshProUGUI>();
             if (text != null)
             {
@@ -168,7 +169,7 @@ public class RoomClearFlowUI : MonoBehaviour
         {
             lines.Add($"• {GetEffectDescription(effect)}");
         }
-        
+
         return string.Join("\n", lines);
     }
 
@@ -208,14 +209,8 @@ public class RoomClearFlowUI : MonoBehaviour
     private void OnMapNodeSelected(MapNode node)
     {
         if (node.State != NodeState.Available) return;
-        
+
         SetState(FlowState.None);
         _mapManager.MoveToNode(node);
-    }
-
-    private void CloseAllPanels()
-    {
-        _rewardPanel?.SetActive(false);
-        _mapToggleController?.CloseMap();
     }
 }

@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Name: Bullet
   m_EditorClassIdentifier: 
   parameterType: 0
-  uniqueIndex: 448254
+  uniqueIndex: 2920472
   profile: {fileID: 11400000}
   parent: {fileID: 114201774248674550}
   children: []
@@ -8208,6 +8208,58 @@ MonoBehaviour:
     typeName: UnityEngine.AudioClip, UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
     requiredComponentName: 
+  audioEvent:
+    settings:
+      valueType: 0
+      interpolationValue:
+        interpolationFactor: 0
+        repartitionCurve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        shareValueBetweenInstances: 0
+        rerollFrequency: 0
+        interpolationFactorFromShot: 0
+        interpolationFactorFromPattern: 0
+        interpolationFactorFromBullet: 0
+        relativeTo: 0
+        parameterName: 
+        loopDepth: 0
+        useComplexRerollSequence: 0
+        checkEveryNLoops: 0
+        loopSequence: 0
+        period: 0
+        wrapMode: 0
+        sortMode: 0
+        sortDirection: 0
+        repartitionTexture: {fileID: 0}
+        centerX: 0
+        centerY: 0
+        radius: 0
+        wrapPoint: 0
+        countClockwise: 0
+        differentValuesPerShot: 0
+      combinedInterpolationFactors: 0
+      index: 0
+      indexOfParent: 0
+      indexOfFrom: 0
+      indexOfTo: 0
+      indexOfBlendedChildren: 
+      weight: 0
+      headerTitle: 
+      blendColor: {r: 0, g: 0, b: 0, a: 0}
+      parameterType: 0
+      relativeTo: 0
+      parameterName: 
+    defaultValue:
+      Guid:
+        Data1: 0
+        Data2: 0
+        Data3: 0
+        Data4: 0
+      Path: 
   customParameters:
   - type: 2
     name: Damage
@@ -8714,7 +8766,7 @@ MonoBehaviour:
   m_Name: Shot
   m_EditorClassIdentifier: 
   parameterType: 1
-  uniqueIndex: 8992127
+  uniqueIndex: 14238419
   profile: {fileID: 11400000}
   parent: {fileID: 114917193883442684}
   children:
@@ -11507,7 +11559,7 @@ MonoBehaviour:
   m_Name: Root Emitter
   m_EditorClassIdentifier: 
   parameterType: 0
-  uniqueIndex: 418621
+  uniqueIndex: 1841666
   profile: {fileID: 11400000}
   parent: {fileID: 0}
   children:
@@ -19299,6 +19351,58 @@ MonoBehaviour:
     typeName: UnityEngine.AudioClip, UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
     requiredComponentName: 
+  audioEvent:
+    settings:
+      valueType: 0
+      interpolationValue:
+        interpolationFactor: 0
+        repartitionCurve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        shareValueBetweenInstances: 0
+        rerollFrequency: 0
+        interpolationFactorFromShot: 0
+        interpolationFactorFromPattern: 0
+        interpolationFactorFromBullet: 0
+        relativeTo: 0
+        parameterName: 
+        loopDepth: 0
+        useComplexRerollSequence: 0
+        checkEveryNLoops: 0
+        loopSequence: 0
+        period: 0
+        wrapMode: 0
+        sortMode: 0
+        sortDirection: 0
+        repartitionTexture: {fileID: 0}
+        centerX: 0
+        centerY: 0
+        radius: 0
+        wrapPoint: 0
+        countClockwise: 0
+        differentValuesPerShot: 0
+      combinedInterpolationFactors: 0
+      index: 0
+      indexOfParent: 0
+      indexOfFrom: 0
+      indexOfTo: 0
+      indexOfBlendedChildren: 
+      weight: 0
+      headerTitle: 
+      blendColor: {r: 0, g: 0, b: 0, a: 0}
+      parameterType: 0
+      relativeTo: 0
+      parameterName: 
+    defaultValue:
+      Guid:
+        Data1: 0
+        Data2: 0
+        Data3: 0
+        Data4: 0
+      Path: 
   customParameters:
   - type: 2
     name: Damage
@@ -22495,7 +22599,7 @@ MonoBehaviour:
   m_Name: Pattern
   m_EditorClassIdentifier: 
   parameterType: 2
-  uniqueIndex: 3184703
+  uniqueIndex: 1059947
   profile: {fileID: 11400000}
   parent: {fileID: 114671512830859702}
   children:
@@ -23752,6 +23856,58 @@ MonoBehaviour:
         typeName: UnityEngine.AudioClip, UnityEngine.AudioModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         requiredComponentName: 
+      audioEvent:
+        settings:
+          valueType: 0
+          interpolationValue:
+            interpolationFactor: 0
+            repartitionCurve:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            shareValueBetweenInstances: 0
+            rerollFrequency: 0
+            interpolationFactorFromShot: 0
+            interpolationFactorFromPattern: 0
+            interpolationFactorFromBullet: 0
+            relativeTo: 0
+            parameterName: 
+            loopDepth: 0
+            useComplexRerollSequence: 0
+            checkEveryNLoops: 0
+            loopSequence: 0
+            period: 0
+            wrapMode: 0
+            sortMode: 0
+            sortDirection: 0
+            repartitionTexture: {fileID: 0}
+            centerX: 0
+            centerY: 0
+            radius: 0
+            wrapPoint: 0
+            countClockwise: 0
+            differentValuesPerShot: 0
+          combinedInterpolationFactors: 0
+          index: 0
+          indexOfParent: 0
+          indexOfFrom: 0
+          indexOfTo: 0
+          indexOfBlendedChildren: 
+          weight: 0
+          headerTitle: 
+          blendColor: {r: 0, g: 0, b: 0, a: 0}
+          parameterType: 0
+          relativeTo: 0
+          parameterName: 
+        defaultValue:
+          Guid:
+            Data1: 0
+            Data2: 0
+            Data3: 0
+            Data4: 0
+          Path: 
       vfxToPlay:
         valueTree:
         - settings:
@@ -28578,6 +28734,58 @@ MonoBehaviour:
         typeName: UnityEngine.AudioClip, UnityEngine.AudioModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         requiredComponentName: 
+      audioEvent:
+        settings:
+          valueType: 0
+          interpolationValue:
+            interpolationFactor: 0
+            repartitionCurve:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            shareValueBetweenInstances: 0
+            rerollFrequency: 0
+            interpolationFactorFromShot: 0
+            interpolationFactorFromPattern: 0
+            interpolationFactorFromBullet: 0
+            relativeTo: 0
+            parameterName: 
+            loopDepth: 0
+            useComplexRerollSequence: 0
+            checkEveryNLoops: 0
+            loopSequence: 0
+            period: 0
+            wrapMode: 0
+            sortMode: 0
+            sortDirection: 0
+            repartitionTexture: {fileID: 0}
+            centerX: 0
+            centerY: 0
+            radius: 0
+            wrapPoint: 0
+            countClockwise: 0
+            differentValuesPerShot: 0
+          combinedInterpolationFactors: 0
+          index: 0
+          indexOfParent: 0
+          indexOfFrom: 0
+          indexOfTo: 0
+          indexOfBlendedChildren: 
+          weight: 0
+          headerTitle: 
+          blendColor: {r: 0, g: 0, b: 0, a: 0}
+          parameterType: 0
+          relativeTo: 0
+          parameterName: 
+        defaultValue:
+          Guid:
+            Data1: 0
+            Data2: 0
+            Data3: 0
+            Data4: 0
+          Path: 
       vfxToPlay:
         valueTree:
         - settings:
@@ -33404,6 +33612,58 @@ MonoBehaviour:
         typeName: UnityEngine.AudioClip, UnityEngine.AudioModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         requiredComponentName: 
+      audioEvent:
+        settings:
+          valueType: 0
+          interpolationValue:
+            interpolationFactor: 0
+            repartitionCurve:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            shareValueBetweenInstances: 0
+            rerollFrequency: 0
+            interpolationFactorFromShot: 0
+            interpolationFactorFromPattern: 0
+            interpolationFactorFromBullet: 0
+            relativeTo: 0
+            parameterName: 
+            loopDepth: 0
+            useComplexRerollSequence: 0
+            checkEveryNLoops: 0
+            loopSequence: 0
+            period: 0
+            wrapMode: 0
+            sortMode: 0
+            sortDirection: 0
+            repartitionTexture: {fileID: 0}
+            centerX: 0
+            centerY: 0
+            radius: 0
+            wrapPoint: 0
+            countClockwise: 0
+            differentValuesPerShot: 0
+          combinedInterpolationFactors: 0
+          index: 0
+          indexOfParent: 0
+          indexOfFrom: 0
+          indexOfTo: 0
+          indexOfBlendedChildren: 
+          weight: 0
+          headerTitle: 
+          blendColor: {r: 0, g: 0, b: 0, a: 0}
+          parameterType: 0
+          relativeTo: 0
+          parameterName: 
+        defaultValue:
+          Guid:
+            Data1: 0
+            Data2: 0
+            Data3: 0
+            Data4: 0
+          Path: 
       vfxToPlay:
         valueTree:
         - settings:
@@ -38230,6 +38490,58 @@ MonoBehaviour:
         typeName: UnityEngine.AudioClip, UnityEngine.AudioModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         requiredComponentName: 
+      audioEvent:
+        settings:
+          valueType: 0
+          interpolationValue:
+            interpolationFactor: 0
+            repartitionCurve:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            shareValueBetweenInstances: 0
+            rerollFrequency: 0
+            interpolationFactorFromShot: 0
+            interpolationFactorFromPattern: 0
+            interpolationFactorFromBullet: 0
+            relativeTo: 0
+            parameterName: 
+            loopDepth: 0
+            useComplexRerollSequence: 0
+            checkEveryNLoops: 0
+            loopSequence: 0
+            period: 0
+            wrapMode: 0
+            sortMode: 0
+            sortDirection: 0
+            repartitionTexture: {fileID: 0}
+            centerX: 0
+            centerY: 0
+            radius: 0
+            wrapPoint: 0
+            countClockwise: 0
+            differentValuesPerShot: 0
+          combinedInterpolationFactors: 0
+          index: 0
+          indexOfParent: 0
+          indexOfFrom: 0
+          indexOfTo: 0
+          indexOfBlendedChildren: 
+          weight: 0
+          headerTitle: 
+          blendColor: {r: 0, g: 0, b: 0, a: 0}
+          parameterType: 0
+          relativeTo: 0
+          parameterName: 
+        defaultValue:
+          Guid:
+            Data1: 0
+            Data2: 0
+            Data3: 0
+            Data4: 0
+          Path: 
       vfxToPlay:
         valueTree:
         - settings:
@@ -43056,6 +43368,58 @@ MonoBehaviour:
         typeName: UnityEngine.AudioClip, UnityEngine.AudioModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
         requiredComponentName: 
+      audioEvent:
+        settings:
+          valueType: 0
+          interpolationValue:
+            interpolationFactor: 0
+            repartitionCurve:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            shareValueBetweenInstances: 0
+            rerollFrequency: 0
+            interpolationFactorFromShot: 0
+            interpolationFactorFromPattern: 0
+            interpolationFactorFromBullet: 0
+            relativeTo: 0
+            parameterName: 
+            loopDepth: 0
+            useComplexRerollSequence: 0
+            checkEveryNLoops: 0
+            loopSequence: 0
+            period: 0
+            wrapMode: 0
+            sortMode: 0
+            sortDirection: 0
+            repartitionTexture: {fileID: 0}
+            centerX: 0
+            centerY: 0
+            radius: 0
+            wrapPoint: 0
+            countClockwise: 0
+            differentValuesPerShot: 0
+          combinedInterpolationFactors: 0
+          index: 0
+          indexOfParent: 0
+          indexOfFrom: 0
+          indexOfTo: 0
+          indexOfBlendedChildren: 
+          weight: 0
+          headerTitle: 
+          blendColor: {r: 0, g: 0, b: 0, a: 0}
+          parameterType: 0
+          relativeTo: 0
+          parameterName: 
+        defaultValue:
+          Guid:
+            Data1: 0
+            Data2: 0
+            Data3: 0
+            Data4: 0
+          Path: 
       vfxToPlay:
         valueTree:
         - settings:
