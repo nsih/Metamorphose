@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5552623930664728372}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: ' WeaponPivot'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3995408395396626441}
   - component: {fileID: 9022561187776324406}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Bullet Emitter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 7537120093880331209}
   - component: {fileID: 4624806749065188075}
   - component: {fileID: 8336194354480287056}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,8 +227,7 @@ GameObject:
   - component: {fileID: 2394982346096528680}
   - component: {fileID: 3712052864602313827}
   - component: {fileID: 5364182852138832805}
-  - component: {fileID: 7837817189826959663}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -276,6 +275,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f619e2844d6fbed43a3ad6ad9b80d95c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _wallLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  _collisionCheckRadius: 0.3
 --- !u!114 &3074840396876414495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,6 +329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _weaponPivot: {fileID: 5552623930664728372}
+  _weaponSprite: {fileID: 0}
 --- !u!114 &4478449993465741101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -457,18 +461,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 3}
   m_EdgeRadius: 0
---- !u!114 &7837817189826959663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7348186144451456775}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a82e624a6edb8ad418e46d6420b799e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  config: {fileID: 11400000, guid: 4c901f0a863185849938996247e19cde, type: 2}
-  duration: 3
-  tickInterval: 0.1

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using R3;
 
 public class PlayerDashSystem : IDisposable
 {
@@ -9,10 +10,10 @@ public class PlayerDashSystem : IDisposable
     public float DashDuration { get; private set; }
     public int MaxDashChargeStack { get; private set; }
     public float DashChargeTime { get; private set; }
-    
-    public AsyncReactiveProperty<int> CurrentDashCount { get; private set; }
-    public AsyncReactiveProperty<float> DashCooldownNormalized { get; private set; }
-    
+
+    public ReactiveProperty<int> CurrentDashCount { get; private set; }
+    public ReactiveProperty<float> DashCooldownNormalized { get; private set; }
+
     private CancellationTokenSource _cts;
 
     public PlayerDashSystem(PlayerStat stat)
@@ -21,10 +22,10 @@ public class PlayerDashSystem : IDisposable
         DashDuration = stat.DashDuration;
         MaxDashChargeStack = stat.MaxDashChargeStack;
         DashChargeTime = stat.DashChargeTime;
-        
-        CurrentDashCount = new AsyncReactiveProperty<int>(MaxDashChargeStack);
-        DashCooldownNormalized = new AsyncReactiveProperty<float>(0f);
-        
+
+        CurrentDashCount = new ReactiveProperty<int>(MaxDashChargeStack);
+        DashCooldownNormalized = new ReactiveProperty<float>(0f);
+
         _cts = new CancellationTokenSource();
         StartCooldownLoop(_cts.Token).Forget();
     }
