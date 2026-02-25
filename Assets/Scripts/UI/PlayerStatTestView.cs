@@ -1,9 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI; // Slider용
+using UnityEngine.UI;
 using TMPro;
 using Reflex.Attributes;
-using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq;
+using R3;
+using System;
 
 public class PlayerStatTestView : MonoBehaviour
 {
@@ -11,10 +11,11 @@ public class PlayerStatTestView : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _hpText;
 
     [Header("Dash UI")]
-    [SerializeField] private TextMeshProUGUI _dashCountText; // 대시 횟수 (3, 2, 1...)
-    [SerializeField] private Slider _dashSlider;             // 쿨타임 게이지 (0.0 ~ 1.0)
+    [SerializeField] private TextMeshProUGUI _dashCountText;
+    [SerializeField] private Slider _dashSlider;
 
     private PlayerModel _model;
+    private CompositeDisposable _disposables = new CompositeDisposable();
 
     [Inject]
     public void Construct(PlayerModel model)
@@ -22,20 +23,25 @@ public class PlayerStatTestView : MonoBehaviour
         _model = model;
     }
 
-    void Start()
+    private void Start()
     {
         if (_model == null) return;
 
         _model.CurrentHP
             .Subscribe(hp => _hpText.text = $"HP: {hp} / {_model.MaxHP}")
-            .AddTo(this.GetCancellationTokenOnDestroy());
+            .AddTo(_disposables);
 
         _model.CurrentDashCount
             .Subscribe(count => _dashCountText.text = $"Dash: {count}")
-            .AddTo(this.GetCancellationTokenOnDestroy());
+            .AddTo(_disposables);
 
         _model.DashCooldownNormalized
             .Subscribe(val => _dashSlider.value = val)
-            .AddTo(this.GetCancellationTokenOnDestroy());
+            .AddTo(_disposables);
+    }
+
+    private void OnDestroy()
+    {
+        _disposables.Dispose();
     }
 }

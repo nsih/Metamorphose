@@ -25,17 +25,17 @@ public class RoomClearFlowUI : MonoBehaviour
     private enum FlowState { None, Reward, MapSelect }
     private FlowState _currentState;
 
-    private ReadOnlyReactiveProperty<RoomManager> _globalCurrentRoomHandle;
+    private ReactiveProperty<RoomManager> _globalCurrentRoomHandle;
     private PlayerModel _playerModel;
     private MapUIManager _mapUIManager;
     private MapManager _mapManager;
 
-    private IDisposable _roomHandleSubscription;
+    private readonly CompositeDisposable _disposables = new CompositeDisposable();
     private IDisposable _roomStateSubscription;
 
     [Inject]
     public void Construct(
-        ReadOnlyReactiveProperty<RoomManager> globalHandle,
+        ReactiveProperty<RoomManager> globalHandle,
         PlayerModel playerModel,
         MapUIManager mapUIManager,
         MapManager mapManager)
@@ -58,7 +58,7 @@ public class RoomClearFlowUI : MonoBehaviour
             _mapUIManager.OnNodeSelected += OnMapNodeSelected;
         }
 
-        _roomHandleSubscription = _globalCurrentRoomHandle
+        _globalCurrentRoomHandle
             .Subscribe(room =>
             {
                 _roomStateSubscription?.Dispose();
@@ -72,7 +72,8 @@ public class RoomClearFlowUI : MonoBehaviour
                         if (state == RoomState.Complete)
                             StartClearFlow();
                     });
-            });
+            })
+            .AddTo(_disposables);
     }
 
     private void OnDestroy()
@@ -82,7 +83,7 @@ public class RoomClearFlowUI : MonoBehaviour
             _mapUIManager.OnNodeSelected -= OnMapNodeSelected;
         }
 
-        _roomHandleSubscription?.Dispose();
+        _disposables.Dispose();
         _roomStateSubscription?.Dispose();
     }
 

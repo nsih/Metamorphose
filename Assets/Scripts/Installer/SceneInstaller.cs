@@ -22,10 +22,7 @@ public class SceneInstaller : MonoBehaviour, IInstaller
         builder.RegisterValue(_playerSpawner);
 
         var roomProperty = new ReactiveProperty<RoomManager>(null);
-        builder.RegisterValue(
-            roomProperty,
-            new Type[] { typeof(ReactiveProperty<RoomManager>), typeof(ReadOnlyReactiveProperty<RoomManager>) }
-        );
+        builder.RegisterValue(roomProperty, new Type[] { typeof(ReactiveProperty<RoomManager>) });
 
         if (_mapUIManager != null)
             builder.RegisterValue(_mapUIManager);

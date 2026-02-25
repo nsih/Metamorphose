@@ -12,7 +12,7 @@ public class RoomEventView : MonoBehaviour
 
     private ReactiveProperty<RoomManager> _currentRoomHandle;
 
-    private IDisposable _roomHandleSubscription;
+    private readonly CompositeDisposable _disposables = new CompositeDisposable();
     private IDisposable _roomStateSubscription;
 
     [Inject]
@@ -25,7 +25,7 @@ public class RoomEventView : MonoBehaviour
     {
         if (_currentRoomHandle == null) return;
 
-        _roomHandleSubscription = _currentRoomHandle
+        _currentRoomHandle
             .Subscribe(room =>
             {
                 _roomStateSubscription?.Dispose();
@@ -34,12 +34,13 @@ public class RoomEventView : MonoBehaviour
 
                 _roomStateSubscription = room.CurrentRoomState
                     .Subscribe(state => HandleStateChange(state));
-            });
+            })
+            .AddTo(_disposables);
     }
 
     private void OnDestroy()
     {
-        _roomHandleSubscription?.Dispose();
+        _disposables.Dispose();
         _roomStateSubscription?.Dispose();
     }
 
