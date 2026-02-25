@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Threading;
 using Common;
 using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq;
 using Reflex.Attributes;
 using System.Linq;
+using R3;
 
 using Random = UnityEngine.Random;
 
@@ -15,25 +15,25 @@ public class RoomManager : MonoBehaviour
     [SerializeField] private List<RoomWaveData> _possibleWaveDatas;
     [SerializeField] private List<Transform> _spawnPoints;
 
-    private AsyncReactiveProperty<RoomState> _roomState = new AsyncReactiveProperty<RoomState>(RoomState.Idle);
-    public IReadOnlyAsyncReactiveProperty<RoomState> CurrentRoomState => _roomState;
+    private ReactiveProperty<RoomState> _roomState = new ReactiveProperty<RoomState>(RoomState.Idle);
+    public ReadOnlyReactiveProperty<RoomState> CurrentRoomState => _roomState;
 
-    private AsyncReactiveProperty<RoomManager> _globalCurrentRoomHandle;
+    private ReactiveProperty<RoomManager> _globalCurrentRoomHandle;
     private EnemyPoolManager _enemyPoolManager;
     private MapManager _mapManager;
 
     private RoomWaveData _currentWaveData;
     private List<Enemy> _activeEnemies = new List<Enemy>();
     private EnemyFactory _factory;
-    
+
     private PlayerSpawner _playerSpawner;
     private Transform _playerTransform;
-    
+
     private CancellationTokenSource _cts;
 
     [Inject]
     public void Construct(
-        AsyncReactiveProperty<RoomManager> globalHandle, 
+        ReactiveProperty<RoomManager> globalHandle,
         PlayerSpawner spawner,
         EnemyPoolManager enemyPoolManager,
         MapManager mapManager)
@@ -108,7 +108,7 @@ public class RoomManager : MonoBehaviour
 
                 SpawnWaveUnits(wave);
 
-                await UniTask.WaitUntil(() => 
+                await UniTask.WaitUntil(() =>
                 {
                     return _activeEnemies.All(x => x == null || !x.gameObject.activeSelf);
                 }, cancellationToken: token);
@@ -130,12 +130,10 @@ public class RoomManager : MonoBehaviour
     {
         foreach (var entry in wave.SpawnGroups)
         {
-            //Debug.Log($"SpawnEntry Brain: {entry.EnemyBrain}");
-            
             int index = 0;
             if (_spawnPoints.Count > 0)
                 index = entry.SpawnPointIndex % _spawnPoints.Count;
-            
+
             Transform spawnTr = _spawnPoints[index];
 
             for (int k = 0; k < entry.Count; k++)
@@ -146,10 +144,11 @@ public class RoomManager : MonoBehaviour
             }
         }
     }
+
     private void CompleteRoom()
     {
         _roomState.Value = RoomState.Complete;
-        
+
         if (_mapManager != null && _mapManager.CurrentNode != null)
         {
             var currentNode = _mapManager.CurrentNode;

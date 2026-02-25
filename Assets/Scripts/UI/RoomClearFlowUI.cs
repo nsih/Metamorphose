@@ -5,8 +5,7 @@ using Common;
 using Reflex.Attributes;
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq;
+using R3;
 
 public class RoomClearFlowUI : MonoBehaviour
 {
@@ -26,7 +25,7 @@ public class RoomClearFlowUI : MonoBehaviour
     private enum FlowState { None, Reward, MapSelect }
     private FlowState _currentState;
 
-    private IReadOnlyAsyncReactiveProperty<RoomManager> _globalCurrentRoomHandle;
+    private ReadOnlyReactiveProperty<RoomManager> _globalCurrentRoomHandle;
     private PlayerModel _playerModel;
     private MapUIManager _mapUIManager;
     private MapManager _mapManager;
@@ -36,7 +35,7 @@ public class RoomClearFlowUI : MonoBehaviour
 
     [Inject]
     public void Construct(
-        IReadOnlyAsyncReactiveProperty<RoomManager> globalHandle,
+        ReadOnlyReactiveProperty<RoomManager> globalHandle,
         PlayerModel playerModel,
         MapUIManager mapUIManager,
         MapManager mapManager)
