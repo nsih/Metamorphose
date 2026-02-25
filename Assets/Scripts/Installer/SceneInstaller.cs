@@ -1,11 +1,11 @@
 using Reflex.Core;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
 using System;
 using Reflex.Extensions;
 using GamePlay;
 using FMODUnity;
 using TJR.Core.Interface;
+using R3;
 
 public class SceneInstaller : MonoBehaviour, IInstaller
 {
@@ -21,10 +21,10 @@ public class SceneInstaller : MonoBehaviour, IInstaller
     {
         builder.RegisterValue(_playerSpawner);
 
-        var roomProperty = new AsyncReactiveProperty<RoomManager>(null);
+        var roomProperty = new ReactiveProperty<RoomManager>(null);
         builder.RegisterValue(
-            roomProperty, 
-            new Type[] { typeof(AsyncReactiveProperty<RoomManager>), typeof(IReadOnlyAsyncReactiveProperty<RoomManager>) }
+            roomProperty,
+            new Type[] { typeof(ReactiveProperty<RoomManager>), typeof(ReadOnlyReactiveProperty<RoomManager>) }
         );
 
         if (_mapUIManager != null)
