@@ -36,11 +36,11 @@ public class MapGeneratorTest : MonoBehaviour
 
         if (canReachBoss)
         {
-            Debug.Log("Can reach boss");
+            //Debug.Log("Can reach boss");
         }
         else
         {
-            Debug.Log("Cannot reach boss");
+            //Debug.Log("Cannot reach boss");
         }
     }
 
@@ -48,7 +48,7 @@ public class MapGeneratorTest : MonoBehaviour
     {
         if (_config.Constraints.Count == 0)
         {   
-            Debug.Log("제약 조건 없음");
+            //Debug.Log("제약 조건 없음");
             return;
         }
 
