@@ -1,11 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Cysharp.Threading.Tasks;
-using Cysharp.Threading.Tasks.Linq;
 using Common;
 using Reflex.Attributes;
-using System.Threading;
+using System;
 using System.Collections.Generic;
 
 public class RoomClearFlowUI : MonoBehaviour
@@ -30,6 +28,9 @@ public class RoomClearFlowUI : MonoBehaviour
     private PlayerModel _playerModel;
     private MapUIManager _mapUIManager;
     private MapManager _mapManager;
+
+    private IDisposable _roomHandleSubscription;
+    private IDisposable _roomStateSubscription;
 
     [Inject]
     public void Construct(
@@ -56,7 +57,21 @@ public class RoomClearFlowUI : MonoBehaviour
             _mapUIManager.OnNodeSelected += OnMapNodeSelected;
         }
 
-        MonitorRoomChanges().Forget();
+        _roomHandleSubscription = _globalCurrentRoomHandle
+            .Subscribe(room =>
+            {
+                _roomStateSubscription?.Dispose();
+                _currentState = FlowState.None;
+
+                if (room == null) return;
+
+                _roomStateSubscription = room.CurrentRoomState
+                    .Subscribe(state =>
+                    {
+                        if (state == RoomState.Complete)
+                            StartClearFlow();
+                    });
+            });
     }
 
     private void OnDestroy()
@@ -65,32 +80,9 @@ public class RoomClearFlowUI : MonoBehaviour
         {
             _mapUIManager.OnNodeSelected -= OnMapNodeSelected;
         }
-    }
 
-    private async UniTaskVoid MonitorRoomChanges()
-    {
-        await foreach (var currentRoom in _globalCurrentRoomHandle)
-        {
-            if (currentRoom == null) continue;
-            MonitorCurrentRoomState(currentRoom).Forget();
-        }
-    }
-
-    private async UniTaskVoid MonitorCurrentRoomState(RoomManager room)
-    {
-        var destroyToken = this.GetCancellationTokenOnDestroy();
-        var roomDestroyToken = room.GetCancellationTokenOnDestroy();
-        var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(destroyToken, roomDestroyToken).Token;
-
-        try
-        {
-            await room.CurrentRoomState
-                .Where(state => state == RoomState.Complete)
-                .FirstAsync(linkedToken);
-
-            StartClearFlow();
-        }
-        catch (System.OperationCanceledException) { }
+        _roomHandleSubscription?.Dispose();
+        _roomStateSubscription?.Dispose();
     }
 
     private void StartClearFlow()
