@@ -11,6 +11,7 @@ public class PlayerDash : MonoBehaviour
     [Inject] private PlayerModel _model;
 
     private Rigidbody2D _rb;
+    private SpriteRenderer _spriteRenderer;
     private bool _isDashing = false;
     private CancellationTokenSource _dashCts;
 
@@ -19,6 +20,7 @@ public class PlayerDash : MonoBehaviour
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     void Start()
@@ -43,7 +45,7 @@ public class PlayerDash : MonoBehaviour
         _dashCts = new CancellationTokenSource();
         DashAsync(_dashCts.Token).Forget();
     }
-    
+
     private void CancelDash()
     {
         if (_dashCts != null)
@@ -57,7 +59,8 @@ public class PlayerDash : MonoBehaviour
     private async UniTaskVoid DashAsync(CancellationToken token)
     {
         _isDashing = true;
-        
+        SetAlpha(0.3f);
+
         Vector2 moveInput = _input.MoveDirection;
         Vector2 dashDirection;
 
@@ -71,19 +74,22 @@ public class PlayerDash : MonoBehaviour
             mousePos.z = 0;
             dashDirection = ((Vector2)(mousePos - transform.position)).normalized;
         }
-        
-        _rb.linearVelocity = dashDirection * _model.DashSpeed;
+
+        float elapsed = 0f;
 
         try
         {
-            await UniTask.Delay(
-                TimeSpan.FromSeconds(_model.DashDuration),
-                ignoreTimeScale: true,
-                cancellationToken: token
-            );
+            while (elapsed < _model.DashDuration)
+            {
+                float delta = Time.fixedUnscaledDeltaTime;
+                _rb.MovePosition(_rb.position + dashDirection * _model.DashSpeed * delta);
+                elapsed += delta;
+                await UniTask.WaitForFixedUpdate(token);
+            }
         }
         catch (OperationCanceledException)
         {
+            SetAlpha(1f);
             return;
         }
 
@@ -91,5 +97,16 @@ public class PlayerDash : MonoBehaviour
 
         _rb.linearVelocity = Vector2.zero;
         _isDashing = false;
+        SetAlpha(1f);
+    }
+
+
+    //애니메이션이 없어서 대쉬하는것 같지가 않아요
+    private void SetAlpha(float alpha)
+    {
+        if (_spriteRenderer == null) return;
+        var c = _spriteRenderer.color;
+        c.a = alpha;
+        _spriteRenderer.color = c;
     }
 }

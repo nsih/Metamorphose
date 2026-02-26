@@ -26,17 +26,10 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (_playerDash != null && _playerDash.IsDashing)
-        {
-            return;
-        }
-        
-        if (_input != null && _model != null)
-        {
-            Vector2 moveInput = _input.MoveDirection;
-            Vector2 movement = moveInput.normalized * _model.MoveSpeed;
-            
-            _rb.linearVelocity = movement;
-        }
+        if (_playerDash != null && _playerDash.IsDashing) return;
+        if (_input == null || _model == null) return;
+
+        Vector2 delta = _input.MoveDirection.normalized * _model.MoveSpeed * Time.fixedUnscaledDeltaTime;
+        _rb.MovePosition(_rb.position + delta);
     }
 }

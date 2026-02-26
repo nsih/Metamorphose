@@ -4,11 +4,10 @@ using BulletPro;
 
 public class PlayerAttack : MonoBehaviour
 {
-    // [Dependency]
     [Inject] private IInputService _input;
-    private PlayerModel _model; 
+    private PlayerModel _model;
 
-    [SerializeField] private BulletEmitter _mainEmitter; 
+    [SerializeField] private BulletEmitter _mainEmitter;
 
     private bool _isShooting = false;
     private float _fireTimer = 0f;
@@ -17,7 +16,7 @@ public class PlayerAttack : MonoBehaviour
     public void Construct(PlayerModel model)
     {
         _model = model;
-        
+
         if (_mainEmitter != null && _model.CurrentProfile != null)
         {
             _mainEmitter.emitterProfile = _model.CurrentProfile;
@@ -35,10 +34,10 @@ public class PlayerAttack : MonoBehaviour
 
         if (_fireTimer > 0)
         {
-            _fireTimer -= Time.deltaTime;
+            _fireTimer -= Time.unscaledDeltaTime;
         }
 
-        if (_input.IsAttackPressed) 
+        if (_input.IsAttackPressed)
         {
             if (_fireTimer <= 0)
             {
@@ -61,13 +60,9 @@ public class PlayerAttack : MonoBehaviour
             _mainEmitter.emitterProfile = _model.CurrentProfile;
         }
 
-        //_mainEmitter.Kill(); 
         _mainEmitter.Play();
-        
         _isShooting = true;
-
         ApplyDynamicStats();
-
         _fireTimer = _model.FireRate > 0 ? _model.FireRate : 0.05f;
     }
 
