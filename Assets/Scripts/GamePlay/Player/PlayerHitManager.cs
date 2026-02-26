@@ -68,7 +68,7 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
         //그레이즈 처리
         if (IsInvincible)
         {
-            Debug.Log("Graze");
+            //Debug.Log("Graze");
             
             if (_bulletTimeManager != null)
             {

@@ -11,8 +11,11 @@ public class BulletTimeManager : MonoBehaviour
     private float _defaultFixedDeltaTime;
     private CancellationTokenSource _cts;
 
-    // 외부에서 상태를 확인해야 한다면 프로퍼티로 제공
     public bool IsBulletTimeActive { get; private set; }
+
+    // 구독 포인트: 시각 연출, FMOD 훅 등
+    public event Action OnBulletTimeStart;
+    public event Action OnBulletTimeEnd;
 
     void Awake()
     {
@@ -23,40 +26,38 @@ public class BulletTimeManager : MonoBehaviour
     {
         if (_playerStat == null) return;
 
-        // 1. 기존에 실행 중인 불렛타임이 있다면 취소 (타이머 리셋 효과)
+        bool wasActive = IsBulletTimeActive;
+
         CancelCurrentTask();
 
-        // 2. 새로운 토큰 생성 및 실행
         _cts = new CancellationTokenSource();
-        ProcessBulletTime(_playerStat.SlowMotionDuration, _playerStat.TimeSlowFactor, _cts.Token).Forget();
+        ProcessBulletTime(_playerStat.SlowMotionDuration, _playerStat.TimeSlowFactor, wasActive, _cts.Token).Forget();
     }
 
-    private async UniTaskVoid ProcessBulletTime(float duration, float scale, CancellationToken token)
+    private async UniTaskVoid ProcessBulletTime(float duration, float scale, bool wasActive, CancellationToken token)
     {
-        // 상태값 변경
         IsBulletTimeActive = true;
-        
+
         try
         {
             SetTimeScale(scale);
-            Debug.Log($"Bullet Time On: {duration}s");
 
-            // ignoreTimeScale: true 필수
-            // 게임 시간이 느려져도, 실제 시간(Unscaled Time) 기준으로 duration만큼 기다림
+            // 이미 활성 중이었으면 이벤트 재발행 안함
+            if (!wasActive)
+            {
+                OnBulletTimeStart?.Invoke();
+            }
+
             await UniTask.Delay(TimeSpan.FromSeconds(duration), ignoreTimeScale: true, cancellationToken: token);
         }
-        catch (OperationCanceledException)
-        {
-            // TriggerSlowMotion에서 CancelCurrentTask()를 호출했을 때 여기로 튐
-        }
+        catch (OperationCanceledException) { }
         finally
         {
-            // 시간이 다 돼서 끝난 경우에만 원복
             if (!token.IsCancellationRequested)
             {
                 SetTimeScale(1f);
+                OnBulletTimeEnd?.Invoke();
                 IsBulletTimeActive = false;
-                Debug.Log("Bullet Time Off");
                 DisposeCTS();
             }
         }
@@ -65,7 +66,6 @@ public class BulletTimeManager : MonoBehaviour
     private void SetTimeScale(float scale)
     {
         Time.timeScale = scale;
-        // fixedDeltaTime 안맞추면 재앙이 일어난다
         Time.fixedDeltaTime = _defaultFixedDeltaTime * scale;
     }
 
@@ -86,8 +86,7 @@ public class BulletTimeManager : MonoBehaviour
 
     void OnDestroy()
     {
-        // 씬 이동이나 오브젝트 파괴 시 안전하게 정리
         CancelCurrentTask();
-        SetTimeScale(1f); // 강제 시간 복구
+        SetTimeScale(1f);
     }
 }

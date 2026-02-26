@@ -1,0 +1,351 @@
+fileFormatVersion: 2
+guid: 2f3b0aad5d5989d4e935b5e11f6e1063
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5949743877178116813
+    second: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_0
+  - first:
+      213: -3078442580836884406
+    second: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_1
+  - first:
+      213: 5209488844209746306
+    second: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_2
+  - first:
+      213: -3735646855631915561
+    second: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_3
+  - first:
+      213: -3421227541492408312
+    second: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_4
+  - first:
+      213: -8694457591358872864
+    second: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_5
+  - first:
+      213: -4192127593607930685
+    second: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_6
+  - first:
+      213: -7535267398954740849
+    second: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_7
+  - first:
+      213: 7201585020676175628
+    second: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_8
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_0
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 480
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcac1cf788cb19250800000000000000
+      internalID: 5949743877178116813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_1
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 50
+        width: 569
+        height: 545
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a40e7c378cc2745d0800000000000000
+      internalID: -3078442580836884406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_2
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 333
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2817b74b082db4840800000000000000
+      internalID: 5209488844209746306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_3
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 234
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d531c32af0582cc0800000000000000
+      internalID: -3735646855631915561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_4
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 160
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 800ef8d6dab5580d0800000000000000
+      internalID: -3421227541492408312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_5
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 13
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e22b58c2e4175780800000000000000
+      internalID: -8694457591358872864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_6
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 13
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ccd2e91a2292d5c0800000000000000
+      internalID: -4192127593607930685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_7
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 13
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8398b5693a5d6790800000000000000
+      internalID: -7535267398954740849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_8
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 13
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c077d21bb6b21f360800000000000000
+      internalID: 7201585020676175628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_0: 5949743877178116813
+      pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_1: -3078442580836884406
+      pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_2: 5209488844209746306
+      pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_3: -3735646855631915561
+      pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_4: -3421227541492408312
+      pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_5: -8694457591358872864
+      pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_6: -4192127593607930685
+      pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_7: -7535267398954740849
+      pngtree-giant-eye-tentacle-with-black-tendrils-floating-in-dark-fantasy-png-image_18778544_8: 7201585020676175628
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
