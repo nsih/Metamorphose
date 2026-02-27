@@ -6,7 +6,7 @@ namespace GamePlay
     public class SceneLoader : ISceneLoader
     {
         private const string LobbyScene = "Lobby";
-        private const string GamePlayScene = "GamePlay";
+        private const string GamePlayScene = "PlayerTest";
 
         public async UniTask LoadLobbyAsync()
         {

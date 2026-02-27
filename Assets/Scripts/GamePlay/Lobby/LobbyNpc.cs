@@ -1,0 +1,38 @@
+using System;
+using UnityEngine;
+
+namespace GamePlay
+{
+    public class LobbyNpc : MonoBehaviour
+    {
+        [SerializeField] private string _npcId = "companion_01";
+
+        // Yarn Spinner 연결 훅
+        public event Action<string> OnInteractRequested;
+
+        private bool _playerInRange = false;
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (!other.CompareTag("Player")) return;
+            _playerInRange = true;
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (!other.CompareTag("Player")) return;
+            _playerInRange = false;
+        }
+
+        private void Update()
+        {
+            if (_playerInRange && Input.GetKeyDown(KeyCode.E))
+            {
+                OnInteractRequested?.Invoke(_npcId);
+                Debug.Log($"interact: {_npcId}");
+            }
+        }
+
+        public string NpcId => _npcId;
+    }
+}
