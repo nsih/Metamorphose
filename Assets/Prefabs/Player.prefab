@@ -93,7 +93,6 @@ GameObject:
   - component: {fileID: 1948237730841851029}
   - component: {fileID: 6415796960832105585}
   - component: {fileID: 5874620046971301336}
-  - component: {fileID: 2839281900080305678}
   m_Layer: 5
   m_Name: BulletTimeCanvas
   m_TagString: Untagged
@@ -169,23 +168,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
---- !u!114 &2839281900080305678
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6225250432280308635}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!1 &6633858662862875220
 GameObject:
   m_ObjectHideFlags: 0
@@ -658,7 +640,6 @@ MonoBehaviour:
   - {fileID: 6457351591846653513}
   _silhouetteSprites:
   - {fileID: -3078442580836884406, guid: 2f3b0aad5d5989d4e935b5e11f6e1063, type: 3}
-  _silhouetteHoldDuration: 0.2
   _silhouetteFadeOut: 0.15
 --- !u!1 &8277777670179475997
 GameObject:
