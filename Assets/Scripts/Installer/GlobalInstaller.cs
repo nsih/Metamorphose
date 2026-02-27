@@ -4,9 +4,6 @@ using Reflex.Core;
 using TJR.Core.Interface;
 using UnityEngine;
 
-/// <summary>
-/// Root Installer for the game.
-/// </summary>
 public class GlobalInstaller : MonoBehaviour, IInstaller
 {
     [SerializeField] private PlayerStat _playerStatSO;
@@ -14,10 +11,11 @@ public class GlobalInstaller : MonoBehaviour, IInstaller
 
     public void InstallBindings(ContainerBuilder builder)
     {
-        //Debug.Log("Global Install Start");
         builder.RegisterValue(new AudioService(), new Type[] { typeof(IAudioService) });
         builder.RegisterValue(_playerStatSO, new Type[] { typeof(PlayerStat) });
         builder.RegisterValue(new PlayerModel(_playerStatSO, _startWeapon));
         builder.RegisterValue(new PlayerInputService(), new Type[] { typeof(IInputService) });
+        builder.RegisterValue(new SceneLoader(), new Type[] { typeof(ISceneLoader) });
+        builder.RegisterValue(new RunResultModel());
     }
 }

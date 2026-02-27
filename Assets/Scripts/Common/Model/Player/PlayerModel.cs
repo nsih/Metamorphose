@@ -11,13 +11,27 @@ public class PlayerModel : IDisposable
     public PlayerStatsSystem Stats { get; private set; }
     public RewardSystem Reward { get; private set; }
 
+    private readonly PlayerStat _baseStat;
+    private readonly PlayerWeaponData _baseWeapon;
+
     public PlayerModel(PlayerStat stat, PlayerWeaponData initialWeapon)
     {
+        _baseStat = stat;
+        _baseWeapon = initialWeapon;
+
         Health = new PlayerHealthSystem(stat.MaxHealth);
         Weapon = new PlayerWeaponSystem(initialWeapon);
         Dash = new PlayerDashSystem(stat);
         Stats = new PlayerStatsSystem(stat);
         Reward = new RewardSystem(this);
+    }
+
+    // 로비 진입 시 호출
+    public void ResetForNewRun()
+    {
+        Health.Reset();
+        Dash.Reset();
+        Weapon.SetWeapon(_baseWeapon);
     }
 
     // Health

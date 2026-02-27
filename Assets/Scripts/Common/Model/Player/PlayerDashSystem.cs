@@ -40,6 +40,20 @@ public class PlayerDashSystem : IDisposable
         return false;
     }
 
+    public void Reset()
+    {
+        // 기존 루프 종료
+        _cts?.Cancel();
+        _cts?.Dispose();
+
+        CurrentDashCount.Value = MaxDashChargeStack;
+        DashCooldownNormalized.Value = 0f;
+
+        // 루프 재시작
+        _cts = new CancellationTokenSource();
+        StartCooldownLoop(_cts.Token).Forget();
+    }
+
     private async UniTaskVoid StartCooldownLoop(CancellationToken token)
     {
         while (!token.IsCancellationRequested)

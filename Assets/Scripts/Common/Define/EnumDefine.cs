@@ -103,4 +103,11 @@ namespace Common
         Enemy,
         Environment
     }
+
+    public enum RunEndReason
+    {
+        None,
+        GameOver,
+        Clear
+    }
 }

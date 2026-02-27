@@ -62,6 +62,11 @@ public class PlayerHealthSystem : IDisposable
         MaxHP.AddModifier(new StatModifier(percent, StatModType.PercentAdd));
     }
 
+    public void Reset()
+    {
+        CurrentHP.Value = MaxHP.Value;
+    }
+
     public void Dispose()
     {
         if (MaxHP != null)

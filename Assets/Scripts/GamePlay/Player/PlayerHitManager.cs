@@ -10,17 +10,13 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
 
     private BulletReceiver _receiver;
     private SpriteRenderer _spriteRenderer;
-
-
     private PlayerBomb _playerBomb;
     private PlayerDash _playerDash;
     private BulletTimeManager _bulletTimeManager;
 
-
-    //public bool IsInvincible => (_playerDash != null && _playerDash.IsDashing);
-    public bool IsInvincible => 
-    (_playerDash != null && _playerDash.IsDashing) || 
-    (_playerBomb != null && _playerBomb.IsActive);
+    public bool IsInvincible =>
+        (_playerDash != null && _playerDash.IsDashing) ||
+        (_playerBomb != null && _playerBomb.IsActive);
 
     void Awake()
     {
@@ -28,7 +24,6 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
         _playerDash = GetComponent<PlayerDash>();
         _playerBomb = GetComponent<PlayerBomb>();
         _bulletTimeManager = GetComponent<BulletTimeManager>();
-
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
@@ -46,83 +41,74 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
         }
     }
 
+    void OnDestroy()
+    {
+        if (_receiver != null)
+        {
+            _receiver.OnHitByBullet.RemoveListener(HandleBulletHit);
+        }
+    }
+
     public void TakeDamage(int dmg)
     {
         if (_model.CurrentHP.Value <= 0) return;
         if (IsInvincible) return;
-        
+
         _model.TakeDamage(dmg);
         PlayHitFeedback().Forget();
-        
+
         if (_model.CurrentHP.Value <= 0)
         {
-            Die();
+            OnDead();
         }
     }
 
     public void HandleBulletHit(Bullet bullet, Vector3 hitPoint)
     {
-        // 이미 죽었으면 무시 (Model 데이터 확인)
         if (_model.CurrentHP.Value <= 0) return;
-        
-        //그레이즈 처리
+
         if (IsInvincible)
         {
-            //Debug.Log("Graze");
-            
             if (_bulletTimeManager != null)
-            {
                 _bulletTimeManager.TriggerSlowMotion();
-            }
-            
-            // 그레이즈 시 bullet.Die() 호출 안 함
-            return; 
+            return;
         }
 
-        float damage = 1; // 기본 데미지
-        if (bullet.dynamicSolver != null)
+        float damage = 1f;
+        if (bullet != null)
         {
             damage = bullet.moduleParameters.GetFloat("_Damage");
-            if (damage == 0) damage = 1;             
+            if (damage == 0) damage = 1;
         }
 
-        //Debug.Log($"dmg: {damage}");
-        
         _model.TakeDamage(damage);
         PlayHitFeedback().Forget();
 
         bullet.Die();
-        
+
         if (_model.CurrentHP.Value <= 0)
         {
-            Die();
+            OnDead();
         }
     }
 
-    private void Die()
+    // 시각 비활성화만 담당 — 씬 전환은 RunEndManager가 OnDeath 이벤트로 처리
+    private void OnDead()
     {
-        Debug.Log("Game Over");
-        
-        // 임시 처리
-        gameObject.SetActive(false); 
+        gameObject.SetActive(false);
     }
 
-    //
     private async UniTaskVoid PlayHitFeedback()
     {
-        //맞을때 잠깐 번쩍이는데 무적시간 추가할때 이것도 바꿔야함
-        if (_spriteRenderer != null)
-        {
-            var token = this.GetCancellationTokenOnDestroy();
-            try
-            {
-                _spriteRenderer.color = Color.red;
-                await UniTask.Delay(100, cancellationToken: token);
-                _spriteRenderer.color = Color.white;
-            }
-            catch (System.OperationCanceledException) { }
-        }
+        if (_spriteRenderer == null) return;
 
-        // 카메라 흔드는 효과 추가? (아직 안만듬)
+        var token = this.GetCancellationTokenOnDestroy();
+        try
+        {
+            _spriteRenderer.color = Color.red;
+            await UniTask.Delay(100, cancellationToken: token);
+            _spriteRenderer.color = Color.white;
+        }
+        catch (System.OperationCanceledException) { }
     }
 }
