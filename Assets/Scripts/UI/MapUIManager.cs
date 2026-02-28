@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 using Common;
 using System;
@@ -50,19 +51,79 @@ public class MapUIManager : MonoBehaviour
 
         _maxNodesPerLayer = CalculateMaxNodesPerLayer(map);
 
-        // center pivot 유지 (노드 Y 좌표 계산이 이 기준)
         _contentRect.anchorMin = new Vector2(0.5f, 0.5f);
         _contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         _contentRect.pivot = new Vector2(0.5f, 0.5f);
         _contentRect.anchoredPosition = Vector2.zero;
 
-        CalculateContentSize(map);
+        // 일단 임시 크기로 노드 먼저 생성
+        CalculateContentSize(map, 0f);
         CreateNodeUIs(map, currentNode);
         DrawConnections();
 
+        StartCoroutine(ScrollAfterLayout());
+    }
+
+    private IEnumerator ScrollAfterLayout()
+    {
+        // 레이아웃 빌드 완료 대기
+        yield return new WaitForEndOfFrame();
+
+        // 실제 인스턴스에서 노드 크기 읽기
+        float nodeHeight = GetActualNodeHeight();
+        float nodeWidth = GetActualNodeWidth();
+
+        // 실제 크기 기반으로 content 재계산
+        CalculateContentSize(_currentMap, nodeHeight);
+
+        // 레이아웃 재적용
         Canvas.ForceUpdateCanvases();
 
-        ScrollToCurrentNode();
+        float contentHeight = _contentRect.rect.height;
+        float viewportHeight = _scrollRect.viewport.rect.height;
+
+        _scrollRect.StopMovement();
+        _scrollRect.vertical = contentHeight > viewportHeight;
+
+        _contentRect.anchoredPosition = new Vector2(CalculateHorizontalOffset(nodeWidth), 0f);
+    }
+
+    private float GetActualNodeHeight()
+    {
+        foreach (var rect in _nodePositions.Values)
+        {
+            if (rect != null)
+                return rect.rect.height;
+        }
+        return 0f;
+    }
+
+    private float GetActualNodeWidth()
+    {
+        foreach (var rect in _nodePositions.Values)
+        {
+            if (rect != null)
+                return rect.rect.width;
+        }
+        return 0f;
+    }
+
+    private float CalculateHorizontalOffset(float nodeWidth)
+    {
+        if (_currentNode == null || !_nodePositions.ContainsKey(_currentNode))
+            return 0f;
+
+        float contentWidth = _contentRect.rect.width;
+        float viewportWidth = _scrollRect.viewport.rect.width;
+
+        if (contentWidth <= viewportWidth)
+            return 0f;
+
+        float nodeX = _nodePositions[_currentNode].anchoredPosition.x;
+        float maxOffset = (contentWidth - viewportWidth) / 2f;
+        float targetOffset = -nodeX;
+
+        return Mathf.Clamp(targetOffset, -maxOffset, maxOffset);
     }
 
     private int CalculateMaxNodesPerLayer(Map map)
@@ -79,41 +140,11 @@ public class MapUIManager : MonoBehaviour
         return maxNodes;
     }
 
-    private void ScrollToCurrentNode()
-    {
-        // vertical: 0.5f = 중앙. center pivot이므로 중앙이 정위치
-        _scrollRect.verticalNormalizedPosition = 0.5f;
-
-        if (_currentNode == null || !_nodePositions.ContainsKey(_currentNode))
-        {
-            _scrollRect.horizontalNormalizedPosition = 0f;
-            return;
-        }
-
-        RectTransform currentNodeRect = _nodePositions[_currentNode];
-
-        float contentWidth = _contentRect.rect.width;
-        float viewportWidth = _scrollRect.viewport.rect.width;
-
-        if (contentWidth <= viewportWidth)
-        {
-            _scrollRect.horizontalNormalizedPosition = 0f;
-            return;
-        }
-
-        float nodeWorldX = currentNodeRect.anchoredPosition.x;
-        float contentLeftEdge = -contentWidth / 2f;
-        float nodePositionInContent = nodeWorldX - contentLeftEdge;
-        float targetPosition = nodePositionInContent - (viewportWidth / 2f);
-        float scrollableWidth = contentWidth - viewportWidth;
-
-        _scrollRect.horizontalNormalizedPosition = Mathf.Clamp01(targetPosition / scrollableWidth);
-    }
-
-    private void CalculateContentSize(Map map)
+    private void CalculateContentSize(Map map, float nodeHeight)
     {
         float width = map.LayerCount * _horizontalSpacing + _padding * 2;
-        float height = _maxNodesPerLayer * _verticalSpacing + _padding * 2;
+        // 노드 중심 간격 범위 + 노드 실제 높이(위아래 절반씩) + 패딩
+        float height = (_maxNodesPerLayer - 1) * _verticalSpacing + nodeHeight + _padding * 2;
 
         _contentRect.sizeDelta = new Vector2(width, height);
     }
