@@ -50,6 +50,7 @@ public class MapUIManager : MonoBehaviour
 
         _maxNodesPerLayer = CalculateMaxNodesPerLayer(map);
 
+        // center pivot 유지 (노드 Y 좌표 계산이 이 기준)
         _contentRect.anchorMin = new Vector2(0.5f, 0.5f);
         _contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         _contentRect.pivot = new Vector2(0.5f, 0.5f);
@@ -60,27 +61,29 @@ public class MapUIManager : MonoBehaviour
         DrawConnections();
 
         Canvas.ForceUpdateCanvases();
-        
+
         ScrollToCurrentNode();
     }
 
     private int CalculateMaxNodesPerLayer(Map map)
     {
         int maxNodes = 0;
-        for(int layer = 0; layer < map.LayerCount; layer++)
+        for (int layer = 0; layer < map.LayerCount; layer++)
         {
             List<MapNode> nodes = map.GetNodesInLayer(layer);
-            if(nodes.Count > maxNodes)
+            if (nodes.Count > maxNodes)
             {
                 maxNodes = nodes.Count;
             }
         }
-
         return maxNodes;
     }
 
     private void ScrollToCurrentNode()
     {
+        // vertical: 0.5f = 중앙. center pivot이므로 중앙이 정위치
+        _scrollRect.verticalNormalizedPosition = 0.5f;
+
         if (_currentNode == null || !_nodePositions.ContainsKey(_currentNode))
         {
             _scrollRect.horizontalNormalizedPosition = 0f;
@@ -88,10 +91,10 @@ public class MapUIManager : MonoBehaviour
         }
 
         RectTransform currentNodeRect = _nodePositions[_currentNode];
-        
+
         float contentWidth = _contentRect.rect.width;
         float viewportWidth = _scrollRect.viewport.rect.width;
-        
+
         if (contentWidth <= viewportWidth)
         {
             _scrollRect.horizontalNormalizedPosition = 0f;
@@ -99,19 +102,15 @@ public class MapUIManager : MonoBehaviour
         }
 
         float nodeWorldX = currentNodeRect.anchoredPosition.x;
-        
         float contentLeftEdge = -contentWidth / 2f;
         float nodePositionInContent = nodeWorldX - contentLeftEdge;
-        
         float targetPosition = nodePositionInContent - (viewportWidth / 2f);
-        
         float scrollableWidth = contentWidth - viewportWidth;
-        float normalizedPosition = Mathf.Clamp01(targetPosition / scrollableWidth);
-        
-        _scrollRect.horizontalNormalizedPosition = normalizedPosition;
+
+        _scrollRect.horizontalNormalizedPosition = Mathf.Clamp01(targetPosition / scrollableWidth);
     }
 
-    void CalculateContentSize(Map map)
+    private void CalculateContentSize(Map map)
     {
         float width = map.LayerCount * _horizontalSpacing + _padding * 2;
         float height = _maxNodesPerLayer * _verticalSpacing + _padding * 2;
@@ -119,9 +118,9 @@ public class MapUIManager : MonoBehaviour
         _contentRect.sizeDelta = new Vector2(width, height);
     }
 
-    void CreateNodeUIs(Map map, MapNode currentNode)
+    private void CreateNodeUIs(Map map, MapNode currentNode)
     {
-        for(int layer = 0; layer < map.LayerCount; layer++)
+        for (int layer = 0; layer < map.LayerCount; layer++)
         {
             List<MapNode> nodes = map.GetNodesInLayer(layer);
             foreach (var node in nodes)
@@ -146,9 +145,9 @@ public class MapUIManager : MonoBehaviour
         float totalWidth = (_currentMap.LayerCount - 1) * _horizontalSpacing;
         float startX = -totalWidth / 2f;
         float x = startX + (layer * _horizontalSpacing);
-        
+
         float y;
-        
+
         if (type == RoomType.Start || type == RoomType.Boss)
         {
             y = 0f;
@@ -163,7 +162,7 @@ public class MapUIManager : MonoBehaviour
         System.Random rng = new System.Random(_layoutSeed + nodeId);
         float jitterX = ((float)rng.NextDouble() * 2f - 1f) * _positionJitter;
         float jitterY = ((float)rng.NextDouble() * 2f - 1f) * _positionJitter;
-        
+
         return new Vector2(x + jitterX, y + jitterY);
     }
 
@@ -186,17 +185,17 @@ public class MapUIManager : MonoBehaviour
 
     public void OnNodeClicked(MapNode node)
     {
-        Debug.Log($"MapUI: 노드 클릭됨 - {node}");
+        Debug.Log($"MapUI: node clicked - {node}");
 
         if (node.State != NodeState.Available)
         {
-            Debug.LogWarning($"접근 불가: {node.State} 상태");
+            Debug.LogWarning($"MapUI: invalid state - {node.State}");
             return;
         }
 
         if (!_currentMap.IsNodeConnected(_currentNode.NodeID, node.NodeID))
         {
-            Debug.LogWarning($"직접 연결되지 않은 노드: {node}");
+            Debug.LogWarning($"MapUI: not connected - {node}");
             return;
         }
 
