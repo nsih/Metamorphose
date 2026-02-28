@@ -18,13 +18,11 @@ public class LobbyController : MonoBehaviour
         if (_runResultModel.LastResult.Value != RunEndReason.None)
         {
             Debug.Log($"last run: {_runResultModel.LastResult.Value}");
-            // TODO: 결과 UI 연결 지점
         }
 
         _runResultModel.LastResult.Value = RunEndReason.None;
     }
 
-    // StartButton OnClick에 연결
     public void StartRun()
     {
         if (_isLoading) return;
@@ -34,6 +32,7 @@ public class LobbyController : MonoBehaviour
 
     private async UniTaskVoid LoadGamePlay()
     {
+        Time.timeScale = 1f;
         await _sceneLoader.LoadGamePlayAsync();
     }
 }
