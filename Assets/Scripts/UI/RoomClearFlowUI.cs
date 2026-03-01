@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using TMPro;
 using Common;
 using Reflex.Attributes;
-using System;
 using System.Collections.Generic;
 using R3;
 
@@ -16,9 +15,6 @@ public class RoomClearFlowUI : MonoBehaviour
     [SerializeField] private Transform _rewardButtonContainer;
     [SerializeField] private Button _rewardButtonPrefab;
 
-    [Header("Data")]
-    [SerializeField] private RewardLibrary _rewardLibrary;
-
     [Header("References")]
     [SerializeField] private MapToggleController _mapToggleController;
 
@@ -29,21 +25,27 @@ public class RoomClearFlowUI : MonoBehaviour
     private PlayerModel _playerModel;
     private MapUIManager _mapUIManager;
     private MapManager _mapManager;
+    private ItemRepository _itemRepository;
+    private ItemApplyService _itemApplyService;
 
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
-    private IDisposable _roomStateSubscription;
+    private System.IDisposable _roomStateSubscription;
 
     [Inject]
     public void Construct(
         ReactiveProperty<RoomManager> globalHandle,
         PlayerModel playerModel,
         MapUIManager mapUIManager,
-        MapManager mapManager)
+        MapManager mapManager,
+        ItemRepository itemRepository,
+        ItemApplyService itemApplyService)
     {
         _globalCurrentRoomHandle = globalHandle;
         _playerModel = playerModel;
         _mapUIManager = mapUIManager;
         _mapManager = mapManager;
+        _itemRepository = itemRepository;
+        _itemApplyService = itemApplyService;
     }
 
     private void Awake()
@@ -54,9 +56,7 @@ public class RoomClearFlowUI : MonoBehaviour
     private void Start()
     {
         if (_mapUIManager != null)
-        {
             _mapUIManager.OnNodeSelected += OnMapNodeSelected;
-        }
 
         _globalCurrentRoomHandle
             .Subscribe(room =>
@@ -79,9 +79,7 @@ public class RoomClearFlowUI : MonoBehaviour
     private void OnDestroy()
     {
         if (_mapUIManager != null)
-        {
             _mapUIManager.OnNodeSelected -= OnMapNodeSelected;
-        }
 
         _disposables.Dispose();
         _roomStateSubscription?.Dispose();
@@ -120,83 +118,42 @@ public class RoomClearFlowUI : MonoBehaviour
     private void GenerateRewardButtons()
     {
         foreach (Transform child in _rewardButtonContainer)
-        {
             Destroy(child.gameObject);
-        }
 
-        if (_rewardLibrary == null || _rewardButtonPrefab == null) return;
+        if (_rewardButtonPrefab == null) return;
 
-        List<RewardData> rewards = _rewardLibrary.GetRandomRewards(_playerModel.RewardChoiceCount);
+        List<ItemSO> items = _itemRepository.GetRandomRewards(
+            _playerModel.RewardChoiceCount,
+            _itemApplyService.Registry);
 
-        foreach (var reward in rewards)
+        foreach (var item in items)
         {
-            if (reward == null) continue;
+            if (item == null) continue;
 
             Button btn = Instantiate(_rewardButtonPrefab, _rewardButtonContainer);
 
             var text = btn.GetComponentInChildren<TextMeshProUGUI>();
             if (text != null)
-            {
-                string effectsSummary = GetEffectsSummary(reward);
-                text.text = $"[{reward.Rarity}]\n{reward.DisplayName}\n\n{effectsSummary}";
-            }
+                text.text = BuildItemText(item);
 
-            RewardData capturedReward = reward;
-            btn.onClick.AddListener(() => OnRewardSelected(capturedReward));
+            ItemSO captured = item;
+            btn.onClick.AddListener(() => OnItemSelected(captured));
         }
     }
 
-    private string GetEffectsSummary(RewardData reward)
+    private string BuildItemText(ItemSO item)
     {
-        if (reward.Effects == null || reward.Effects.Count == 0)
-        {
-            return reward.Description;
-        }
-
-        if (reward.Effects.Count == 1)
-        {
-            return reward.Description;
-        }
-
-        List<string> lines = new List<string>();
-        foreach (var effect in reward.Effects)
-        {
-            lines.Add($"• {GetEffectDescription(effect)}");
-        }
-
-        return string.Join("\n", lines);
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"[{item.tier}]");
+        sb.AppendLine(item.nameKr);
+        sb.AppendLine();
+        sb.Append(item.description);
+        return sb.ToString();
     }
 
-    private string GetEffectDescription(RewardEffect effect)
+    private void OnItemSelected(ItemSO item)
     {
-        switch (effect.Type)
-        {
-            case RewardType.MaxHP:
-                return $"최대 체력 +{effect.Value}";
-            case RewardType.MaxHPPercent:
-                return $"최대 체력 +{effect.Value * 100}%";
-            case RewardType.Heal:
-                return $"체력 회복 +{effect.Value}";
-            case RewardType.Damage:
-                return $"공격력 +{effect.Value}";
-            case RewardType.DamagePercent:
-                return $"공격력 +{effect.Value * 100}%";
-            case RewardType.DamageMultiplier:
-                return $"공격력 ×{effect.Value}";
-            case RewardType.AttackSpeed:
-                return $"공격 속도 +{effect.Value * 100}%";
-            case RewardType.Multishot:
-                return $"발사체 +{effect.Value}";
-            case RewardType.MoveSpeed:
-                return $"이동 속도 +{effect.Value}";
-            default:
-                return $"{effect.Type} +{effect.Value}";
-        }
-    }
-
-    private void OnRewardSelected(RewardData reward)
-    {
-        _playerModel?.Reward.ApplyReward(reward);
+        _itemApplyService.Apply(item);
         SetState(FlowState.MapSelect);
     }
 

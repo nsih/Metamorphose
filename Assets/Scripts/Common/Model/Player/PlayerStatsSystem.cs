@@ -1,26 +1,20 @@
+using Common;
+using Common.Model;
+
 public class PlayerStatsSystem
 {
-    public float MoveSpeed { get; private set; }
-    public int RewardChoiceCount { get; private set; }
-    
-    private PlayerStat _stat;
+    private readonly PlayerStat _stat;
+
+    public ModifiableStat MoveSpeed { get; private set; }
+    public ModifiableStat RewardChoiceCount { get; private set; }
+
     public float TimeSlowFactor => _stat.TimeSlowFactor;
     public float SlowMotionDuration => _stat.SlowMotionDuration;
 
     public PlayerStatsSystem(PlayerStat stat)
     {
         _stat = stat;
-        MoveSpeed = stat.MoveSpeed;
-        RewardChoiceCount = stat.RewardChoiceCount;
-    }
-
-    public void IncreaseMoveSpeed(float amount)
-    {
-        MoveSpeed += amount;
-    }
-
-    public void IncreaseRewardChoiceCount(int amount)
-    {
-        RewardChoiceCount += amount;
+        MoveSpeed = new ModifiableStat(stat.MoveSpeed);
+        RewardChoiceCount = new ModifiableStat(stat.RewardChoiceCount);
     }
 }

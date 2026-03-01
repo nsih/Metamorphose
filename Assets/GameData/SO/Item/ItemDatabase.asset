@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 417ef5017f016784a824415748821d9d, type: 3}
+  m_Name: ItemDatabase
+  m_EditorClassIdentifier: 
+  items:
+  - {fileID: 11400000, guid: 773874fe99f0e3f4f80d15af9427bc97, type: 2}
+  - {fileID: 11400000, guid: 5c3497a19eaa3ba4fad3355b902aa308, type: 2}
+  - {fileID: 11400000, guid: c34f79c500e161e4fa7f96c3d498fb8b, type: 2}
+  - {fileID: 11400000, guid: 78c9891582b28bc4690a997df52204f9, type: 2}
+  - {fileID: 11400000, guid: 2fc220ea2f598ac4eb52047c7ff5b1b9, type: 2}
+  commonChance: 0.7
+  rareChance: 0.25
+  bossChance: 0.05

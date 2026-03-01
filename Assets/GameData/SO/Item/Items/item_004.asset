@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43a6a82993b329b4682ec867f3373e82, type: 3}
+  m_Name: item_004
+  m_EditorClassIdentifier: 
+  itemId: item_004
+  itemName: Sniper's Lens
+  nameKr: "\uC800\uACA9\uC218\uC758 \uB80C\uC988"
+  description: "\uC0AC\uAC70\uB9AC\uC640 \uD22C\uC0AC\uCCB4 \uC18D\uB3C4\uB97C \uD06C\uAC8C
+    \uAC15\uD654\uD569\uB2C8\uB2E4."
+  tier: 2
+  itemType: 0
+  isUnique: 0
+  sprite: {fileID: 0}
+  spritePath: Items/Sprites/placeholder
+  statModifiers:
+  - statName: Range
+    value: 0.5
+    modType: 200
+  - statName: SpeedScale
+    value: 0.2
+    modType: 200
+  onPickupHeal: 0
+  activeCooldown: 0
+  tags:
+  - utility
+  - vision

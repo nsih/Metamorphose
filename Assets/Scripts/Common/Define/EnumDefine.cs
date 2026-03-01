@@ -110,4 +110,22 @@ namespace Common
         GameOver,
         Clear
     }
+
+
+
+
+    //  item
+    public enum ItemTier
+    {
+        Common,
+        Uncommon,
+        Rare,
+        Boss
+    }
+
+    public enum ItemType
+    {
+        Passive,
+        Active
+    }
 }
