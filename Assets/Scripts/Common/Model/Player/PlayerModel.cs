@@ -2,6 +2,7 @@ using System;
 using BulletPro;
 using Common;
 using R3;
+using UnityEngine;
 
 public class PlayerModel : IDisposable
 {
@@ -9,29 +10,31 @@ public class PlayerModel : IDisposable
     public PlayerWeaponSystem Weapon { get; private set; }
     public PlayerDashSystem Dash { get; private set; }
     public PlayerStatsSystem Stats { get; private set; }
-    public RewardSystem Reward { get; private set; }
 
     private readonly PlayerStat _baseStat;
     private readonly PlayerWeaponData _baseWeapon;
+    private readonly AcquiredItemRegistry _acquiredItemRegistry;
 
-    public PlayerModel(PlayerStat stat, PlayerWeaponData initialWeapon)
+    public PlayerModel(PlayerStat stat, PlayerWeaponData initialWeapon, AcquiredItemRegistry registry)
     {
         _baseStat = stat;
         _baseWeapon = initialWeapon;
+        _acquiredItemRegistry = registry;
 
         Health = new PlayerHealthSystem(stat.MaxHealth);
         Weapon = new PlayerWeaponSystem(initialWeapon);
         Dash = new PlayerDashSystem(stat);
         Stats = new PlayerStatsSystem(stat);
-        Reward = new RewardSystem(this);
     }
 
-    // 로비 진입 시 호출
     public void ResetForNewRun()
     {
         Health.Reset();
         Dash.Reset();
         Weapon.SetWeapon(_baseWeapon);
+        _acquiredItemRegistry.Clear();
+
+        Debug.Log("player model reset");
     }
 
     // Health
@@ -61,12 +64,12 @@ public class PlayerModel : IDisposable
     public bool TryConsumeDash() => Dash.TryConsumeDash();
 
     // Stats
-    public float MoveSpeed => Stats.MoveSpeed;
+    public float MoveSpeed => Stats.MoveSpeed.Value;
     public float TimeSlowFactor => Stats.TimeSlowFactor;
     public float SlowMotionDuration => Stats.SlowMotionDuration;
-    public int RewardChoiceCount => Stats.RewardChoiceCount;
+    public int RewardChoiceCount => (int)Stats.RewardChoiceCount.Value;
 
-    // Reward
+    // stat modifiers (Step 4에서 ItemApplyService로 이전 예정)
     public void IncreaseMaxHP(float amount) => Health.AddMaxHP(amount);
     public void IncreaseDamage(float amount) => Weapon.AddDamage(amount);
     public void IncreaseMultishot(int amount) => Weapon.AddProjectileCount(amount);
