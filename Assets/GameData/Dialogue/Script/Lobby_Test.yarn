@@ -2,7 +2,7 @@
 tags:
 ---
 <<if $BossDefeated>>
-    NPC: 보스를 처치했군.
+    NPC: 어케이겼노 시발련ㄴ아
 <<else>>
     NPC: 삭제해라 애송이.
 <<endif>>

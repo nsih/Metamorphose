@@ -9,25 +9,25 @@ public class GameVariableStorage : VariableStorageBehaviour
     private Dictionary<string, float> _numbers = new Dictionary<string, float>();
     private Dictionary<string, string> _strings = new Dictionary<string, string>();
 
-    private void Awake()
+    private void Start()
     {
-        SetValue("$BossDefeated", false);
+        SetValue("$BossDefeated", true);
         SetValue("$ItemGiven", false);
     }
 
     public override bool TryGetValue<T>(string variableName, out T result)
     {
-        if (typeof(T) == typeof(bool) && _bools.TryGetValue(variableName, out bool boolVal))
+        if (_bools.TryGetValue(variableName, out bool boolVal))
         {
             result = (T)(object)boolVal;
             return true;
         }
-        if (typeof(T) == typeof(float) && _numbers.TryGetValue(variableName, out float floatVal))
+        if (_numbers.TryGetValue(variableName, out float floatVal))
         {
             result = (T)(object)floatVal;
             return true;
         }
-        if (typeof(T) == typeof(string) && _strings.TryGetValue(variableName, out string stringVal))
+        if (_strings.TryGetValue(variableName, out string stringVal))
         {
             result = (T)(object)stringVal;
             return true;
@@ -52,13 +52,11 @@ public class GameVariableStorage : VariableStorageBehaviour
         _bools[variableName] = boolValue;
     }
 
-    // Unity 코드에서 플래그 읽기
     public bool GetBool(string variableName, bool defaultValue = false)
     {
         return _bools.TryGetValue(variableName, out bool val) ? val : defaultValue;
     }
 
-    // Unity 코드에서 플래그 쓰기
     public void SetBool(string variableName, bool value)
     {
         _bools[variableName] = value;
