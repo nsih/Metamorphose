@@ -1,5 +1,9 @@
 ﻿title: Lobby_Test
 tags:
 ---
-NPC: 연결 테스트.
+<<if $BossDefeated>>
+    NPC: 어케이겼노시발련ㄴ아
+<<else>>
+    NPC: 삭제해라 애송이
+<<endif>>
 ===
