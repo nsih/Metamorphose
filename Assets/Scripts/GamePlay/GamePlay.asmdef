@@ -10,7 +10,8 @@
         "Kybernetik.Animancer",
         "Common",
         "FMODUnity",
-        "TJR.Core.Interface"
+        "TJR.Core.Interface",
+        "YarnSpinner.Unity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
