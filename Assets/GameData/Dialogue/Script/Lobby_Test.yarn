@@ -1,9 +1,9 @@
-﻿title: Lobby_Test
+﻿title: NPC_companion_01
 tags:
 ---
 <<if $BossDefeated>>
-    NPC: 어케이겼노시발련ㄴ아
+    NPC: 보스를 처치했군.
 <<else>>
-    NPC: 삭제해라 애송이
+    NPC: 삭제해라 애송이.
 <<endif>>
 ===
