@@ -30,23 +30,19 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
     void Start()
     {
         if (_model == null)
-        {
             Debug.LogError("PlayerHitManager: DI Error");
-            return;
-        }
-
-        if (_receiver != null)
-        {
-            _receiver.OnHitByBullet.AddListener(HandleBulletHit);
-        }
     }
 
-    void OnDestroy()
+    void OnEnable()
     {
         if (_receiver != null)
-        {
+            _receiver.OnHitByBullet.AddListener(HandleBulletHit);
+    }
+
+    void OnDisable()
+    {
+        if (_receiver != null)
             _receiver.OnHitByBullet.RemoveListener(HandleBulletHit);
-        }
     }
 
     public void TakeDamage(int dmg)
@@ -58,9 +54,7 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
         PlayHitFeedback().Forget();
 
         if (_model.CurrentHP.Value <= 0)
-        {
             OnDead();
-        }
     }
 
     public void HandleBulletHit(Bullet bullet, Vector3 hitPoint)
@@ -87,12 +81,10 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
         bullet.Die();
 
         if (_model.CurrentHP.Value <= 0)
-        {
             OnDead();
-        }
     }
 
-    // 시각 비활성화만 담당 — 씬 전환은 RunEndManager가 OnDeath 이벤트로 처리
+    // 시각 비활성화만 담당, 씬 전환은 RunEndManager가 처리
     private void OnDead()
     {
         gameObject.SetActive(false);

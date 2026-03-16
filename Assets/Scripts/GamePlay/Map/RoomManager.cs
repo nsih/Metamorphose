@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using Reflex.Attributes;
 using System.Linq;
 using R3;
+using UnityEngine.InputSystem;
 
 using Random = UnityEngine.Random;
 
@@ -69,13 +70,14 @@ public class RoomManager : MonoBehaviour
         _roomState?.Dispose();
     }
 
+    // 교체
     private void Update()
+{
+    if (Keyboard.current.rKey.wasPressedThisFrame)
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            ResetRoom();
-        }
+        ResetRoom();
     }
+}
 
     public void StartRoomEvent()
     {

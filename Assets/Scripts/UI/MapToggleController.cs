@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Reflex.Attributes;
 
 public class MapToggleController : MonoBehaviour
@@ -6,9 +7,6 @@ public class MapToggleController : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject _mapScrollView;
     [SerializeField] private MapUIManager _mapUIManager;
-
-    [Header("Settings")]
-    [SerializeField] private KeyCode _toggleKey = KeyCode.Tab;
 
     private MapManager _mapManager;
 
@@ -32,7 +30,7 @@ public class MapToggleController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(_toggleKey))
+        if (Keyboard.current.tabKey.wasPressedThisFrame)
         {
             ToggleMap();
         }
@@ -52,7 +50,7 @@ public class MapToggleController : MonoBehaviour
 
         if (_mapManager == null || _mapManager.CurrentMap == null || _mapManager.CurrentNode == null)
         {
-            Debug.LogWarning("MapToggle: map data not ready");
+            Debug.Log("MapToggle: map data not ready");
             return;
         }
 
@@ -86,7 +84,7 @@ public class MapToggleController : MonoBehaviour
 
         if (_mapManager == null || _mapManager.CurrentMap == null || _mapManager.CurrentNode == null)
         {
-            Debug.LogWarning("MapToggle: map data not ready");
+            Debug.Log("MapToggle: map data not ready");
             return;
         }
 
