@@ -34,7 +34,7 @@ public class PlayerModel : IDisposable
         Weapon.SetWeapon(_baseWeapon);
         _acquiredItemRegistry.Clear();
 
-        Debug.Log("player model reset");
+        //Debug.Log("player model reset");
     }
 
     // Health
