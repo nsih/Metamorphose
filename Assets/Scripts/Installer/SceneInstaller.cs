@@ -1,7 +1,6 @@
 using Reflex.Core;
 using UnityEngine;
 using System;
-using Reflex.Extensions;
 using GamePlay;
 using FMODUnity;
 using TJR.Core.Interface;
@@ -13,9 +12,8 @@ public class SceneInstaller : MonoBehaviour, IInstaller
     [SerializeField] private MapUIManager _mapUIManager;
     [SerializeField] private MapManager _mapManager;
     [SerializeField] private EnemyPoolManager _enemyPoolManager;
-    [SerializeField] private EventReference _musicEventReference;
 
-    ContainerBuilder _builder;
+    [SerializeField] private EventReference _gameplayBGM;
 
     public void InstallBindings(ContainerBuilder builder)
     {
@@ -38,6 +36,11 @@ public class SceneInstaller : MonoBehaviour, IInstaller
 
     void OnBuilt(Container container)
     {
-        // container.Single<IAudioService>().PlayMusic(_musicEventReference);
+        var audio = container.Single<IAudioService>();
+
+        if (_gameplayBGM.IsNull)
+            audio.PlayMusic(FMODEvents.Music.Gameplay);
+        else
+            audio.PlayMusic(_gameplayBGM);
     }
 }
