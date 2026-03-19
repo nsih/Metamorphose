@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Audio/AudioService.cs
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,10 +15,8 @@ namespace GamePlay
         List<EventInstance> _eventInstances = new List<EventInstance>();
 
         public AudioService()
-        {       
+        {
             _masterBus = RuntimeManager.GetBus("bus:/");
-            //Debug.Log("AudioService init");
-            //Debug.Log($"Bank 로드 여부: {RuntimeManager.HaveAllBanksLoaded}");
         }
 
         public void PlayOneShot(EventReference sound, Vector3 position)
@@ -33,19 +32,15 @@ namespace GamePlay
         public void PlayMusic(EventReference musicEventReference)
         {
             StopCurrentMusic();
-            _musicEventInstance = CreateInstance(musicEventReference);
+            _musicEventInstance = RuntimeManager.CreateInstance(musicEventReference);
             _musicEventInstance.start();
         }
 
         public void PlayMusic(string eventPath)
         {
-            //Debug.Log($"PlayMusic 호출: {eventPath}");
-            //Debug.Log($"Bank 로드 여부: {RuntimeManager.HaveAllBanksLoaded}");
             StopCurrentMusic();
             _musicEventInstance = RuntimeManager.CreateInstance(eventPath);
-            _eventInstances.Add(_musicEventInstance);
-            var result = _musicEventInstance.start();
-            //Debug.Log($"start 결과: {result}");
+            _musicEventInstance.start();
         }
 
         public void StopMusic(bool fadeOut = true)
@@ -94,7 +89,6 @@ namespace GamePlay
         public void Dispose()
         {
             CleanUp();
-            //Debug.Log("AudioService disposed");
         }
     }
 }
