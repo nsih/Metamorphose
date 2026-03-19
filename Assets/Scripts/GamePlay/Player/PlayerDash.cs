@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Reflex.Attributes;
 using System;
 using System.Threading;
@@ -70,7 +71,9 @@ public class PlayerDash : MonoBehaviour
         }
         else
         {
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 mouseScreen = Mouse.current.position.ReadValue();
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(
+                new Vector3(mouseScreen.x, mouseScreen.y, 0f));
             mousePos.z = 0;
             dashDirection = ((Vector2)(mousePos - transform.position)).normalized;
         }
@@ -100,8 +103,6 @@ public class PlayerDash : MonoBehaviour
         SetAlpha(1f);
     }
 
-
-    //애니메이션이 없어서 대쉬하는것 같지가 않아요
     private void SetAlpha(float alpha)
     {
         if (_spriteRenderer == null) return;

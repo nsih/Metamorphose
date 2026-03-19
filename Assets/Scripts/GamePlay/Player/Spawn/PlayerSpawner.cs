@@ -26,7 +26,7 @@ public class PlayerSpawner : MonoBehaviour
 
         if (_playerPrefab == null)
         {
-            Debug.LogError("PlayerSpawner error: Prefab missing");
+            Debug.LogError("PlayerSpawner: prefab missing");
             return null;
         }
 
@@ -41,7 +41,11 @@ public class PlayerSpawner : MonoBehaviour
         return player;
     }
 
-    // BulletCollisionManager 초기화 대기 후 재활성화
+    public GameObject GetPlayer()
+    {
+        return _cachedPlayerInstance;
+    }
+
     private async UniTaskVoid ReactivateAsync(GameObject player)
     {
         player.SetActive(false);

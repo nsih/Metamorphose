@@ -19,6 +19,7 @@ public class BulletTimeManager : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log($"BulletTimeManager instanceID: {GetInstanceID()}");
         _defaultFixedDeltaTime = Time.fixedDeltaTime;
     }
 
