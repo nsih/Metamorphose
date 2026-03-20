@@ -4,12 +4,14 @@ using Reflex.Attributes;
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using TJR.Core.Interface;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerDash : MonoBehaviour
 {
     [Inject] private IInputService _input;
     [Inject] private PlayerModel _model;
+    [Inject] private IAudioService _audio;
 
     private Rigidbody2D _rb;
     private SpriteRenderer _spriteRenderer;
@@ -27,9 +29,7 @@ public class PlayerDash : MonoBehaviour
     void Start()
     {
         if (_input != null)
-        {
             _input.OnDashPressed += HandleDash;
-        }
     }
 
     void OnDestroy()
@@ -61,6 +61,8 @@ public class PlayerDash : MonoBehaviour
     {
         _isDashing = true;
         SetAlpha(0.3f);
+
+        _audio?.PlayOneShot(GamePlay.FMODEvents.SFX.Player.Dash, transform.position);
 
         Vector2 moveInput = _input.MoveDirection;
         Vector2 dashDirection;

@@ -7,12 +7,12 @@ using System.Threading;
 public class PlayerAttack : MonoBehaviour
 {
     [Inject] private IInputService _input;
+
     private PlayerModel _model;
 
     [SerializeField] private BulletEmitter _mainEmitter;
 
     private bool _isShooting = false;
-    private float _fireTimer = 0f;
     private CancellationTokenSource _cts;
 
     [Inject]
@@ -24,10 +24,12 @@ public class PlayerAttack : MonoBehaviour
             _mainEmitter.emitterProfile = _model.CurrentProfile;
     }
 
-    void Start()
+    void OnEnable()
     {
-        if (_mainEmitter != null) _mainEmitter.Kill();
+        _cts?.Cancel();
+        _cts?.Dispose();
         _cts = new CancellationTokenSource();
+        _isShooting = false;
     }
 
     void OnDestroy()
@@ -40,18 +42,33 @@ public class PlayerAttack : MonoBehaviour
     {
         if (_input == null || _mainEmitter == null || _model == null) return;
 
-        if (_fireTimer > 0)
-            _fireTimer -= Time.unscaledDeltaTime;
-
         if (_input.IsAttackPressed)
         {
-            if (_fireTimer <= 0)
+            if (!_isShooting)
                 StartShooting();
         }
         else
         {
             if (_isShooting)
                 StopShooting();
+        }
+    }
+
+    public void StopAndReset()
+    {
+        _isShooting = false;
+
+        if (_mainEmitter == null) return;
+        if (_mainEmitter.bullets == null) return;
+        if (_mainEmitter.bullets.Count == 0) return;
+
+        try
+        {
+            _mainEmitter.Kill();
+        }
+        catch (System.Exception)
+        {
+            // 씬 전환 시 이미 파괴된 bullet 접근 무시
         }
     }
 
@@ -62,7 +79,6 @@ public class PlayerAttack : MonoBehaviour
 
         _mainEmitter.Play();
         _isShooting = true;
-        _fireTimer = _model.FireRate > 0 ? _model.FireRate : 0.05f;
 
         ApplyDynamicStatsAsync(_cts.Token).Forget();
     }

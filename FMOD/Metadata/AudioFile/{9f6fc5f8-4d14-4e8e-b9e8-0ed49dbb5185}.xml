@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{9f6fc5f8-4d14-4e8e-b9e8-0ed49dbb5185}">
+		<property name="assetPath">
+			<value>Attack_SFX.ogg</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.10764172335600906</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{e4d8139a-e507-4688-a5ca-4a9f3f4e43cc}</destination>
+		</relationship>
+	</object>
+</objects>
