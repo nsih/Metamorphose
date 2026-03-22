@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.Pool;
+using Reflex.Core;
+using Reflex.Attributes;
+using Reflex.Injectors;
 
 public class EnemyPoolManager : MonoBehaviour
 {
     [Header("Settings")]
-    [SerializeField] private Enemy _prefab; 
+    [SerializeField] private Enemy _prefab;
     [SerializeField] private int _defaultCapacity = 20;
     [SerializeField] private int _maxSize = 100;
 
@@ -12,6 +15,8 @@ public class EnemyPoolManager : MonoBehaviour
     [SerializeField] private int _totalCount;
     [SerializeField] private int _activeCount;
     [SerializeField] private int _inactiveCount;
+
+    [Inject] private Container _container;
 
     private ObjectPool<Enemy> _pool;
 
@@ -45,7 +50,12 @@ public class EnemyPoolManager : MonoBehaviour
 
     private Enemy CreateEnemy()
     {
-        return Instantiate(_prefab, transform);
+        var enemy = Instantiate(_prefab, transform);
+
+        if (_container != null)
+            GameObjectInjector.InjectRecursive(enemy.gameObject, _container);
+
+        return enemy;
     }
 
     private void OnGetEnemy(Enemy enemy)

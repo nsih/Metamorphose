@@ -8,6 +8,7 @@ public class BulletShootAudioBehaviour : BaseBulletBehaviour
 
     public override void OnBulletBirth()
     {
+        Debug.Log($"OnBulletBirth: path={_eventPath}");
         if (string.IsNullOrEmpty(_eventPath)) return;
         RuntimeManager.PlayOneShot(_eventPath, bullet.self.position);
     }

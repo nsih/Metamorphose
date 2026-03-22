@@ -831,7 +831,7 @@ MonoBehaviour:
   sourceProjectPath: FMOD/TouhouTJR.fspro
   sourceBankPath: Assets/Banks/Desktop
   sourceBankPathUnformatted: 
-  BankRefreshCooldown: 5
+  BankRefreshCooldown: 1
   ShowBankRefreshWindow: 1
   AutomaticEventLoading: 1
   BankLoadType: 0

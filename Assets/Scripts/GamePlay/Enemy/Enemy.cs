@@ -3,6 +3,9 @@ using BulletPro;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using System;
+using FMODUnity;
+using TJR.Core.Interface;
+using Reflex.Attributes;
 
 [RequireComponent(typeof(BulletReceiver))]
 [RequireComponent(typeof(EnemyFSM))]
@@ -31,6 +34,8 @@ public class Enemy : MonoBehaviour, IDamageable
     private EnemyMuzzleAim _muzzleAim;
     
     private Vector3 _defaultScale;
+
+    [Inject] private IAudioService _audio;
 
     private void Awake()
     {
@@ -194,21 +199,21 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private async UniTaskVoid DieSequence()
     {
+        Debug.Log($"DieSequence: audio={_audio != null}");
         _fsm.Stop();
-        
+
         if (_emitter != null)
             _emitter.Stop();
-        
+
+        // 사망 SE
+        _audio?.PlayOneShot(GamePlay.FMODEvents.SFX.Enemy.Death, transform.position);
+
         if (_currentBrain.DeathDelay > 0)
-        {
             await UniTask.Delay(TimeSpan.FromSeconds(_currentBrain.DeathDelay));
-        }
-        
+
         if (_currentBrain.DeathEffect != null)
-        {
             await _currentBrain.DeathEffect.Execute(_ctx);
-        }
-        
+
         OnDeath?.Invoke();
 
         if (_returnToPool != null)
