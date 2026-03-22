@@ -1,4 +1,3 @@
-// Assets/Scripts/GamePlay/Audio/AudioService.cs
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,6 +50,8 @@ namespace GamePlay
                 ? FMOD.Studio.STOP_MODE.ALLOWFADEOUT
                 : FMOD.Studio.STOP_MODE.IMMEDIATE;
             _musicEventInstance.stop(mode);
+            _musicEventInstance.release();
+            _musicEventInstance = default;
         }
 
         public void SetMusicPitch(float pitch)
@@ -72,6 +73,7 @@ namespace GamePlay
 
             _musicEventInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
             _musicEventInstance.release();
+            _musicEventInstance = default;
         }
 
         void CleanUp()

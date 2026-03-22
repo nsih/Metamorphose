@@ -12,13 +12,11 @@ namespace GamePlay
         {
             public static class Player
             {
-                public const string Shoot           = "event:/SFX/Player/Shoot";
-                public const string BulletTimeStart = "event:/SFX/Player/BulletTimeStart";
-                public const string BulletTimeEnd   = "event:/SFX/Player/BulletTimeEnd";
-                public const string Dash            = "event:/SFX/Player/Dash";
-                public const string Bomb            = "event:/SFX/Player/Bomb";
-                public const string Damaged         = "event:/SFX/Player/Damaged";
-                public const string Death           = "event:/SFX/Player/Death";
+                public const string Shoot   = "event:/SFX/Player/Shoot";
+                public const string Dash    = "event:/SFX/Player/Dash";
+                public const string Bomb    = "event:/SFX/Player/Bomb";
+                public const string Damaged = "event:/SFX/Player/Damaged";
+                public const string Death   = "event:/SFX/Player/Death";
             }
 
             public static class Bullet
