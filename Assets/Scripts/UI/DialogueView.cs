@@ -29,6 +29,10 @@ public class DialogueView : MonoBehaviour
     {
         _bridge = GetComponent<DialogueBridge>();
 
+        // 다른 오브젝트에 있을 경우 씬 전체 탐색
+        if (_bridge == null)
+            _bridge = FindObjectOfType<DialogueBridge>();
+
         if (_bridge == null)
         {
             Debug.LogError("DialogueView: DialogueBridge null");
@@ -57,17 +61,20 @@ public class DialogueView : MonoBehaviour
     }
 
     private void Update()
-{
-    if (_bridge == null) return;
-    if (_optionButtons.Count > 0) return;
-    if (!_panel.activeSelf) return;
-
-    if (Keyboard.current.eKey.wasPressedThisFrame)
     {
-        Debug.Log($"E 키 감지: isTyping={_isTyping}, isActive={_bridge.IsActive.Value}");
-        OnContinueClicked();
+        if (_bridge == null) return;
+        if (_optionButtons.Count > 0) return;
+        if (!_panel.activeSelf) return;
+
+        // 대화 시작 프레임 E키 무시
+        if (LobbyNpc.DialogueStartedThisFrame) return;
+
+        if (Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            Debug.Log($"E 키 감지: isTyping={_isTyping}, isActive={_bridge.IsActive.Value}");
+            OnContinueClicked();
+        }
     }
-}
 
     private void StartTyping(string fullText)
     {
@@ -90,25 +97,35 @@ public class DialogueView : MonoBehaviour
         _isTyping = true;
         _lineText.text = string.Empty;
 
-        for (int i = 0; i < fullText.Length; i++)
+        try
         {
-            if (token.IsCancellationRequested)
+            for (int i = 0; i < fullText.Length; i++)
             {
-                _lineText.text = fullText;
-                _isTyping = false;
-                return;
+                if (token.IsCancellationRequested)
+                {
+                    _lineText.text = fullText;
+                    _isTyping = false;
+                    return;
+                }
+
+                _lineText.text += fullText[i];
+
+                if (fullText[i] != ' ')
+                    RuntimeManager.PlayOneShot(FMODEvents.SFX.UI.DialogueTick);
+
+                int delayMs = Mathf.RoundToInt(_bridge.TypingSpeed.Value * 1000f);
+                await UniTask.Delay(delayMs, cancellationToken: token);
             }
-
-            _lineText.text += fullText[i];
-
-            if (fullText[i] != ' ')
-                RuntimeManager.PlayOneShot(FMODEvents.SFX.UI.DialogueTick);
-
-            int delayMs = Mathf.RoundToInt(_bridge.TypingSpeed.Value * 1000f);
-            await UniTask.Delay(delayMs, cancellationToken: token);
         }
-
-        _isTyping = false;
+        catch (System.OperationCanceledException)
+        {
+            // 타이핑 취소 정상 처리
+            _lineText.text = fullText;
+        }
+        finally
+        {
+            _isTyping = false;
+        }
     }
 
     private void OnContinueClicked()

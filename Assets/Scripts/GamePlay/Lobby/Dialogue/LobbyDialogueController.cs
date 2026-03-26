@@ -16,13 +16,29 @@ public class LobbyDialogueController : MonoBehaviour
 
     private void Start()
     {
+        // 인스펙터 미연결 시 씬에서 자동 탐색
+        if (_bridge == null)
+            _bridge = FindObjectOfType<DialogueBridge>();
+
+        if (_input == null)
+            Debug.LogError("LobbyDialogueController: IInputService null, 이동 차단 불가");
+
+        if (_bridge == null)
+            Debug.LogError("LobbyDialogueController: DialogueBridge null, IsActive 구독 불가");
+
         foreach (var npc in _npcs)
             npc.OnInteractRequested += OnNpcInteract;
 
         if (_bridge != null)
         {
             _bridge.IsActive
-                .Subscribe(active => _input?.SetEnabled(!active))
+                .Subscribe(active =>
+                {
+                    if (_input != null)
+                        _input.SetEnabled(!active);
+                    else
+                        Debug.LogError("IsActive 실행: input null로 이동 차단 불가");
+                })
                 .AddTo(_disposables);
         }
     }

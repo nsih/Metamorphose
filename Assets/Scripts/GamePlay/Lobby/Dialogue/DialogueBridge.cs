@@ -17,7 +17,7 @@ public class DialogueBridge : DialoguePresenterBase
     // 글자당 딜레이 (초 단위). Yarn 커맨드로 변경 가능
     public ReactiveProperty<float> TypingSpeed { get; } = new ReactiveProperty<float>(0.05f);
 
-    private readonly Subject<Unit> _lineAdvanceSignal = new Subject<Unit>();
+    private UniTaskCompletionSource _lineCompletionSource;
     private readonly Subject<int> _optionSelectedSignal = new Subject<int>();
 
     [YarnCommand("typing_speed")]
@@ -28,15 +28,17 @@ public class DialogueBridge : DialoguePresenterBase
 
     public override async YarnTask RunLineAsync(LocalizedLine dialogueLine, LineCancellationToken token)
     {
+        _lineCompletionSource = new UniTaskCompletionSource();
+
+        // Yarn 자체 취소 토큰도 CompletionSource로 수렴 — WhenAny 제거
+        token.NextContentToken.Register(() => _lineCompletionSource.TrySetResult());
+
         CharacterName.Value = dialogueLine.CharacterName ?? string.Empty;
         CurrentLine.Value = dialogueLine.TextWithoutCharacterName.Text;
         CurrentOptions.Value = new List<DialogueOption>();
         IsActive.Value = true;
 
-        await UniTask.WhenAny(
-            _lineAdvanceSignal.FirstAsync().AsUniTask(),
-            UniTask.WaitUntilCanceled(token.NextContentToken)
-        );
+        await _lineCompletionSource.Task;
     }
 
     public override async YarnTask<DialogueOption> RunOptionsAsync(DialogueOption[] dialogueOptions, CancellationToken cancellationToken)
@@ -74,7 +76,7 @@ public class DialogueBridge : DialoguePresenterBase
 
     public void OnLineRead()
     {
-        _lineAdvanceSignal.OnNext(Unit.Default);
+        _lineCompletionSource?.TrySetResult();
     }
 
     public void SelectOption(int optionIndex)
