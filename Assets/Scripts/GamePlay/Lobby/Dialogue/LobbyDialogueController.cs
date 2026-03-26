@@ -2,23 +2,38 @@ using UnityEngine;
 using Yarn.Unity;
 using Reflex.Attributes;
 using GamePlay;
+using R3;
 
-// LobbyNpc 이벤트 수신 -> DialogueRunner 실행
 public class LobbyDialogueController : MonoBehaviour
 {
     [SerializeField] private DialogueRunner _dialogueRunner;
     [SerializeField] private LobbyNpc[] _npcs;
+    [SerializeField] private DialogueBridge _bridge;
+
+    [Inject] private IInputService _input;
+
+    private CompositeDisposable _disposables = new CompositeDisposable();
 
     private void Start()
     {
         foreach (var npc in _npcs)
             npc.OnInteractRequested += OnNpcInteract;
+
+        if (_bridge != null)
+        {
+            _bridge.IsActive
+                .Subscribe(active => _input?.SetEnabled(!active))
+                .AddTo(_disposables);
+        }
     }
 
     private void OnDestroy()
     {
         foreach (var npc in _npcs)
             npc.OnInteractRequested -= OnNpcInteract;
+
+        _disposables.Dispose();
+        _input?.SetEnabled(true);
     }
 
     private void OnNpcInteract(string npcId)
@@ -38,7 +53,6 @@ public class LobbyDialogueController : MonoBehaviour
         _dialogueRunner.StartDialogue(nodeName);
     }
 
-    // npcId -> Yarn 노드 이름 변환
     private string GetNodeName(string npcId)
     {
         return $"NPC_{npcId}";

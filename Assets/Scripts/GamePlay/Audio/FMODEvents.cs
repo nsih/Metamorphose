@@ -33,8 +33,8 @@ namespace GamePlay
 
             public static class UI
             {
+                public const string Hover        = "event:/SFX/UI/Hover";
                 public const string Click        = "event:/SFX/UI/Click";
-                public const string MapSelect    = "event:/SFX/UI/MapSelect";
                 public const string DialogueTick = "event:/SFX/UI/DialogueTick";
             }
         }

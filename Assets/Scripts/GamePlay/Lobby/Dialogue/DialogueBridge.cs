@@ -1,30 +1,30 @@
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using FMODUnity;
+using GamePlay;
 using R3;
 using UnityEngine;
 using Yarn.Unity;
 
-// DialoguePresenterBase -> R3 ReactiveProperty 브릿지
 public class DialogueBridge : DialoguePresenterBase
 {
-    // 현재 출력 중인 대사
     public ReactiveProperty<string> CurrentLine { get; } = new ReactiveProperty<string>(string.Empty);
-
-    // 현재 화자 이름
     public ReactiveProperty<string> CharacterName { get; } = new ReactiveProperty<string>(string.Empty);
-
-    // 현재 선택지 목록
     public ReactiveProperty<List<DialogueOption>> CurrentOptions { get; } = new ReactiveProperty<List<DialogueOption>>(new List<DialogueOption>());
-
-    // 대화 패널 활성화 여부
     public ReactiveProperty<bool> IsActive { get; } = new ReactiveProperty<bool>(false);
 
-    // View에서 다음 줄 진행 요청 신호
-    private readonly Subject<Unit> _lineAdvanceSignal = new Subject<Unit>();
+    // 글자당 딜레이 (초 단위). Yarn 커맨드로 변경 가능
+    public ReactiveProperty<float> TypingSpeed { get; } = new ReactiveProperty<float>(0.05f);
 
-    // View에서 선택지 선택 신호 (선택 인덱스)
+    private readonly Subject<Unit> _lineAdvanceSignal = new Subject<Unit>();
     private readonly Subject<int> _optionSelectedSignal = new Subject<int>();
+
+    [YarnCommand("typing_speed")]
+    public void SetTypingSpeed(float speed)
+    {
+        TypingSpeed.Value = speed;
+    }
 
     public override async YarnTask RunLineAsync(LocalizedLine dialogueLine, LineCancellationToken token)
     {
@@ -33,10 +33,9 @@ public class DialogueBridge : DialoguePresenterBase
         CurrentOptions.Value = new List<DialogueOption>();
         IsActive.Value = true;
 
-        // 버튼 입력 또는 Yarn 외부 진행 신호 중 먼저 오는 것 대기
         await UniTask.WhenAny(
             _lineAdvanceSignal.FirstAsync().AsUniTask(),
-            UniTask.WaitUntilCanceled(token.NextLineToken)
+            UniTask.WaitUntilCanceled(token.NextContentToken)
         );
     }
 
@@ -44,7 +43,6 @@ public class DialogueBridge : DialoguePresenterBase
     {
         CurrentOptions.Value = new List<DialogueOption>(dialogueOptions);
 
-        // 선택지 선택 대기
         int selectedIndex = await _optionSelectedSignal
             .FirstAsync()
             .AsUniTask()
@@ -60,6 +58,7 @@ public class DialogueBridge : DialoguePresenterBase
 
     public override YarnTask OnDialogueCompleteAsync()
     {
+        Debug.Log("OnDialogueCompleteAsync 호출");
         IsActive.Value = false;
         CurrentLine.Value = string.Empty;
         CharacterName.Value = string.Empty;
@@ -73,13 +72,11 @@ public class DialogueBridge : DialoguePresenterBase
         return YarnTask.CompletedTask;
     }
 
-    // View에서 호출: 다음 줄 진행
     public void OnLineRead()
     {
         _lineAdvanceSignal.OnNext(Unit.Default);
     }
 
-    // View에서 호출: 선택지 선택
     public void SelectOption(int optionIndex)
     {
         _optionSelectedSignal.OnNext(optionIndex);
