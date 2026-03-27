@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Reflex.Attributes;
 
 public class TopDownCameraController : MonoBehaviour
@@ -36,7 +37,7 @@ public class TopDownCameraController : MonoBehaviour
         if (_playerSpawner != null)
         {
             GameObject playerObj = _playerSpawner.Spawn();
-            
+
             if (playerObj != null)
             {
                 _playerTransform = playerObj.transform;
@@ -44,7 +45,7 @@ public class TopDownCameraController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("TopDownCameraController: PlayerSpawner is null");
+            Debug.LogError("TopDownCameraController: PlayerSpawner null");
         }
     }
 
@@ -81,8 +82,8 @@ public class TopDownCameraController : MonoBehaviour
     {
         if (_camera == null) return _playerTransform.position;
 
-        Vector3 mouseScreenPos = Input.mousePosition;
-        mouseScreenPos.z = Mathf.Abs(_cameraHeight);
+        Vector2 mouseScreen = Mouse.current.position.ReadValue();
+        Vector3 mouseScreenPos = new Vector3(mouseScreen.x, mouseScreen.y, Mathf.Abs(_cameraHeight));
 
         return _camera.ScreenToWorldPoint(mouseScreenPos);
     }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Reflex.Attributes;
 
 public class PlayerAim : MonoBehaviour
@@ -14,13 +15,13 @@ public class PlayerAim : MonoBehaviour
     {
         if (_input == null) return;
 
-        // 씬 전환 후 카메라 교체 대응
         if (_mainCam == null)
             _mainCam = Camera.main;
 
         if (_mainCam == null) return;
 
-        Vector3 mousePos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 mouseScreen = Mouse.current.position.ReadValue();
+        Vector3 mousePos = _mainCam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, 0f));
         mousePos.z = 0;
 
         Vector3 direction = (mousePos - transform.position).normalized;

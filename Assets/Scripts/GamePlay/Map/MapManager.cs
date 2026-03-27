@@ -12,10 +12,11 @@ public class MapManager : MonoBehaviour
     [SerializeField] private MapGenerationConfig _config;
 
     [Inject] private Container _container;
+    [Inject] private PlayerSpawner _playerSpawner;
 
     public MapNode CurrentNode { get; private set; }
     public Map CurrentMap => _currentMap;
-    
+
     private GameObject _currentRoomInstance;
     private bool _isTransitioning = false;
     [SerializeField] private Map _currentMap;
@@ -47,16 +48,16 @@ public class MapManager : MonoBehaviour
     {
         if (_isTransitioning)
         {
-            Debug.LogWarning("already transitioning");
+            Debug.Log("already transitioning");
             return;
         }
-        
+
         if (nextNode.State != NodeState.Available)
         {
-            Debug.LogWarning($"node not available: {nextNode}");
+            Debug.Log($"node not available: {nextNode}");
             return;
         }
-        
+
         LockOtherNodesInLayer(nextNode);
         LoadNode(nextNode).Forget();
     }
@@ -69,13 +70,11 @@ public class MapManager : MonoBehaviour
         if (targetLayer < 0 || targetLayer >= _currentMap.LayerCount) return;
 
         var layerNodes = _currentMap.GetNodesInLayer(targetLayer);
-        
+
         foreach (var node in layerNodes)
         {
             if (node != selectedNode && node.State == NodeState.Available)
-            {
                 node.State = NodeState.Locked;
-            }
         }
     }
 
@@ -85,6 +84,14 @@ public class MapManager : MonoBehaviour
 
         try
         {
+            // Room 전환 전 총알 정리
+            GameObject playerObj = _playerSpawner?.GetPlayer();
+            if (playerObj != null)
+            {
+                var playerAttack = playerObj.GetComponent<PlayerAttack>();
+                playerAttack?.StopAndReset();
+            }
+
             if (_currentRoomInstance != null)
             {
                 Destroy(_currentRoomInstance);
@@ -92,12 +99,12 @@ public class MapManager : MonoBehaviour
             }
 
             CurrentNode = node;
-            
+
             if (node.RoomPrefab != null)
             {
                 _currentRoomInstance = Instantiate(node.RoomPrefab, _roomParent);
                 _currentRoomInstance.name = $"Room_{node.NodeID}_{node.Type}";
-                
+
                 GameObjectInjector.InjectRecursive(_currentRoomInstance, _container);
                 ResetPlayerPosition();
             }
@@ -115,7 +122,7 @@ public class MapManager : MonoBehaviour
     private void ResetPlayerPosition()
     {
         var newSpawner = _currentRoomInstance?.GetComponentInChildren<PlayerSpawner>();
-        
+
         if (newSpawner != null)
         {
             newSpawner.Spawn();
@@ -124,9 +131,7 @@ public class MapManager : MonoBehaviour
         {
             var player = GameObject.Find("Player");
             if (player != null)
-            {
                 player.transform.position = Vector3.zero;
-            }
         }
     }
 }

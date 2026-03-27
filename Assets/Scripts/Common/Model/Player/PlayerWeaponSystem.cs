@@ -52,7 +52,7 @@ public class PlayerWeaponSystem : IDisposable
         SpeedScale = new ModifiableStat(data.BaseSpeedScale);
         HomingStrength = new ModifiableStat(data.BaseHomingStrength);
 
-        Debug.Log($"Weapon changed to: {data.name}");
+        //Debug.Log($"Weapon changed to: {data.name}");
     }
 
     public void AddDamage(float amount)

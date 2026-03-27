@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{4992251c-5db7-4a59-b3fb-12f155a1d2db}">
+		<property name="assetPath">
+			<value>Heartfelt Fancy.wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>22369.621312499999</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{e4d8139a-e507-4688-a5ca-4a9f3f4e43cc}</destination>
+		</relationship>
+	</object>
+</objects>

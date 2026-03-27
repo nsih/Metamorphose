@@ -6,16 +6,13 @@ public class PlayerInputService : IInputService, IDisposable
 {
     private readonly PlayerControls _controls;
 
-    public Vector2 MoveDirection => _controls.Player.Move.ReadValue<Vector2>();
-    public bool IsAttackPressed => _controls.Player.Attack.IsPressed();
+    public bool IsEnabled { get; private set; } = true;
+
+    public Vector2 MoveDirection => IsEnabled ? _controls.Player.Move.ReadValue<Vector2>() : Vector2.zero;
+    public bool IsAttackPressed => IsEnabled && _controls.Player.Attack.IsPressed();
 
     public event Action OnDashPressed;
     public event Action OnBombPressed;
-
-    private void OnBombPerformed(InputAction.CallbackContext ctx)
-    {
-        OnBombPressed?.Invoke();
-    }
 
     public PlayerInputService()
     {
@@ -26,16 +23,27 @@ public class PlayerInputService : IInputService, IDisposable
         _controls.Player.Dash.performed += OnDash;
     }
 
-    public void Dispose()
+    public void SetEnabled(bool enabled)
     {
-        _controls.Disable();
-        
-        _controls.Player.Bomb.performed -= OnBombPerformed;
-        _controls.Player.Dash.performed -= OnDash;
+        IsEnabled = enabled;
+    }
+
+    private void OnBombPerformed(InputAction.CallbackContext ctx)
+    {
+        if (!IsEnabled) return;
+        OnBombPressed?.Invoke();
     }
 
     private void OnDash(InputAction.CallbackContext context)
     {
+        if (!IsEnabled) return;
         OnDashPressed?.Invoke();
+    }
+
+    public void Dispose()
+    {
+        _controls.Disable();
+        _controls.Player.Bomb.performed -= OnBombPerformed;
+        _controls.Player.Dash.performed -= OnDash;
     }
 }

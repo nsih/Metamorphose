@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{ab464d8a-4bb3-4f86-9762-87e6d88f71e4}">
+		<property name="assetPath">
+			<value>gDie Divil JIO.mp3</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>228.20571428571429</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{e4d8139a-e507-4688-a5ca-4a9f3f4e43cc}</destination>
+		</relationship>
+	</object>
+</objects>
