@@ -14,6 +14,7 @@ public class PlayerStat : ScriptableObject
     public float DashDuration = 0.2f;
     public int MaxDashChargeStack = 3;
     public float DashChargeTime = 2f;
+    public float PostDashInvincibleDuration = 0.1f;
 
     [Header("Bullet Time")]
     [Tooltip("시간이 느려지는 배율 (0.1 = 10%의 속도)")]

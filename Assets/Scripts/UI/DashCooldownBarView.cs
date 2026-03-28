@@ -8,8 +8,7 @@ public class DashCooldownBarView : MonoBehaviour
 {
     [Inject] private PlayerModel _model;
 
-    [SerializeField] private Image _fillImage;
-    [SerializeField] private GameObject _barRoot;
+    [SerializeField] private Slider _slider;
 
     private CompositeDisposable _disposables = new CompositeDisposable();
 
@@ -24,16 +23,16 @@ public class DashCooldownBarView : MonoBehaviour
         _model.DashCooldownNormalized
             .Subscribe(val =>
             {
-                if (_fillImage != null)
-                    _fillImage.fillAmount = val;
+                if (_slider != null)
+                    _slider.value = val;
             })
             .AddTo(_disposables);
 
         _model.CurrentDashCount
             .Subscribe(count =>
             {
-                if (_barRoot != null)
-                    _barRoot.SetActive(count < _model.MaxDashChargeStack);
+                if (_slider != null)
+                    _slider.gameObject.SetActive(count < _model.MaxDashChargeStack);
             })
             .AddTo(_disposables);
     }

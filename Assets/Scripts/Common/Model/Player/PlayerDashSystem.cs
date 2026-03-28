@@ -10,6 +10,7 @@ public class PlayerDashSystem : IDisposable
     public float DashDuration { get; private set; }
     public int MaxDashChargeStack { get; private set; }
     public float DashChargeTime { get; private set; }
+    public float PostDashInvincibleDuration { get; private set; }
 
     public ReactiveProperty<int> CurrentDashCount { get; private set; }
     public ReactiveProperty<float> DashCooldownNormalized { get; private set; }
@@ -22,6 +23,7 @@ public class PlayerDashSystem : IDisposable
         DashDuration = stat.DashDuration;
         MaxDashChargeStack = stat.MaxDashChargeStack;
         DashChargeTime = stat.DashChargeTime;
+        PostDashInvincibleDuration = stat.PostDashInvincibleDuration;
 
         CurrentDashCount = new ReactiveProperty<int>(MaxDashChargeStack);
         DashCooldownNormalized = new ReactiveProperty<float>(0f);

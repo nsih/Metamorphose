@@ -84,6 +84,7 @@ public class PlayerDash : MonoBehaviour
 
         try
         {
+            // 이동 구간
             while (elapsed < _model.DashDuration)
             {
                 float delta = Time.fixedUnscaledDeltaTime;
@@ -91,18 +92,27 @@ public class PlayerDash : MonoBehaviour
                 elapsed += delta;
                 await UniTask.WaitForFixedUpdate(token);
             }
+
+            _rb.linearVelocity = Vector2.zero;
+            SetAlpha(1f);
+
+            // 후보정 무적 구간
+            await UniTask.Delay(
+                System.TimeSpan.FromSeconds(_model.PostDashInvincibleDuration),
+                ignoreTimeScale: true,
+                cancellationToken: token
+            );
         }
         catch (OperationCanceledException)
         {
             SetAlpha(1f);
+            _isDashing = false;
             return;
         }
 
         if (this == null) return;
 
-        _rb.linearVelocity = Vector2.zero;
         _isDashing = false;
-        SetAlpha(1f);
     }
 
     private void SetAlpha(float alpha)

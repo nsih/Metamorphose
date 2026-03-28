@@ -8,7 +8,7 @@ public class DashAfterimageController : MonoBehaviour
     [SerializeField] private Sprite[] _afterimageSprites;
     [SerializeField] private Color _afterimageColor = new Color(1f, 0.4f, 0.8f, 0.8f);
 
-    private const float SpawnInterval = 0.05f;
+    private const float SpawnInterval = 0.025f;
     private const float FadeDuration = 0.3f;
     private const int PoolInitSize = 100;
     private const int PoolMaxSize = 200;
@@ -75,8 +75,9 @@ public class DashAfterimageController : MonoBehaviour
         GameObject obj = GetFromPool();
         if (obj == null) return;
 
-        obj.transform.position = transform.position;
-        obj.transform.rotation = transform.rotation;
+        // 활성화 시 씬 루트로 분리해 플레이어 이동에 영향받지 않도록
+        obj.transform.SetParent(null);
+        obj.transform.SetPositionAndRotation(transform.position, transform.rotation);
         obj.SetActive(true);
 
         SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
@@ -118,7 +119,6 @@ public class DashAfterimageController : MonoBehaviour
         if (_pool.Count > 0)
             return _pool.Dequeue();
 
-        // 풀 고갈 시 최대치 미만이면 신규 생성
         if (CountAllAfterimages() < PoolMaxSize)
             return CreateAfterimageObject();
 
@@ -130,12 +130,15 @@ public class DashAfterimageController : MonoBehaviour
     {
         if (obj == null) return;
         obj.SetActive(false);
+        // 풀 반환 시 다시 플레이어 하위로
+        obj.transform.SetParent(transform);
         _pool.Enqueue(obj);
     }
 
     private GameObject CreateAfterimageObject()
     {
         var obj = new GameObject("Afterimage");
+        obj.transform.SetParent(transform);
         obj.AddComponent<SpriteRenderer>();
         obj.SetActive(false);
         return obj;
@@ -143,7 +146,6 @@ public class DashAfterimageController : MonoBehaviour
 
     private int CountAllAfterimages()
     {
-        // 풀 내부 + 현재 활성 오브젝트 합산 추정 (최대치 guard용)
-        return PoolMaxSize; // 단순화: 최대치 초과 방지만 목적
+        return PoolMaxSize;
     }
 }
