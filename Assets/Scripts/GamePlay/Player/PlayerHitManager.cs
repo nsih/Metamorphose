@@ -65,6 +65,8 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
         {
             if (_bulletTimeManager != null)
                 _bulletTimeManager.TriggerSlowMotion();
+            if (_model != null)
+                _model.Dash.RefillAllCharges();
             return;
         }
 

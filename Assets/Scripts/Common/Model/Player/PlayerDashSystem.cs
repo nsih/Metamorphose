@@ -40,6 +40,11 @@ public class PlayerDashSystem : IDisposable
         return false;
     }
 
+    public void RefillAllCharges()
+    {
+        Reset();
+    }
+
     public void Reset()
     {
         // 기존 루프 종료
