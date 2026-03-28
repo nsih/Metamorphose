@@ -14,6 +14,7 @@ namespace GamePlay
             {
                 public const string Shoot   = "event:/SFX/Player/Shoot";
                 public const string Dash    = "event:/SFX/Player/Dash";
+                public const string Graze   = "event:/SFX/Player/Graze";
                 public const string Bomb    = "event:/SFX/Player/Bomb";
                 public const string Damaged = "event:/SFX/Player/Damaged";
                 public const string Death   = "event:/SFX/Player/Death";

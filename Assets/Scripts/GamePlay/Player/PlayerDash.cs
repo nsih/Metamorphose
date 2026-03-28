@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using TJR.Core.Interface;
+using BulletPro;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerDash : MonoBehaviour
@@ -13,8 +14,12 @@ public class PlayerDash : MonoBehaviour
     [Inject] private PlayerModel _model;
     [Inject] private IAudioService _audio;
 
+    [SerializeField] private float _dashHitboxMultiplier = 2.0f;
+
     private Rigidbody2D _rb;
     private SpriteRenderer _spriteRenderer;
+    private BulletReceiver _receiver;
+    private float _defaultHitboxSize;
     private bool _isDashing = false;
     private CancellationTokenSource _dashCts;
 
@@ -24,6 +29,10 @@ public class PlayerDash : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _receiver = GetComponent<BulletReceiver>();
+
+        if (_receiver != null)
+            _defaultHitboxSize = _receiver.hitboxSize;
     }
 
     void Start()
@@ -61,6 +70,7 @@ public class PlayerDash : MonoBehaviour
     {
         _isDashing = true;
         SetAlpha(0.3f);
+        SetHitboxSize(_defaultHitboxSize * _dashHitboxMultiplier);
 
         _audio?.PlayOneShot(GamePlay.FMODEvents.SFX.Player.Dash, transform.position);
 
@@ -84,6 +94,7 @@ public class PlayerDash : MonoBehaviour
 
         try
         {
+            // 이동 구간
             while (elapsed < _model.DashDuration)
             {
                 float delta = Time.fixedUnscaledDeltaTime;
@@ -91,18 +102,29 @@ public class PlayerDash : MonoBehaviour
                 elapsed += delta;
                 await UniTask.WaitForFixedUpdate(token);
             }
+
+            _rb.linearVelocity = Vector2.zero;
+            SetAlpha(1f);
+
+            // 후보정 무적 구간
+            await UniTask.Delay(
+                System.TimeSpan.FromSeconds(_model.PostDashInvincibleDuration),
+                ignoreTimeScale: true,
+                cancellationToken: token
+            );
         }
         catch (OperationCanceledException)
         {
             SetAlpha(1f);
+            SetHitboxSize(_defaultHitboxSize);
+            _isDashing = false;
             return;
         }
 
         if (this == null) return;
 
-        _rb.linearVelocity = Vector2.zero;
+        SetHitboxSize(_defaultHitboxSize);
         _isDashing = false;
-        SetAlpha(1f);
     }
 
     private void SetAlpha(float alpha)
@@ -111,5 +133,11 @@ public class PlayerDash : MonoBehaviour
         var c = _spriteRenderer.color;
         c.a = alpha;
         _spriteRenderer.color = c;
+    }
+
+    private void SetHitboxSize(float size)
+    {
+        if (_receiver == null) return;
+        _receiver.hitboxSize = size;
     }
 }

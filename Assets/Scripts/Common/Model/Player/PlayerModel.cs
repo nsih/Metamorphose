@@ -62,6 +62,7 @@ public class PlayerModel : IDisposable
     public ReactiveProperty<int> CurrentDashCount => Dash.CurrentDashCount;
     public ReactiveProperty<float> DashCooldownNormalized => Dash.DashCooldownNormalized;
     public bool TryConsumeDash() => Dash.TryConsumeDash();
+    public float PostDashInvincibleDuration => Dash.PostDashInvincibleDuration;
 
     // Stats
     public float MoveSpeed => Stats.MoveSpeed.Value;
