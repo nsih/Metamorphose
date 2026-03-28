@@ -15,9 +15,10 @@ MonoBehaviour:
   MaxHealth: 30
   MoveSpeed: 20
   DashSpeed: 80
-  DashDuration: 0.125
+  DashDuration: 0.1
   MaxDashChargeStack: 1
-  DashChargeTime: 1.5
+  DashChargeTime: 1.2
+  PostDashInvincibleDuration: 0.1
   TimeSlowFactor: 0.5
   SlowMotionDuration: 2
   RewardChoiceCount: 3
