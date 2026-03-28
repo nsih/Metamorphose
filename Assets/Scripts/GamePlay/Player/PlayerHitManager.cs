@@ -2,11 +2,13 @@ using UnityEngine;
 using Reflex.Attributes;
 using BulletPro;
 using Cysharp.Threading.Tasks;
+using TJR.Core.Interface;
 
 [RequireComponent(typeof(BulletReceiver))]
 public class PlayerHitManager : MonoBehaviour, IDamageable
 {
     [Inject] private PlayerModel _model;
+    [Inject] private IAudioService _audio;
 
     private BulletReceiver _receiver;
     private SpriteRenderer _spriteRenderer;
@@ -67,6 +69,7 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
                 _bulletTimeManager.TriggerSlowMotion();
             if (_model != null)
                 _model.Dash.RefillAllCharges();
+            _audio?.PlayOneShot(GamePlay.FMODEvents.SFX.Player.Graze, transform.position);
             return;
         }
 

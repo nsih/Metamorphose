@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using TJR.Core.Interface;
+using BulletPro;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerDash : MonoBehaviour
@@ -13,8 +14,12 @@ public class PlayerDash : MonoBehaviour
     [Inject] private PlayerModel _model;
     [Inject] private IAudioService _audio;
 
+    [SerializeField] private float _dashHitboxMultiplier = 2.0f;
+
     private Rigidbody2D _rb;
     private SpriteRenderer _spriteRenderer;
+    private BulletReceiver _receiver;
+    private float _defaultHitboxSize;
     private bool _isDashing = false;
     private CancellationTokenSource _dashCts;
 
@@ -24,6 +29,10 @@ public class PlayerDash : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _receiver = GetComponent<BulletReceiver>();
+
+        if (_receiver != null)
+            _defaultHitboxSize = _receiver.hitboxSize;
     }
 
     void Start()
@@ -61,6 +70,7 @@ public class PlayerDash : MonoBehaviour
     {
         _isDashing = true;
         SetAlpha(0.3f);
+        SetHitboxSize(_defaultHitboxSize * _dashHitboxMultiplier);
 
         _audio?.PlayOneShot(GamePlay.FMODEvents.SFX.Player.Dash, transform.position);
 
@@ -106,12 +116,14 @@ public class PlayerDash : MonoBehaviour
         catch (OperationCanceledException)
         {
             SetAlpha(1f);
+            SetHitboxSize(_defaultHitboxSize);
             _isDashing = false;
             return;
         }
 
         if (this == null) return;
 
+        SetHitboxSize(_defaultHitboxSize);
         _isDashing = false;
     }
 
@@ -121,5 +133,11 @@ public class PlayerDash : MonoBehaviour
         var c = _spriteRenderer.color;
         c.a = alpha;
         _spriteRenderer.color = c;
+    }
+
+    private void SetHitboxSize(float size)
+    {
+        if (_receiver == null) return;
+        _receiver.hitboxSize = size;
     }
 }

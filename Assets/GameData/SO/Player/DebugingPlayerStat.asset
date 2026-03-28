@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHealth: 30
   MoveSpeed: 20
-  DashSpeed: 80
-  DashDuration: 0.1
+  DashSpeed: 75
+  DashDuration: 0.15
   MaxDashChargeStack: 1
-  DashChargeTime: 1.2
+  DashChargeTime: 0.5
   PostDashInvincibleDuration: 0.1
   TimeSlowFactor: 0.5
   SlowMotionDuration: 2
