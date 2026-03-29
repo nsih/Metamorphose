@@ -1,8 +1,8 @@
 using System;
-using GamePlay;
 using Reflex.Core;
 using TJR.Core.Interface;
 using UnityEngine;
+using GamePlay;
 
 public class GlobalInstaller : MonoBehaviour, IInstaller
 {
