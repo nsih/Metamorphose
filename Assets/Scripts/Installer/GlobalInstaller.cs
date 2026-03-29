@@ -18,6 +18,11 @@ public class GlobalInstaller : MonoBehaviour, IInstaller
         builder.RegisterValue(new SceneLoader(), new Type[] { typeof(ISceneLoader) });
         builder.RegisterValue(new RunResultModel());
 
+        var sceneTransitionGo = new GameObject("SceneTransition");
+        var sceneTransitionService = sceneTransitionGo.AddComponent<SceneTransitionService>();
+        sceneTransitionService.Initialize();
+        builder.RegisterValue(sceneTransitionService, new Type[] { typeof(ISceneTransitionService) });
+
         builder.RegisterValue(_itemDatabase);
 
         var registry = new AcquiredItemRegistry();
