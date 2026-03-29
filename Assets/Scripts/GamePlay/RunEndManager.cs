@@ -10,6 +10,7 @@ namespace GamePlay
         [Inject] private PlayerModel _playerModel;
         [Inject] private ISceneLoader _sceneLoader;
         [Inject] private RunResultModel _runResultModel;
+        [Inject] private ISceneTransitionService _sceneTransition;
 
         private bool _isEnding = false;
 
@@ -31,7 +32,7 @@ namespace GamePlay
             HandleGameOver().Forget();
         }
 
-        // 보스 처치 시 외부에서 호출
+        // 보스 처치 시 외부 호출
         public void NotifyRunClear()
         {
             if (_isEnding) return;
@@ -42,15 +43,21 @@ namespace GamePlay
         private async UniTaskVoid HandleGameOver()
         {
             _runResultModel.LastResult.Value = RunEndReason.GameOver;
-            await UniTask.Delay(1500);
-            await _sceneLoader.LoadLobbyAsync();
+
+            // 사망 연출 대기
+            await UniTask.Delay(1500, ignoreTimeScale: true);
+
+            await _sceneTransition.TransitionAsync(() => _sceneLoader.LoadLobbyAsync());
         }
 
         private async UniTaskVoid HandleClear()
         {
             _runResultModel.LastResult.Value = RunEndReason.Clear;
-            await UniTask.Delay(2000);
-            await _sceneLoader.LoadLobbyAsync();
+
+            // 클리어 연출 대기
+            await UniTask.Delay(2000, ignoreTimeScale: true);
+
+            await _sceneTransition.TransitionAsync(() => _sceneLoader.LoadLobbyAsync());
         }
     }
 }

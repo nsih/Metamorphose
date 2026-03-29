@@ -1,9 +1,13 @@
-using UnityEngine;
+using Cysharp.Threading.Tasks;
 using Reflex.Attributes;
+using UnityEngine;
+using Common;
 
 public class LobbyPortal : MonoBehaviour
 {
     [Inject] private LobbyController _lobbyController;
+    [Inject] private IInputService _input;
+    [Inject] private ISceneTransitionService _sceneTransition;
 
     private bool _triggered = false;
 
@@ -14,9 +18,12 @@ public class LobbyPortal : MonoBehaviour
 
         _triggered = true;
 
-        // 입력 차단
-        Time.timeScale = 0f;
+        _input.SetEnabled(false);
+        TransitionAndLoadAsync().Forget();
+    }
 
-        _lobbyController.StartRun();
+    private async UniTaskVoid TransitionAndLoadAsync()
+    {
+        await _sceneTransition.TransitionAsync(() => _lobbyController.StartRunAsync());
     }
 }

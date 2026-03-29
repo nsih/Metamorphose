@@ -23,11 +23,22 @@ public class LobbyController : MonoBehaviour
         _runResultModel.LastResult.Value = RunEndReason.None;
     }
 
+    // 기존 호출부 호환용 유지
     public void StartRun()
     {
         if (_isLoading) return;
         _isLoading = true;
         LoadGamePlay().Forget();
+    }
+
+    // 포탈 TransitionAsync에서 loadAction으로 전달
+    public async UniTask StartRunAsync()
+    {
+        if (_isLoading) return;
+        _isLoading = true;
+
+        Time.timeScale = 1f;
+        await _sceneLoader.LoadGamePlayAsync();
     }
 
     private async UniTaskVoid LoadGamePlay()
