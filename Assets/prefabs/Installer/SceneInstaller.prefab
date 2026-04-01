@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6509006335343921373}
-  - component: {fileID: 507913795547725348}
   m_Layer: 0
   m_Name: SceneInstaller
   m_TagString: Untagged
@@ -32,26 +31,3 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &507913795547725348
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 806796810444636304}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51ea474a26f81e346a5637a00031327d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _playerSpawner: {fileID: 0}
-  _mapUIManager: {fileID: 0}
-  _mapManager: {fileID: 0}
-  _enemyPoolManager: {fileID: 0}
-  _musicEventReference:
-    Guid:
-      Data1: 664494809
-      Data2: 1179853757
-      Data3: -923967602
-      Data4: -1526275176
-    Path: event:/Test
