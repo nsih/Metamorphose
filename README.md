@@ -1,18 +1,19 @@
-# TOUHOU ~ Bulletive Faith
+# Magicalgirl Calamity
 
 ---
 
 ##  개요
-- **장르:** 2D, Roguelike, Bullet curtain, Shooting, TopdownView
+- **장르:** 2D, Action Roguelike, Bullet hell, Shooting, TopdownView
 - **플랫폼:** PC 
 
 ---
 
 ## 환경
-- **Engine:** Unity 6000.0.60f1 (C#)  
+- **Engine:** Unity 6000.3.11f1 (C#)  
 - **IDE:** Visual Studio Code
+- **AI:** Claude, Gemini
 - **Version Control:** Git / GitHub
 - **Documentation:** README / Notion  
-- **Assets:** FMOD, BullerPro, Unitask, Animancer, [A* Pathfinding Project](https://www.arongranberg.com/astar/docs/getstarted.html)
+- **Assets:** FMOD, BullerPro, Unitask, Animancer
 
 ---
