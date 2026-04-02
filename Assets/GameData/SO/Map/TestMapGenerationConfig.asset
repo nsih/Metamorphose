@@ -32,11 +32,11 @@ MonoBehaviour:
   - Type: 2
     Prefab: {fileID: 3579561120315236603, guid: 275c5ca002a9c4c4cabe698b4ce8c559, type: 3}
   - Type: 3
-    Prefab: {fileID: 3579561120315236603, guid: 2eab0f967d902034892cd6f547d0993a, type: 3}
-  - Type: 4
+    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
+  - Type: 2
     Prefab: {fileID: 3579561120315236603, guid: 275c5ca002a9c4c4cabe698b4ce8c559, type: 3}
   - Type: 5
-    Prefab: {fileID: 3579561120315236603, guid: dbe974e304f95de41a0120925bfd98ab, type: 3}
+    Prefab: {fileID: 3579561120315236603, guid: 2eab0f967d902034892cd6f547d0993a, type: 3}
   - Type: 4
     Prefab: {fileID: 3579561120315236603, guid: 42acff96842717346bc44031b15d5c92, type: 3}
   Constraints:

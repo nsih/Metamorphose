@@ -61,8 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47b9101ca3f63504e826d758f976070a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _possibleWaveDatas:
-  - {fileID: 0}
+  _possibleWaveDatas: []
   _spawnPoints:
   - {fileID: 1625097010784421609}
   - {fileID: 8593029528874282843}

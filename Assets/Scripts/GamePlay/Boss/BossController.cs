@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Boss/BossController.cs
 using System;
 using UnityEngine;
 using BulletPro;
@@ -18,6 +19,7 @@ public class BossController : MonoBehaviour
 
     private BossContext _ctx;
     private Transform _target;
+    private bool _targetSetExternally = false;
 
     public ReactiveProperty<int> CurrentHP => _ctx.CurrentHP;
     public ReactiveProperty<int> CurrentPhaseIndex => _ctx.CurrentPhaseIndex;
@@ -35,6 +37,13 @@ public class BossController : MonoBehaviour
         _muzzleAim = GetComponentInChildren<EnemyMuzzleAim>();
     }
 
+    // RoomManager에서 Instantiate 직후 호출 — 비활성 플레이어 문제 우회
+    public void SetTarget(Transform target)
+    {
+        _target = target;
+        _targetSetExternally = true;
+    }
+
     private void Start()
     {
         if (!_profile.Validate())
@@ -45,12 +54,16 @@ public class BossController : MonoBehaviour
 
         _ctx = new BossContext(_profile, transform, _spriteRenderer, _emitter, _rb);
 
-        GameObject playerObj = GameObject.FindWithTag("Player");
-        _target = playerObj != null ? playerObj.transform : null;
-
-        if (_target == null)
+        // 외부에서 타겟 미전달 시 씬 탐색 (BossTest씬 fallback)
+        if (!_targetSetExternally)
         {
-            Debug.LogWarning("BossController: Player 태그 오브젝트 없음");
+            GameObject playerObj = GameObject.FindWithTag("Player");
+            _target = playerObj != null ? playerObj.transform : null;
+
+            if (_target == null)
+            {
+                Debug.LogWarning("BossController: Player 태그 없음");
+            }
         }
 
         BossPhaseSO firstPhase = _profile.Phases[0];

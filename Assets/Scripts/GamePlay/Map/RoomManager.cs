@@ -149,8 +149,11 @@ public class RoomManager : MonoBehaviour
             return;
         }
 
-        // BossHealthBarView는 ReactiveProperty<RoomManager> 구독으로 자체 바인딩
-        // RoomManager에서 직접 참조하지 않음 (어셈블리 순환참조 방지)
+        // 플레이어 비활성 구간 우회 — 이미 확보한 transform 직접 전달
+        if (_playerTransform != null)
+        {
+            _activeBoss.SetTarget(_playerTransform);
+        }
 
         _activeBoss.OnBossDeath += OnBossDefeated;
         Debug.Log("RoomManager: 보스 스폰");

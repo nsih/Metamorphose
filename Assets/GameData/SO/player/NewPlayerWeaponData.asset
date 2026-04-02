@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NewPlayerWeaponData
   m_EditorClassIdentifier: 
   Profile: {fileID: 11400000, guid: fd852e33a81fa4148b6a1735a62d24d8, type: 2}
-  BaseDamage: 2
+  BaseDamage: 10
   BaseFireRate: 0.1
   BaseRange: 30
   BaseProjectileCount: 1
