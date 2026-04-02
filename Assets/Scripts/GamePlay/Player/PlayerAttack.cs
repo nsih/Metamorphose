@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Player/PlayerAttack.cs
 using UnityEngine;
 using Reflex.Attributes;
 using BulletPro;
@@ -12,16 +13,29 @@ public class PlayerAttack : MonoBehaviour
 
     [SerializeField] private BulletEmitter _mainEmitter;
 
+    // emitter가 붙어있는 자식 오브젝트의 로컬 위치/부모를 기억
+    private Transform _emitterParent;
+    private Vector3 _emitterLocalPos;
+    private Quaternion _emitterLocalRot;
+
     private bool _isShooting = false;
+    private bool _isReady = false;
     private CancellationTokenSource _cts;
 
     [Inject]
     public void Construct(PlayerModel model)
     {
         _model = model;
+    }
 
-        if (_mainEmitter != null && _model.CurrentProfile != null)
-            _mainEmitter.emitterProfile = _model.CurrentProfile;
+    void Awake()
+    {
+        if (_mainEmitter != null)
+        {
+            _emitterParent = _mainEmitter.transform.parent;
+            _emitterLocalPos = _mainEmitter.transform.localPosition;
+            _emitterLocalRot = _mainEmitter.transform.localRotation;
+        }
     }
 
     void OnEnable()
@@ -30,6 +44,43 @@ public class PlayerAttack : MonoBehaviour
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
         _isShooting = false;
+        _isReady = false;
+
+        RebuildEmitterAsync(_cts.Token).Forget();
+    }
+
+    private async UniTaskVoid RebuildEmitterAsync(CancellationToken token)
+    {
+        // BulletPoolManager 준비 대기
+        await UniTask.WaitUntil(
+            () => BulletPoolManager.instance != null,
+            cancellationToken: token);
+
+        if (token.IsCancellationRequested) return;
+
+        // 기존 emitter 오브젝트 파괴
+        if (_mainEmitter != null)
+        {
+            Destroy(_mainEmitter.gameObject);
+            _mainEmitter = null;
+        }
+
+        await UniTask.DelayFrame(1, cancellationToken: token);
+        if (token.IsCancellationRequested) return;
+
+        // 새 emitter 오브젝트 생성
+        var emitterGo = new GameObject("PlayerEmitter");
+        emitterGo.transform.SetParent(_emitterParent);
+        emitterGo.transform.localPosition = _emitterLocalPos;
+        emitterGo.transform.localRotation = _emitterLocalRot;
+
+        _mainEmitter = emitterGo.AddComponent<BulletEmitter>();
+
+        if (_model != null && _model.CurrentProfile != null)
+            _mainEmitter.emitterProfile = _model.CurrentProfile;
+
+        _isReady = true;
+        Debug.Log("PlayerAttack: emitter 재생성 완료");
     }
 
     void OnDestroy()
@@ -40,6 +91,7 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
+        if (!_isReady) return;
         if (_input == null || _mainEmitter == null || _model == null) return;
 
         if (_input.IsAttackPressed)
@@ -57,19 +109,15 @@ public class PlayerAttack : MonoBehaviour
     public void StopAndReset()
     {
         _isShooting = false;
+        _isReady = false;
 
         if (_mainEmitter == null) return;
-        if (_mainEmitter.bullets == null) return;
-        if (_mainEmitter.bullets.Count == 0) return;
 
         try
         {
             _mainEmitter.Kill();
         }
-        catch (System.Exception)
-        {
-            // 씬 전환 시 이미 파괴된 bullet 접근 무시
-        }
+        catch (System.Exception) { }
     }
 
     private void StartShooting()
@@ -85,6 +133,7 @@ public class PlayerAttack : MonoBehaviour
 
     private void StopShooting()
     {
+        _mainEmitter.Stop();
         _isShooting = false;
     }
 
