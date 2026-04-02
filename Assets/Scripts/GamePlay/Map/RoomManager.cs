@@ -15,6 +15,7 @@ public class RoomManager : MonoBehaviour
 {
     [SerializeField] private List<RoomWaveData> _possibleWaveDatas;
     [SerializeField] private List<Transform> _spawnPoints;
+    [SerializeField] private StageBossPoolSO _bossPool;
 
     private ReactiveProperty<RoomState> _roomState = new ReactiveProperty<RoomState>(RoomState.Idle);
     public ReadOnlyReactiveProperty<RoomState> CurrentRoomState => _roomState;
@@ -31,6 +32,9 @@ public class RoomManager : MonoBehaviour
     private Transform _playerTransform;
 
     private CancellationTokenSource _cts;
+
+    // 보스방 전용
+    private BossController _activeBoss;
 
     [Inject]
     public void Construct(
@@ -70,21 +74,30 @@ public class RoomManager : MonoBehaviour
         _roomState?.Dispose();
     }
 
-    // 교체
     private void Update()
-{
-    if (Keyboard.current.rKey.wasPressedThisFrame)
     {
-        ResetRoom();
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            ResetRoom();
+        }
     }
-}
 
     public void StartRoomEvent()
     {
         if (_roomState.Value != RoomState.Idle) return;
 
-        _roomState.Value = RoomState.Battle;
+        // 보스방 분기
+        if (_mapManager != null && _mapManager.CurrentNode != null)
+        {
+            if (_mapManager.CurrentNode.Type == RoomType.Boss)
+            {
+                _roomState.Value = RoomState.Battle;
+                SpawnBoss();
+                return;
+            }
+        }
 
+        // 일반 웨이브 흐름
         if (_possibleWaveDatas != null && _possibleWaveDatas.Count > 0)
         {
             int rnd = Random.Range(0, _possibleWaveDatas.Count);
@@ -96,8 +109,57 @@ public class RoomManager : MonoBehaviour
             return;
         }
 
+        _roomState.Value = RoomState.Battle;
         _cts = new CancellationTokenSource();
         ProcessScenario(_cts.Token).Forget();
+    }
+
+    private void SpawnBoss()
+    {
+        if (_bossPool == null)
+        {
+            Debug.LogError("RoomManager: bossPool null");
+            CompleteRoom();
+            return;
+        }
+
+        GameObject prefab = _bossPool.GetRandomBoss();
+
+        if (prefab == null)
+        {
+            Debug.LogError("RoomManager: 보스 프리팹 없음, 방 즉시 완료");
+            CompleteRoom();
+            return;
+        }
+
+        Vector3 spawnPos = Vector3.zero;
+        if (_spawnPoints != null && _spawnPoints.Count > 0)
+        {
+            spawnPos = _spawnPoints[0].position;
+        }
+
+        GameObject bossObj = Instantiate(prefab, spawnPos, Quaternion.identity);
+        _activeBoss = bossObj.GetComponent<BossController>();
+
+        if (_activeBoss == null)
+        {
+            Debug.LogError("RoomManager: BossController 없음");
+            Destroy(bossObj);
+            CompleteRoom();
+            return;
+        }
+
+        // BossHealthBarView는 ReactiveProperty<RoomManager> 구독으로 자체 바인딩
+        // RoomManager에서 직접 참조하지 않음 (어셈블리 순환참조 방지)
+
+        _activeBoss.OnBossDeath += OnBossDefeated;
+        Debug.Log("RoomManager: 보스 스폰");
+    }
+
+    private void OnBossDefeated()
+    {
+        Debug.Log("RoomManager: 보스 처치, 방 클리어");
+        CompleteRoom();
     }
 
     private async UniTaskVoid ProcessScenario(CancellationToken token)
@@ -160,6 +222,7 @@ public class RoomManager : MonoBehaviour
 
     private void CleanupRoom()
     {
+        // 웨이브 CancellationToken 정리
         if (_cts != null)
         {
             _cts.Cancel();
@@ -167,6 +230,7 @@ public class RoomManager : MonoBehaviour
             _cts = null;
         }
 
+        // 일반 적 풀 반환
         foreach (var enemy in _activeEnemies)
         {
             if (enemy != null && enemy.gameObject.activeSelf)
@@ -175,6 +239,19 @@ public class RoomManager : MonoBehaviour
             }
         }
         _activeEnemies.Clear();
+
+        // 보스 정리
+        if (_activeBoss != null)
+        {
+            _activeBoss.OnBossDeath -= OnBossDefeated;
+
+            if (_activeBoss.gameObject != null)
+            {
+                Destroy(_activeBoss.gameObject);
+            }
+
+            _activeBoss = null;
+        }
     }
 
     public void ResetRoom()
