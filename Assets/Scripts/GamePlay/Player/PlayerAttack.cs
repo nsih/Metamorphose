@@ -1,4 +1,3 @@
-// Assets/Scripts/GamePlay/Player/PlayerAttack.cs
 using UnityEngine;
 using Reflex.Attributes;
 using BulletPro;
@@ -12,7 +11,7 @@ public class PlayerAttack : MonoBehaviour
 
     private PlayerModel _model;
 
-    [Header("Emitter")]
+    [Header("Emitter 원본 (비활성 템플릿)")]
     [SerializeField] private BulletEmitter _emitterTemplate;
 
     [Header("발사 사운드")]
@@ -23,6 +22,7 @@ public class PlayerAttack : MonoBehaviour
 
     private bool _isShooting = false;
     private bool _isReady = false;
+    private float _lastFireTime = -999f;
     private CancellationTokenSource _cts;
 
     [Inject]
@@ -48,6 +48,7 @@ public class PlayerAttack : MonoBehaviour
         _cts = new CancellationTokenSource();
         _isShooting = false;
         _isReady = false;
+        _lastFireTime = -999f;
 
         RebuildEmitterAsync(_cts.Token).Forget();
     }
@@ -99,13 +100,36 @@ public class PlayerAttack : MonoBehaviour
 
         if (_input.IsAttackPressed)
         {
-            if (!_isShooting)
-                StartShooting();
+            TryFire();
         }
         else
         {
-            if (_isShooting)
-                StopShooting();
+            _isShooting = false;
+        }
+    }
+
+    private void TryFire()
+    {
+        float timeSinceLast = Time.time - _lastFireTime;
+
+        if (timeSinceLast < _model.FireRate) return;
+
+        _lastFireTime = Time.time;
+
+        if (_model.CurrentProfile != _mainEmitter.emitterProfile)
+            _mainEmitter.emitterProfile = _model.CurrentProfile;
+
+        _mainEmitter.Stop();
+        _mainEmitter.Play();
+
+        if (!string.IsNullOrEmpty(_shootSoundPath))
+            RuntimeManager.PlayOneShot(_shootSoundPath, transform.position);
+
+        // 첫 발사 시 스탯 적용
+        if (!_isShooting)
+        {
+            _isShooting = true;
+            ApplyDynamicStatsAsync(_cts.Token).Forget();
         }
     }
 
@@ -113,6 +137,7 @@ public class PlayerAttack : MonoBehaviour
     {
         _isShooting = false;
         _isReady = false;
+        _lastFireTime = -999f;
 
         if (_mainEmitter == null) return;
 
@@ -121,26 +146,6 @@ public class PlayerAttack : MonoBehaviour
             _mainEmitter.Kill();
         }
         catch (System.Exception) { }
-    }
-
-    private void StartShooting()
-    {
-        if (_model.CurrentProfile != _mainEmitter.emitterProfile)
-            _mainEmitter.emitterProfile = _model.CurrentProfile;
-
-        _mainEmitter.Play();
-        _isShooting = true;
-
-        if (!string.IsNullOrEmpty(_shootSoundPath))
-            RuntimeManager.PlayOneShot(_shootSoundPath, transform.position);
-
-        ApplyDynamicStatsAsync(_cts.Token).Forget();
-    }
-
-    private void StopShooting()
-    {
-        _mainEmitter.Stop();
-        _isShooting = false;
     }
 
     private async UniTaskVoid ApplyDynamicStatsAsync(CancellationToken token)
