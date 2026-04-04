@@ -7,7 +7,7 @@ using System;
 public class PlayerWeaponSystem : IDisposable
 {
     public EmitterProfile CurrentProfile { get; private set; }
-    
+
     public ModifiableStat Damage { get; private set; }
     public ModifiableStat FireRate { get; private set; }
     public ModifiableStat Range { get; private set; }
@@ -15,6 +15,7 @@ public class PlayerWeaponSystem : IDisposable
     public ModifiableStat SpreadAngle { get; private set; }
     public ModifiableStat SpeedScale { get; private set; }
     public ModifiableStat HomingStrength { get; private set; }
+    public float SustainedFireMultiplier { get; private set; }
 
     public PlayerWeaponSystem(PlayerWeaponData initialWeapon)
     {
@@ -38,12 +39,13 @@ public class PlayerWeaponSystem : IDisposable
         SpreadAngle = new ModifiableStat(0f);
         SpeedScale = new ModifiableStat(20f);
         HomingStrength = new ModifiableStat(0f);
+        SustainedFireMultiplier = 1.2f;
     }
 
     public void SetWeapon(PlayerWeaponData data)
     {
         CurrentProfile = data.Profile;
-        
+
         Damage = new ModifiableStat(data.BaseDamage);
         FireRate = new ModifiableStat(data.BaseFireRate);
         Range = new ModifiableStat(data.BaseRange);
@@ -51,8 +53,7 @@ public class PlayerWeaponSystem : IDisposable
         SpreadAngle = new ModifiableStat(data.BaseSpreadAngle);
         SpeedScale = new ModifiableStat(data.BaseSpeedScale);
         HomingStrength = new ModifiableStat(data.BaseHomingStrength);
-
-        //Debug.Log($"Weapon changed to: {data.name}");
+        SustainedFireMultiplier = data.SustainedFireMultiplier;
     }
 
     public void AddDamage(float amount)

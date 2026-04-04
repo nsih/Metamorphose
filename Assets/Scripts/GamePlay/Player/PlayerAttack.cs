@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Player/PlayerAttack.cs
 using UnityEngine;
 using Reflex.Attributes;
 using BulletPro;
@@ -23,7 +24,9 @@ public class PlayerAttack : MonoBehaviour
     private bool _isShooting = false;
     private bool _isReady = false;
     private float _lastFireTime = -999f;
+    private int _consecutiveShots = 0;
     private CancellationTokenSource _cts;
+    private CancellationTokenSource _statsCts;
 
     [Inject]
     public void Construct(PlayerModel model)
@@ -49,6 +52,7 @@ public class PlayerAttack : MonoBehaviour
         _isShooting = false;
         _isReady = false;
         _lastFireTime = -999f;
+        _consecutiveShots = 0;
 
         RebuildEmitterAsync(_cts.Token).Forget();
     }
@@ -91,6 +95,8 @@ public class PlayerAttack : MonoBehaviour
     {
         _cts?.Cancel();
         _cts?.Dispose();
+        _statsCts?.Cancel();
+        _statsCts?.Dispose();
     }
 
     void Update()
@@ -105,16 +111,24 @@ public class PlayerAttack : MonoBehaviour
         else
         {
             _isShooting = false;
+            _consecutiveShots = 0;
         }
     }
 
     private void TryFire()
     {
-        float timeSinceLast = Time.time - _lastFireTime;
+        float cooldown = _model.FireRate;
+        if (_consecutiveShots > 0)
+        {
+            cooldown = _model.FireRate * _model.SustainedFireMultiplier;
+        }
 
-        if (timeSinceLast < _model.FireRate) return;
+        float timeSinceLast = Time.time - _lastFireTime;
+        if (timeSinceLast < cooldown) return;
 
         _lastFireTime = Time.time;
+        _isShooting = true;
+        _consecutiveShots++;
 
         if (_model.CurrentProfile != _mainEmitter.emitterProfile)
             _mainEmitter.emitterProfile = _model.CurrentProfile;
@@ -125,12 +139,10 @@ public class PlayerAttack : MonoBehaviour
         if (!string.IsNullOrEmpty(_shootSoundPath))
             RuntimeManager.PlayOneShot(_shootSoundPath, transform.position);
 
-        // 첫 발사 시 스탯 적용
-        if (!_isShooting)
-        {
-            _isShooting = true;
-            ApplyDynamicStatsAsync(_cts.Token).Forget();
-        }
+        _statsCts?.Cancel();
+        _statsCts?.Dispose();
+        _statsCts = new CancellationTokenSource();
+        ApplyDynamicStatsAsync(_statsCts.Token).Forget();
     }
 
     public void StopAndReset()
@@ -138,6 +150,10 @@ public class PlayerAttack : MonoBehaviour
         _isShooting = false;
         _isReady = false;
         _lastFireTime = -999f;
+        _consecutiveShots = 0;
+
+        _statsCts?.Cancel();
+        _statsCts?.Dispose();
 
         if (_mainEmitter == null) return;
 
