@@ -74,10 +74,10 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
         }
 
         float damage = 1f;
-        if (bullet != null)
+        if (bullet != null && bullet.dynamicSolver != null)
         {
-            damage = bullet.moduleParameters.GetFloat("_Damage");
-            if (damage == 0) damage = 1;
+            damage = bullet.moduleParameters.GetFloat(BPParams.Damage);
+            if (damage <= 0f) damage = 1f;
         }
 
         _model.TakeDamage(damage);
