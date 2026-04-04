@@ -1,8 +1,10 @@
+// Assets/Scripts/GamePlay/Player/PlayerAttack.cs
 using UnityEngine;
 using Reflex.Attributes;
 using BulletPro;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using FMODUnity;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -10,18 +12,36 @@ public class PlayerAttack : MonoBehaviour
 
     private PlayerModel _model;
 
-    [SerializeField] private BulletEmitter _mainEmitter;
+    [Header("Emitter 원본 (비활성 템플릿)")]
+    [SerializeField] private BulletEmitter _emitterTemplate;
+
+    [Header("발사 사운드")]
+    [SerializeField] private string _shootSoundPath = "event:/SFX/Player/Shoot";
+
+    private BulletEmitter _mainEmitter;
+    private Transform _emitterParent;
 
     private bool _isShooting = false;
+    private bool _isReady = false;
+    private float _lastFireTime = -999f;
+    private int _consecutiveShots = 0;
     private CancellationTokenSource _cts;
+    private CancellationTokenSource _statsCts;
 
     [Inject]
     public void Construct(PlayerModel model)
     {
         _model = model;
+    }
 
-        if (_mainEmitter != null && _model.CurrentProfile != null)
-            _mainEmitter.emitterProfile = _model.CurrentProfile;
+    void Awake()
+    {
+        if (_emitterTemplate != null)
+        {
+            _emitterParent = _emitterTemplate.transform.parent;
+            _mainEmitter = _emitterTemplate;
+            _emitterTemplate.gameObject.SetActive(false);
+        }
     }
 
     void OnEnable()
@@ -30,62 +50,118 @@ public class PlayerAttack : MonoBehaviour
         _cts?.Dispose();
         _cts = new CancellationTokenSource();
         _isShooting = false;
+        _isReady = false;
+        _lastFireTime = -999f;
+        _consecutiveShots = 0;
+
+        RebuildEmitterAsync(_cts.Token).Forget();
+    }
+
+    private async UniTaskVoid RebuildEmitterAsync(CancellationToken token)
+    {
+        await UniTask.WaitUntil(
+            () => BulletPoolManager.instance != null,
+            cancellationToken: token);
+
+        if (token.IsCancellationRequested) return;
+
+        if (_mainEmitter != null && _mainEmitter != _emitterTemplate)
+        {
+            Destroy(_mainEmitter.gameObject);
+            _mainEmitter = null;
+        }
+
+        await UniTask.DelayFrame(1, cancellationToken: token);
+        if (token.IsCancellationRequested) return;
+
+        GameObject clone = Instantiate(
+            _emitterTemplate.gameObject,
+            _emitterParent);
+
+        clone.name = "PlayerEmitter_Active";
+        clone.transform.localPosition = _emitterTemplate.transform.localPosition;
+        clone.transform.localRotation = _emitterTemplate.transform.localRotation;
+        clone.SetActive(true);
+
+        _mainEmitter = clone.GetComponent<BulletEmitter>();
+
+        if (_model != null && _model.CurrentProfile != null)
+            _mainEmitter.emitterProfile = _model.CurrentProfile;
+
+        _isReady = true;
     }
 
     void OnDestroy()
     {
         _cts?.Cancel();
         _cts?.Dispose();
+        _statsCts?.Cancel();
+        _statsCts?.Dispose();
     }
 
     void Update()
     {
+        if (!_isReady) return;
         if (_input == null || _mainEmitter == null || _model == null) return;
 
         if (_input.IsAttackPressed)
         {
-            if (!_isShooting)
-                StartShooting();
+            TryFire();
         }
         else
         {
-            if (_isShooting)
-                StopShooting();
+            _isShooting = false;
+            _consecutiveShots = 0;
         }
+    }
+
+    private void TryFire()
+    {
+        float cooldown = _model.FireRate;
+        if (_consecutiveShots > 0)
+        {
+            cooldown = _model.FireRate * _model.SustainedFireMultiplier;
+        }
+
+        float timeSinceLast = Time.time - _lastFireTime;
+        if (timeSinceLast < cooldown) return;
+
+        _lastFireTime = Time.time;
+        _isShooting = true;
+        _consecutiveShots++;
+
+        if (_model.CurrentProfile != _mainEmitter.emitterProfile)
+            _mainEmitter.emitterProfile = _model.CurrentProfile;
+
+        _mainEmitter.Stop();
+        _mainEmitter.Play();
+
+        if (!string.IsNullOrEmpty(_shootSoundPath))
+            RuntimeManager.PlayOneShot(_shootSoundPath, transform.position);
+
+        _statsCts?.Cancel();
+        _statsCts?.Dispose();
+        _statsCts = new CancellationTokenSource();
+        ApplyDynamicStatsAsync(_statsCts.Token).Forget();
     }
 
     public void StopAndReset()
     {
         _isShooting = false;
+        _isReady = false;
+        _lastFireTime = -999f;
+        _consecutiveShots = 0;
+
+        _statsCts?.Cancel();
+        _statsCts?.Dispose();
 
         if (_mainEmitter == null) return;
-        if (_mainEmitter.bullets == null) return;
-        if (_mainEmitter.bullets.Count == 0) return;
 
         try
         {
             _mainEmitter.Kill();
         }
-        catch (System.Exception)
-        {
-            // 씬 전환 시 이미 파괴된 bullet 접근 무시
-        }
-    }
-
-    private void StartShooting()
-    {
-        if (_model.CurrentProfile != _mainEmitter.emitterProfile)
-            _mainEmitter.emitterProfile = _model.CurrentProfile;
-
-        _mainEmitter.Play();
-        _isShooting = true;
-
-        ApplyDynamicStatsAsync(_cts.Token).Forget();
-    }
-
-    private void StopShooting()
-    {
-        _isShooting = false;
+        catch (System.Exception) { }
     }
 
     private async UniTaskVoid ApplyDynamicStatsAsync(CancellationToken token)

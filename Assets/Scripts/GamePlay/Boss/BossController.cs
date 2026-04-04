@@ -87,8 +87,12 @@ public class BossController : MonoBehaviour
         if (_ctx == null || _ctx.IsDead) return;
         if (_ctx.IsInvulnerable) return;
 
-        float damage = bullet.moduleParameters.GetFloat("_Damage");
-        if (damage == 0f) damage = 1f;
+        float damage = 1f;
+        if (bullet.dynamicSolver != null)
+        {
+            damage = bullet.moduleParameters.GetFloat(BPParams.Damage);
+            if (damage <= 0f) damage = 1f;
+        }
 
         TakeDamage((int)damage);
         bullet.Die();

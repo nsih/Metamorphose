@@ -1,3 +1,4 @@
+// Assets/Scripts/Common/Model/Player/PlayerModel.cs
 using System;
 using BulletPro;
 using Common;
@@ -33,8 +34,6 @@ public class PlayerModel : IDisposable
         Dash.Reset();
         Weapon.SetWeapon(_baseWeapon);
         _acquiredItemRegistry.Clear();
-
-        //Debug.Log("player model reset");
     }
 
     // Health
@@ -52,6 +51,7 @@ public class PlayerModel : IDisposable
     public float SpreadAngle => Weapon.SpreadAngle.Value;
     public float SpeedScale => Weapon.SpeedScale.Value;
     public float HomingStrength => Weapon.HomingStrength.Value;
+    public float SustainedFireMultiplier => Weapon.SustainedFireMultiplier;
     public void SetWeapon(PlayerWeaponData data) => Weapon.SetWeapon(data);
 
     // Dash
@@ -70,7 +70,7 @@ public class PlayerModel : IDisposable
     public float SlowMotionDuration => Stats.SlowMotionDuration;
     public int RewardChoiceCount => (int)Stats.RewardChoiceCount.Value;
 
-    // stat modifiers (Step 4에서 ItemApplyService로 이전 예정)
+    // stat modifiers
     public void IncreaseMaxHP(float amount) => Health.AddMaxHP(amount);
     public void IncreaseDamage(float amount) => Weapon.AddDamage(amount);
     public void IncreaseMultishot(int amount) => Weapon.AddProjectileCount(amount);
