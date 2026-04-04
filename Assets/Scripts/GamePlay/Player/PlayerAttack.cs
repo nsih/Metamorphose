@@ -46,8 +46,7 @@ public class PlayerAttack : MonoBehaviour
 
     void OnEnable()
     {
-        _cts?.Cancel();
-        _cts?.Dispose();
+        SafeDisposeCts(ref _cts);
         _cts = new CancellationTokenSource();
         _isShooting = false;
         _isReady = false;
@@ -93,19 +92,8 @@ public class PlayerAttack : MonoBehaviour
 
     void OnDestroy()
     {
-        if (_cts != null)
-        {
-            _cts.Cancel();
-            _cts.Dispose();
-            _cts = null;
-        }
-
-        if (_statsCts != null)
-        {
-            _statsCts.Cancel();
-            _statsCts.Dispose();
-            _statsCts = null;
-        }
+        SafeDisposeCts(ref _cts);
+        SafeDisposeCts(ref _statsCts);
     }
 
     void Update()
@@ -148,12 +136,7 @@ public class PlayerAttack : MonoBehaviour
         if (!string.IsNullOrEmpty(_shootSoundPath))
             RuntimeManager.PlayOneShot(_shootSoundPath, transform.position);
 
-        if (_statsCts != null)
-        {
-            _statsCts.Cancel();
-            _statsCts.Dispose();
-            _statsCts = null;
-        }
+        SafeDisposeCts(ref _statsCts);
         _statsCts = new CancellationTokenSource();
         ApplyDynamicStatsAsync(_statsCts.Token).Forget();
     }
@@ -165,8 +148,7 @@ public class PlayerAttack : MonoBehaviour
         _lastFireTime = -999f;
         _consecutiveShots = 0;
 
-        _statsCts?.Cancel();
-        _statsCts?.Dispose();
+        SafeDisposeCts(ref _statsCts);
 
         if (_mainEmitter == null) return;
 
@@ -192,5 +174,17 @@ public class PlayerAttack : MonoBehaviour
         rootBullet.moduleParameters.SetInt(BPParams.Count, _model.ProjectileCount);
         rootBullet.moduleParameters.SetFloat(BPParams.Spread, _model.SpreadAngle);
         rootBullet.moduleParameters.SetFloat(BPParams.Homing, _model.HomingStrength);
+    }
+
+    private static void SafeDisposeCts(ref CancellationTokenSource cts)
+    {
+        if (cts == null) return;
+        try
+        {
+            cts.Cancel();
+            cts.Dispose();
+        }
+        catch (System.ObjectDisposedException) { }
+        cts = null;
     }
 }
