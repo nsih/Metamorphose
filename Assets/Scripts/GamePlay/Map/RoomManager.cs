@@ -21,6 +21,7 @@ public class RoomManager : MonoBehaviour
     public ReadOnlyReactiveProperty<RoomState> CurrentRoomState => _roomState;
 
     private ReactiveProperty<RoomManager> _globalCurrentRoomHandle;
+    private ReactiveProperty<BossController> _globalBossHandle;
     private EnemyPoolManager _enemyPoolManager;
     private MapManager _mapManager;
 
@@ -35,15 +36,18 @@ public class RoomManager : MonoBehaviour
 
     // 보스방 전용
     private BossController _activeBoss;
+    private BossSpawnService _bossSpawnService;
 
     [Inject]
     public void Construct(
         ReactiveProperty<RoomManager> globalHandle,
+        ReactiveProperty<BossController> globalBossHandle,
         PlayerSpawner spawner,
         EnemyPoolManager enemyPoolManager,
         MapManager mapManager)
     {
         _globalCurrentRoomHandle = globalHandle;
+        _globalBossHandle = globalBossHandle;
         _playerSpawner = spawner;
         _enemyPoolManager = enemyPoolManager;
         _mapManager = mapManager;
@@ -59,6 +63,7 @@ public class RoomManager : MonoBehaviour
         }
 
         _factory = new EnemyFactory(_playerTransform, _enemyPoolManager);
+        _bossSpawnService = new BossSpawnService(_bossPool, _spawnPoints);
 
         if (_globalCurrentRoomHandle != null)
         {
@@ -116,47 +121,22 @@ public class RoomManager : MonoBehaviour
 
     private void SpawnBoss()
     {
-        if (_bossPool == null)
+        BossController boss = _bossSpawnService.Spawn(_playerTransform);
+
+        if (boss == null)
         {
-            Debug.LogError("RoomManager: bossPool null");
             CompleteRoom();
             return;
         }
 
-        GameObject prefab = _bossPool.GetRandomBoss();
-
-        if (prefab == null)
-        {
-            Debug.LogError("RoomManager: 보스 프리팹 없음, 방 즉시 완료");
-            CompleteRoom();
-            return;
-        }
-
-        Vector3 spawnPos = Vector3.zero;
-        if (_spawnPoints != null && _spawnPoints.Count > 0)
-        {
-            spawnPos = _spawnPoints[0].position;
-        }
-
-        GameObject bossObj = Instantiate(prefab, spawnPos, Quaternion.identity);
-        _activeBoss = bossObj.GetComponent<BossController>();
-
-        if (_activeBoss == null)
-        {
-            Debug.LogError("RoomManager: BossController 없음");
-            Destroy(bossObj);
-            CompleteRoom();
-            return;
-        }
-
-        // 플레이어 비활성 구간 우회 — 이미 확보한 transform 직접 전달
-        if (_playerTransform != null)
-        {
-            _activeBoss.SetTarget(_playerTransform);
-        }
-
+        _activeBoss = boss;
         _activeBoss.OnBossDeath += OnBossDefeated;
-        Debug.Log("RoomManager: 보스 스폰");
+
+        // 전역 핸들에 보스 등록
+        if (_globalBossHandle != null)
+        {
+            _globalBossHandle.Value = _activeBoss;
+        }
     }
 
     private void OnBossDefeated()
@@ -254,6 +234,12 @@ public class RoomManager : MonoBehaviour
             }
 
             _activeBoss = null;
+        }
+
+        // 전역 보스 핸들 초기화
+        if (_globalBossHandle != null)
+        {
+            _globalBossHandle.Value = null;
         }
     }
 

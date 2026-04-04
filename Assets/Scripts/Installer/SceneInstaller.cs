@@ -22,6 +22,9 @@ public class SceneInstaller : MonoBehaviour, IInstaller
         var roomProperty = new ReactiveProperty<RoomManager>(null);
         builder.RegisterValue(roomProperty, new Type[] { typeof(ReactiveProperty<RoomManager>) });
 
+        var bossProperty = new ReactiveProperty<BossController>(null);
+        builder.RegisterValue(bossProperty, new Type[] { typeof(ReactiveProperty<BossController>) });
+
         if (_mapUIManager != null)
             builder.RegisterValue(_mapUIManager);
 
@@ -43,7 +46,6 @@ public class SceneInstaller : MonoBehaviour, IInstaller
         else
             audio.PlayMusic(_gameplayBGM);
 
-        // 씬 진입 시 입력 재활성화 (포탈 진입 시 SetEnabled(false) 복원)
         container.Single<IInputService>().SetEnabled(true);
     }
 }

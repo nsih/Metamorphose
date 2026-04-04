@@ -17,6 +17,7 @@ MonoBehaviour:
   BaseFireRate: 0.3
   BaseRange: 20
   BaseProjectileCount: 1
-  BaseSpreadAngle: 10
-  BaseSpeedScale: 20
+  BaseSpreadAngle: 15
+  BaseSpeedScale: 40
   BaseHomingStrength: 0
+  SustainedFireMultiplier: 1.2
