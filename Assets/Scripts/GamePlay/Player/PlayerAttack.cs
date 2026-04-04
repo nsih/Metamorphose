@@ -4,6 +4,7 @@ using Reflex.Attributes;
 using BulletPro;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using FMODUnity;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -11,12 +12,14 @@ public class PlayerAttack : MonoBehaviour
 
     private PlayerModel _model;
 
-    [SerializeField] private BulletEmitter _mainEmitter;
+    [Header("Emitter")]
+    [SerializeField] private BulletEmitter _emitterTemplate;
 
-    // emitter가 붙어있는 자식 오브젝트의 로컬 위치/부모를 기억
+    [Header("발사 사운드")]
+    [SerializeField] private string _shootSoundPath = "event:/SFX/Player/Shoot";
+
+    private BulletEmitter _mainEmitter;
     private Transform _emitterParent;
-    private Vector3 _emitterLocalPos;
-    private Quaternion _emitterLocalRot;
 
     private bool _isShooting = false;
     private bool _isReady = false;
@@ -30,11 +33,11 @@ public class PlayerAttack : MonoBehaviour
 
     void Awake()
     {
-        if (_mainEmitter != null)
+        if (_emitterTemplate != null)
         {
-            _emitterParent = _mainEmitter.transform.parent;
-            _emitterLocalPos = _mainEmitter.transform.localPosition;
-            _emitterLocalRot = _mainEmitter.transform.localRotation;
+            _emitterParent = _emitterTemplate.transform.parent;
+            _mainEmitter = _emitterTemplate;
+            _emitterTemplate.gameObject.SetActive(false);
         }
     }
 
@@ -51,15 +54,13 @@ public class PlayerAttack : MonoBehaviour
 
     private async UniTaskVoid RebuildEmitterAsync(CancellationToken token)
     {
-        // BulletPoolManager 준비 대기
         await UniTask.WaitUntil(
             () => BulletPoolManager.instance != null,
             cancellationToken: token);
 
         if (token.IsCancellationRequested) return;
 
-        // 기존 emitter 오브젝트 파괴
-        if (_mainEmitter != null)
+        if (_mainEmitter != null && _mainEmitter != _emitterTemplate)
         {
             Destroy(_mainEmitter.gameObject);
             _mainEmitter = null;
@@ -68,19 +69,21 @@ public class PlayerAttack : MonoBehaviour
         await UniTask.DelayFrame(1, cancellationToken: token);
         if (token.IsCancellationRequested) return;
 
-        // 새 emitter 오브젝트 생성
-        var emitterGo = new GameObject("PlayerEmitter");
-        emitterGo.transform.SetParent(_emitterParent);
-        emitterGo.transform.localPosition = _emitterLocalPos;
-        emitterGo.transform.localRotation = _emitterLocalRot;
+        GameObject clone = Instantiate(
+            _emitterTemplate.gameObject,
+            _emitterParent);
 
-        _mainEmitter = emitterGo.AddComponent<BulletEmitter>();
+        clone.name = "PlayerEmitter_Active";
+        clone.transform.localPosition = _emitterTemplate.transform.localPosition;
+        clone.transform.localRotation = _emitterTemplate.transform.localRotation;
+        clone.SetActive(true);
+
+        _mainEmitter = clone.GetComponent<BulletEmitter>();
 
         if (_model != null && _model.CurrentProfile != null)
             _mainEmitter.emitterProfile = _model.CurrentProfile;
 
         _isReady = true;
-        Debug.Log("PlayerAttack: emitter 재생성 완료");
     }
 
     void OnDestroy()
@@ -127,6 +130,9 @@ public class PlayerAttack : MonoBehaviour
 
         _mainEmitter.Play();
         _isShooting = true;
+
+        if (!string.IsNullOrEmpty(_shootSoundPath))
+            RuntimeManager.PlayOneShot(_shootSoundPath, transform.position);
 
         ApplyDynamicStatsAsync(_cts.Token).Forget();
     }

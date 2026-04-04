@@ -792,6 +792,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f619e2844d6fbed43a3ad6ad9b80d95c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dashHitboxMultiplier: 2
 --- !u!114 &3074840396876414495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -804,7 +805,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 642e944dcab20394d8cd294e62f9e102, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mainEmitter: {fileID: 9022561187776324406}
+  _emitterTemplate: {fileID: 9022561187776324406}
 --- !u!114 &1987773132866549920
 MonoBehaviour:
   m_ObjectHideFlags: 0
