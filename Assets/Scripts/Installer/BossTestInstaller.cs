@@ -19,6 +19,9 @@ public class BossTestInstaller : MonoBehaviour, IInstaller
         var roomProperty = new ReactiveProperty<RoomManager>(null);
         builder.RegisterValue(roomProperty, new Type[] { typeof(ReactiveProperty<RoomManager>) });
 
+        var bossProperty = new ReactiveProperty<BossController>(null);
+        builder.RegisterValue(bossProperty, new Type[] { typeof(ReactiveProperty<BossController>) });
+
         if (_enemyPoolManager != null)
             builder.RegisterValue(_enemyPoolManager);
 
