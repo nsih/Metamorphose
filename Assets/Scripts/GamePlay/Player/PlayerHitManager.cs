@@ -118,9 +118,6 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
 
     private async UniTaskVoid PlayHitBlinkAsync()
     {
-        Debug.Log($"blink: sr={_spriteRenderer != null}, duration={_model.PostHitInvincibleDuration}");
-
-
         if (_spriteRenderer == null) return;
 
         CancelBlink();
@@ -141,7 +138,7 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
                 SetAlpha(alpha);
                 dim = !dim;
 
-                await UniTask.Delay(80, cancellationToken: token);
+                await UniTask.Delay(80, ignoreTimeScale: true, cancellationToken: token);
                 elapsed += 0.08f;
             }
         }
