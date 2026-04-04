@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Player/PlayerHitManager.cs
 using UnityEngine;
 using Reflex.Attributes;
 using BulletPro;
@@ -32,7 +33,7 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
     void Start()
     {
         if (_model == null)
-            Debug.LogError("PlayerHitManager: DI Error");
+            Debug.LogError("PlayerHitManager: DI 실패");
     }
 
     void OnEnable()
@@ -47,7 +48,7 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
             _receiver.OnHitByBullet.RemoveListener(HandleBulletHit);
     }
 
-    public void TakeDamage(int dmg)
+    public void TakeDamage(float dmg)
     {
         if (_model.CurrentHP.Value <= 0) return;
         if (IsInvincible) return;

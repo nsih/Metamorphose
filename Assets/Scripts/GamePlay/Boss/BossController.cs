@@ -37,7 +37,7 @@ public class BossController : MonoBehaviour
         _muzzleAim = GetComponentInChildren<EnemyMuzzleAim>();
     }
 
-    // RoomManager에서 Instantiate 직후 호출 — 비활성 플레이어 문제 우회
+    // RoomManager에서 Instantiate 직후 호출 - 비활성 플레이어 문제 우회
     public void SetTarget(Transform target)
     {
         _target = target;
@@ -94,13 +94,13 @@ public class BossController : MonoBehaviour
             if (damage <= 0f) damage = 1f;
         }
 
-        TakeDamage((int)damage);
+        TakeDamage(damage);
         bullet.Die();
     }
 
-    private void TakeDamage(int dmg)
+    private void TakeDamage(float dmg)
     {
-        _ctx.CurrentHP.Value = Mathf.Max(0, _ctx.CurrentHP.Value - dmg);
+        _ctx.CurrentHP.Value = Mathf.Max(0, _ctx.CurrentHP.Value - Mathf.FloorToInt(dmg));
 
         if (_ctx.CurrentHP.Value <= 0)
         {

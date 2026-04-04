@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Util/ExplosionUtil.cs
 using UnityEngine;
 using Common;
 
@@ -10,11 +11,11 @@ public static class ExplosionUtil
             Debug.LogWarning("ExplosionUtil: config null");
             return;
         }
-        
+
         Explode(center, owner, config.Radius, config.Damage, config.Force, config.TargetLayer);
         SpawnVisual(center, config);
     }
-    
+
     public static void Explode(
         Vector3 center,
         ExplosionOwner owner,
@@ -25,22 +26,22 @@ public static class ExplosionUtil
     {
         if (targetLayer == default)
             targetLayer = ~0;
-        
+
         Collider2D[] hits = Physics2D.OverlapCircleAll(center, radius, targetLayer);
-        
+
         foreach (var hit in hits)
         {
             ProcessHit(hit, owner, center, damage, force);
         }
-        
+
         DrawDebug(center, radius);
     }
-    
+
     private static void ProcessHit(
-        Collider2D hit, 
-        ExplosionOwner owner, 
-        Vector3 center, 
-        float damage, 
+        Collider2D hit,
+        ExplosionOwner owner,
+        Vector3 center,
+        float damage,
         float force)
     {
         // 1. IExplosionReactable
@@ -53,7 +54,7 @@ public static class ExplosionUtil
             }
             return;
         }
-        
+
         // 2. BulletPro
         var bullet = hit.GetComponent<BulletPro.Bullet>();
         if (bullet != null)
@@ -61,22 +62,22 @@ public static class ExplosionUtil
             HandleBullet(bullet, owner, hit.gameObject.layer);
             return;
         }
-        
+
         // 3. IDamageable
         var damageable = hit.GetComponent<IDamageable>();
         if (damageable != null)
         {
             if (ShouldDamage(hit.gameObject.layer, owner))
             {
-                damageable.TakeDamage((int)damage);
+                damageable.TakeDamage(damage);
             }
         }
     }
-    
+
     private static void HandleBullet(BulletPro.Bullet bullet, ExplosionOwner owner, int bulletLayer)
     {
         string layerName = LayerMask.LayerToName(bulletLayer);
-        
+
         bool shouldDestroy = owner switch
         {
             ExplosionOwner.Player => layerName == "EnemyBullet",
@@ -84,17 +85,17 @@ public static class ExplosionUtil
             ExplosionOwner.Environment => true,
             _ => false
         };
-        
+
         if (shouldDestroy)
         {
             bullet.Die();
         }
     }
-    
+
     private static bool ShouldDamage(int targetLayer, ExplosionOwner owner)
     {
         string layerName = LayerMask.LayerToName(targetLayer);
-        
+
         return owner switch
         {
             ExplosionOwner.Player => layerName is "Enemy" or "Destructible",
@@ -103,23 +104,23 @@ public static class ExplosionUtil
             _ => false
         };
     }
-    
+
     private static void SpawnVisual(Vector3 position, ExplosionConfigSO config)
     {
         if (config.ExplosionSprite == null) return;
-        
+
         var go = new GameObject("ExplosionVisual");
         go.transform.position = position;
         go.transform.localScale = Vector3.one * config.VisualScale;
-        
+
         var sr = go.AddComponent<SpriteRenderer>();
         sr.sprite = config.ExplosionSprite;
         sr.color = config.VisualColor;
         sr.sortingOrder = 100;
-        
+
         Object.Destroy(go, config.VisualDuration);
     }
-    
+
     private static void DrawDebug(Vector3 center, float radius)
     {
         #if UNITY_EDITOR

@@ -1,17 +1,20 @@
+// Assets/Scripts/GamePlay/Stage/DestructibleObject.cs
 using UnityEngine;
 
 public class DestructibleObject : MonoBehaviour, IDamageable
 {
     [SerializeField] private int maxHp = 1;
     private int currentHp;
+
     private void Awake()
     {
         currentHp = maxHp;
     }
-    public void TakeDamage(int damage)
+
+    public void TakeDamage(float damage)
     {
-        currentHp -= damage;
-        
+        currentHp -= Mathf.FloorToInt(damage);
+
         if (currentHp <= 0)
         {
             Destroy();

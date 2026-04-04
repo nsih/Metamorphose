@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Enemy/Enemy.cs
 using UnityEngine;
 using BulletPro;
 using Cysharp.Threading.Tasks;
@@ -32,7 +33,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private Rigidbody2D _rigidbody;
     private EnemyMuzzleAim _muzzleAim;
-    
+
     private Vector3 _defaultScale;
 
     [Inject] private IAudioService _audio;
@@ -51,7 +52,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         if (_spriteRenderer != null)
             _originalColor = _spriteRenderer.color;
-        
+
         _defaultScale = transform.localScale;
 
         _ctx = new EnemyContext(transform, _spriteRenderer, _emitter, _rigidbody);
@@ -74,7 +75,7 @@ public class Enemy : MonoBehaviour, IDamageable
     public void Initialize(EnemyBrainSO brain)
     {
         _currentBrain = brain != null ? brain : _defaultBrain;
-        
+
         if (_currentBrain == null)
         {
             Debug.LogError("Enemy: brain null");
@@ -83,7 +84,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         ResetState();
         ApplyVisual(_currentBrain);
-        
+
         _ctx.Initialize(_currentBrain, null);
         _ctx.SpawnAction = _spawnAction;
         _fsm.Initialize(_currentBrain, _ctx);
@@ -95,11 +96,11 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             if (brain.Sprite != null)
                 _spriteRenderer.sprite = brain.Sprite;
-            
+
             _spriteRenderer.color = brain.Color;
             _originalColor = brain.Color;
         }
-        
+
         transform.localScale = new Vector3(
             _defaultScale.x * brain.Scale.x,
             _defaultScale.y * brain.Scale.y,
@@ -110,13 +111,13 @@ public class Enemy : MonoBehaviour, IDamageable
     private void ResetState()
     {
         CancelFlash();
-        
+
         if (_spriteRenderer != null)
             _spriteRenderer.color = _originalColor;
-        
+
         if (_emitter != null)
             _emitter.Kill();
-        
+
         _ctx.Reset();
     }
 
@@ -124,7 +125,7 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         if (_ctx != null)
             _ctx.Target = target;
-        
+
         if (_muzzleAim != null)
             _muzzleAim.SetTarget(target);
     }
@@ -149,18 +150,18 @@ public class Enemy : MonoBehaviour, IDamageable
         if (bullet.dynamicSolver != null)
         {
             damage = bullet.moduleParameters.GetFloat(BPParams.Damage);
-            if (damage <= 0) damage = 1;
+            if (damage <= 0f) damage = 1f;
         }
 
-        TakeDamage((int)damage);
+        TakeDamage(damage);
         bullet.Die();
     }
 
-    public void TakeDamage(int dmg)
+    public void TakeDamage(float dmg)
     {
         if (_ctx == null || _ctx.IsDead) return;
 
-        _ctx.CurrentHP -= dmg;
+        _ctx.CurrentHP -= Mathf.FloorToInt(dmg);
         OnHit?.Invoke();
         PlayFlashEffect().Forget();
 

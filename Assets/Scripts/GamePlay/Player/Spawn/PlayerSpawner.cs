@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Player/Spawn/PlayerSpawner.cs
 using UnityEngine;
 using Reflex.Core;
 using Reflex.Attributes;
@@ -50,7 +51,11 @@ public class PlayerSpawner : MonoBehaviour
     {
         player.SetActive(false);
 
-        await UniTask.WaitUntil(() => BulletPro.BulletCollisionManager.instance != null);
+        await UniTask.WaitUntil(() =>
+            BulletPro.BulletCollisionManager.instance != null
+            && BulletPro.BulletPoolManager.instance != null);
+
+        Debug.Log($"ReactivateAsync: CollisionMgr={BulletPro.BulletCollisionManager.instance != null}, PoolMgr={BulletPro.BulletPoolManager.instance != null}");
 
         player.SetActive(true);
     }
