@@ -41,6 +41,7 @@ public class PlayerModel : IDisposable
     public ReactiveProperty<float> CurrentHP => Health.CurrentHP;
     public void TakeDamage(float amount) => Health.TakeDamage(amount);
     public void Heal(float amount) => Health.Heal(amount);
+    public float PostHitInvincibleDuration => _baseStat.PostHitInvincibleDuration;
 
     // Weapon
     public EmitterProfile CurrentProfile => Weapon.CurrentProfile;

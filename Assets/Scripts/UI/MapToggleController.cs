@@ -1,3 +1,4 @@
+// Assets/Scripts/UI/MapToggleController.cs
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Reflex.Attributes;
@@ -9,14 +10,15 @@ public class MapToggleController : MonoBehaviour
     [SerializeField] private MapUIManager _mapUIManager;
 
     private MapManager _mapManager;
+    private IInputService _inputService;
 
     private bool _isMapOpen = false;
-    private float _previousTimeScale = 1f;
 
     [Inject]
-    public void Construct(MapManager mapManager)
+    public void Construct(MapManager mapManager, IInputService inputService)
     {
         _mapManager = mapManager;
+        _inputService = inputService;
     }
 
     private void Start()
@@ -42,11 +44,16 @@ public class MapToggleController : MonoBehaviour
 
         if (_isMapOpen)
         {
-            _isMapOpen = false;
-            _mapScrollView.SetActive(false);
-            Time.timeScale = _previousTimeScale;
+            CloseMap();
             return;
         }
+
+        OpenMap();
+    }
+
+    public void OpenMap()
+    {
+        if (_mapScrollView == null) return;
 
         if (_mapManager == null || _mapManager.CurrentMap == null || _mapManager.CurrentNode == null)
         {
@@ -56,9 +63,17 @@ public class MapToggleController : MonoBehaviour
 
         _isMapOpen = true;
         _mapScrollView.SetActive(true);
-        _previousTimeScale = Time.timeScale;
-        Time.timeScale = 0f;
+        _inputService?.SetEnabled(false);
         RefreshMapUI();
+    }
+
+    public void CloseMap()
+    {
+        if (_mapScrollView == null) return;
+
+        _isMapOpen = false;
+        _mapScrollView.SetActive(false);
+        _inputService?.SetEnabled(true);
     }
 
     private void RefreshMapUI()
@@ -78,37 +93,11 @@ public class MapToggleController : MonoBehaviour
         }
     }
 
-    public void OpenMap()
-    {
-        if (_mapScrollView == null) return;
-
-        if (_mapManager == null || _mapManager.CurrentMap == null || _mapManager.CurrentNode == null)
-        {
-            Debug.Log("MapToggle: map data not ready");
-            return;
-        }
-
-        _isMapOpen = true;
-        _mapScrollView.SetActive(true);
-        _previousTimeScale = Time.timeScale;
-        Time.timeScale = 0f;
-        RefreshMapUI();
-    }
-
-    public void CloseMap()
-    {
-        if (_mapScrollView == null) return;
-
-        _isMapOpen = false;
-        _mapScrollView.SetActive(false);
-        Time.timeScale = _previousTimeScale;
-    }
-
     private void OnDestroy()
     {
         if (_isMapOpen)
         {
-            Time.timeScale = _previousTimeScale;
+            _inputService?.SetEnabled(true);
         }
     }
 }

@@ -1,3 +1,4 @@
+// Assets/Scripts/Common/SO/PlayerStat.cs
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewPlayerStat", menuName = "SO/Player/Player Stats")]
@@ -5,6 +6,7 @@ public class PlayerStat : ScriptableObject
 {
     [Header("Health")]
     public float MaxHealth = 10f;
+    public float PostHitInvincibleDuration = 1.0f;
 
     [Header("Movement")]
     public float MoveSpeed = 25f;
