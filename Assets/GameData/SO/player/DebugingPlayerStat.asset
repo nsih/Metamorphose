@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: DebugingPlayerStat
   m_EditorClassIdentifier: 
   MaxHealth: 30
+  PostHitInvincibleDuration: 1
   MoveSpeed: 20
   DashSpeed: 75
   DashDuration: 0.15

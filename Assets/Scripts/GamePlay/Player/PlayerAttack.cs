@@ -93,10 +93,19 @@ public class PlayerAttack : MonoBehaviour
 
     void OnDestroy()
     {
-        _cts?.Cancel();
-        _cts?.Dispose();
-        _statsCts?.Cancel();
-        _statsCts?.Dispose();
+        if (_cts != null)
+        {
+            _cts.Cancel();
+            _cts.Dispose();
+            _cts = null;
+        }
+
+        if (_statsCts != null)
+        {
+            _statsCts.Cancel();
+            _statsCts.Dispose();
+            _statsCts = null;
+        }
     }
 
     void Update()
@@ -139,8 +148,12 @@ public class PlayerAttack : MonoBehaviour
         if (!string.IsNullOrEmpty(_shootSoundPath))
             RuntimeManager.PlayOneShot(_shootSoundPath, transform.position);
 
-        _statsCts?.Cancel();
-        _statsCts?.Dispose();
+        if (_statsCts != null)
+        {
+            _statsCts.Cancel();
+            _statsCts.Dispose();
+            _statsCts = null;
+        }
         _statsCts = new CancellationTokenSource();
         ApplyDynamicStatsAsync(_statsCts.Token).Forget();
     }
