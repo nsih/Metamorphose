@@ -1,3 +1,4 @@
+// Assets/Scripts/Common/Interface/IInputService.cs
 using UnityEngine;
 using System;
 
@@ -9,4 +10,5 @@ public interface IInputService
     void SetEnabled(bool enabled);
     event Action OnDashPressed;
     event Action OnBombPressed;
+    event Action OnInteractPressed;
 }

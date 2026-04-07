@@ -31,6 +31,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5805127058576015317}
   - {fileID: 6666309844939415862}
   - {fileID: 8118985104103922108}
   - {fileID: 2347967226511957643}
@@ -66,6 +67,8 @@ MonoBehaviour:
   - {fileID: 1625097010784421609}
   - {fileID: 8593029528874282843}
   _bossPool: {fileID: 11400000, guid: 47b9f35da9df872458831feee1d69e6e, type: 2}
+  _clearPortalPrefab: {fileID: 6590854473695513187, guid: b1df3fefb79fe8f4ca96b6c18681244d, type: 3}
+  _portalSpawnPoint: {fileID: 5805127058576015317}
 --- !u!1 &3823613242989546852
 GameObject:
   m_ObjectHideFlags: 0
@@ -12933,3 +12936,34 @@ TilemapRenderer:
   m_SortOrder: 0
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
+--- !u!1 &8603355851632719939
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5805127058576015317}
+  m_Layer: 0
+  m_Name: PortalSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5805127058576015317
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8603355851632719939}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 10.05, y: 6.93, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9064814274275955005}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
