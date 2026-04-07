@@ -1,10 +1,10 @@
+// Assets/Scripts/UI/RoomClearFlowUI.cs
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Common;
 using Reflex.Attributes;
 using System.Collections.Generic;
-using R3;
 
 public class RoomClearFlowUI : MonoBehaviour
 {
@@ -18,34 +18,31 @@ public class RoomClearFlowUI : MonoBehaviour
     [Header("References")]
     [SerializeField] private MapToggleController _mapToggleController;
 
-    private enum FlowState { None, Reward, MapSelect }
-    private FlowState _currentState;
-
-    private ReactiveProperty<RoomManager> _globalCurrentRoomHandle;
+    private RoomClearFlowController _flowController;
     private PlayerModel _playerModel;
     private MapUIManager _mapUIManager;
     private MapManager _mapManager;
     private ItemRepository _itemRepository;
     private ItemApplyService _itemApplyService;
-
-    private readonly CompositeDisposable _disposables = new CompositeDisposable();
-    private System.IDisposable _roomStateSubscription;
+    private IInputService _inputService;
 
     [Inject]
     public void Construct(
-        ReactiveProperty<RoomManager> globalHandle,
+        RoomClearFlowController flowController,
         PlayerModel playerModel,
         MapUIManager mapUIManager,
         MapManager mapManager,
         ItemRepository itemRepository,
-        ItemApplyService itemApplyService)
+        ItemApplyService itemApplyService,
+        IInputService inputService)
     {
-        _globalCurrentRoomHandle = globalHandle;
+        _flowController = flowController;
         _playerModel = playerModel;
         _mapUIManager = mapUIManager;
         _mapManager = mapManager;
         _itemRepository = itemRepository;
         _itemApplyService = itemApplyService;
+        _inputService = inputService;
     }
 
     private void Awake()
@@ -58,22 +55,11 @@ public class RoomClearFlowUI : MonoBehaviour
         if (_mapUIManager != null)
             _mapUIManager.OnNodeSelected += OnMapNodeSelected;
 
-        _globalCurrentRoomHandle
-            .Subscribe(room =>
-            {
-                _roomStateSubscription?.Dispose();
-                _currentState = FlowState.None;
-
-                if (room == null) return;
-
-                _roomStateSubscription = room.CurrentRoomState
-                    .Subscribe(state =>
-                    {
-                        if (state == RoomState.Complete)
-                            StartClearFlow();
-                    });
-            })
-            .AddTo(_disposables);
+        if (_flowController != null)
+        {
+            _flowController.OnRequestRewardUI += ShowRewardUI;
+            _flowController.OnRequestMapUI += ShowMapUI;
+        }
     }
 
     private void OnDestroy()
@@ -81,38 +67,25 @@ public class RoomClearFlowUI : MonoBehaviour
         if (_mapUIManager != null)
             _mapUIManager.OnNodeSelected -= OnMapNodeSelected;
 
-        _disposables.Dispose();
-        _roomStateSubscription?.Dispose();
-    }
-
-    private void StartClearFlow()
-    {
-        if (_currentState != FlowState.None) return;
-        SetState(FlowState.Reward);
-    }
-
-    private void SetState(FlowState newState)
-    {
-        _currentState = newState;
-
-        switch (_currentState)
+        if (_flowController != null)
         {
-            case FlowState.Reward:
-                _mapToggleController?.CloseMap();
-                _rewardPanel?.SetActive(true);
-                GenerateRewardButtons();
-                break;
-
-            case FlowState.MapSelect:
-                _rewardPanel?.SetActive(false);
-                _mapToggleController?.OpenMap();
-                break;
-
-            case FlowState.None:
-                _rewardPanel?.SetActive(false);
-                _mapToggleController?.CloseMap();
-                break;
+            _flowController.OnRequestRewardUI -= ShowRewardUI;
+            _flowController.OnRequestMapUI -= ShowMapUI;
         }
+    }
+
+    private void ShowRewardUI()
+    {
+        _mapToggleController?.CloseMap();
+        _rewardPanel?.SetActive(true);
+        GenerateRewardButtons();
+    }
+
+    private void ShowMapUI()
+    {
+        _rewardPanel?.SetActive(false);
+        _inputService?.SetEnabled(true);
+        _mapToggleController?.OpenMap();
     }
 
     private void GenerateRewardButtons()
@@ -154,14 +127,18 @@ public class RoomClearFlowUI : MonoBehaviour
     private void OnItemSelected(ItemSO item)
     {
         _itemApplyService.Apply(item);
-        SetState(FlowState.MapSelect);
+        _rewardPanel?.SetActive(false);
+
+        // Controller에 보상 완료 알림 -> 맵 UI 요청
+        _flowController?.NotifyRewardComplete();
     }
 
     private void OnMapNodeSelected(MapNode node)
     {
         if (node.State != NodeState.Available) return;
 
-        SetState(FlowState.None);
+        _mapToggleController?.CloseMap();
+        _inputService?.SetEnabled(true);
         _mapManager.MoveToNode(node);
     }
 }
