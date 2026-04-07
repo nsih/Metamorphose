@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Map/RoomManager.cs
 using System;
 using UnityEngine;
 using System.Collections.Generic;
@@ -16,6 +17,10 @@ public class RoomManager : MonoBehaviour
     [SerializeField] private List<RoomWaveData> _possibleWaveDatas;
     [SerializeField] private List<Transform> _spawnPoints;
     [SerializeField] private StageBossPoolSO _bossPool;
+
+    [Header("Clear Portal")]
+    [SerializeField] private GameObject _clearPortalPrefab;
+    [SerializeField] private Transform _portalSpawnPoint;
 
     private ReactiveProperty<RoomState> _roomState = new ReactiveProperty<RoomState>(RoomState.Idle);
     public ReadOnlyReactiveProperty<RoomState> CurrentRoomState => _roomState;
@@ -37,6 +42,23 @@ public class RoomManager : MonoBehaviour
     // 보스방 전용
     private BossController _activeBoss;
     private BossSpawnService _bossSpawnService;
+
+    private bool _isCompleted;
+
+    // 포탈
+    public GameObject ClearPortalPrefab => _clearPortalPrefab;
+
+    public Vector3 PortalSpawnPosition
+    {
+        get
+        {
+            if (_portalSpawnPoint != null)
+                return _portalSpawnPoint.position;
+            if (_spawnPoints != null && _spawnPoints.Count > 0)
+                return _spawnPoints[0].position;
+            return transform.position;
+        }
+    }
 
     [Inject]
     public void Construct(
@@ -91,6 +113,14 @@ public class RoomManager : MonoBehaviour
     {
         if (_roomState.Value != RoomState.Idle) return;
 
+        // 이벤트/상점방은 전투 없음
+        if (_mapManager != null && _mapManager.CurrentNode != null)
+        {
+            RoomType type = _mapManager.CurrentNode.Type;
+            if (type == RoomType.Event || type == RoomType.Shop)
+                return;
+        }
+
         // 보스방 분기
         if (_mapManager != null && _mapManager.CurrentNode != null)
         {
@@ -141,7 +171,7 @@ public class RoomManager : MonoBehaviour
 
     private void OnBossDefeated()
     {
-        Debug.Log("RoomManager: 보스 처치, 방 클리어");
+        Debug.Log("RoomManager: 보스 처치");
         CompleteRoom();
     }
 
@@ -192,8 +222,11 @@ public class RoomManager : MonoBehaviour
         }
     }
 
-    private void CompleteRoom()
+    public void CompleteRoom()
     {
+        if (_isCompleted) return;
+        _isCompleted = true;
+
         _roomState.Value = RoomState.Complete;
 
         if (_mapManager != null && _mapManager.CurrentNode != null)
@@ -246,6 +279,7 @@ public class RoomManager : MonoBehaviour
     public void ResetRoom()
     {
         CleanupRoom();
+        _isCompleted = false;
         _roomState.Value = RoomState.Idle;
         UniTask.DelayFrame(1).ContinueWith(StartRoomEvent).Forget();
     }

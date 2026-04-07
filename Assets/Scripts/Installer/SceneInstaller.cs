@@ -1,3 +1,4 @@
+// Assets/Scripts/Installer/SceneInstaller.cs
 using Reflex.Core;
 using UnityEngine;
 using System;
@@ -12,6 +13,9 @@ public class SceneInstaller : MonoBehaviour, IInstaller
     [SerializeField] private MapUIManager _mapUIManager;
     [SerializeField] private MapManager _mapManager;
     [SerializeField] private EnemyPoolManager _enemyPoolManager;
+    [SerializeField] private TopDownCameraController _cameraController;
+    [SerializeField] private RoomClearFlowController _roomClearFlowController;
+    [SerializeField] private RunEndManager _runEndManager;
 
     [SerializeField] private EventReference _gameplayBGM;
 
@@ -33,6 +37,15 @@ public class SceneInstaller : MonoBehaviour, IInstaller
 
         if (_enemyPoolManager != null)
             builder.RegisterValue(_enemyPoolManager);
+
+        if (_cameraController != null)
+            builder.RegisterValue(_cameraController);
+
+        if (_roomClearFlowController != null)
+            builder.RegisterValue(_roomClearFlowController);
+
+        if (_runEndManager != null)
+            builder.RegisterValue(_runEndManager);
 
         builder.OnContainerBuilt += OnBuilt;
     }
