@@ -1,8 +1,10 @@
+// Assets/Scripts/UI/BossHealthBarView.cs
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using R3;
 using Reflex.Attributes;
+using Cysharp.Threading.Tasks;
 
 public class BossHealthBarView : MonoBehaviour
 {
@@ -13,8 +15,8 @@ public class BossHealthBarView : MonoBehaviour
 
     private ReactiveProperty<BossController> _bossHandle;
 
-    private CompositeDisposable _outerDisposables = new CompositeDisposable();
-    private CompositeDisposable _disposables = new CompositeDisposable();
+    private readonly CompositeDisposable _outerDisposables = new CompositeDisposable();
+    private readonly SerialDisposable _bindSub = new SerialDisposable();
 
     private BossController _currentBoss;
 
@@ -27,6 +29,7 @@ public class BossHealthBarView : MonoBehaviour
     private void Start()
     {
         _barRoot.SetActive(false);
+        _bindSub.AddTo(_outerDisposables);
 
         if (_bossHandle == null)
         {
@@ -39,7 +42,7 @@ public class BossHealthBarView : MonoBehaviour
             {
                 if (boss != null)
                 {
-                    Bind(boss);
+                    BindDelayed(boss).Forget();
                 }
                 else
                 {
@@ -49,7 +52,18 @@ public class BossHealthBarView : MonoBehaviour
             .AddTo(_outerDisposables);
     }
 
-    private void Bind(BossController boss)
+    private async UniTaskVoid BindDelayed(BossController boss)
+    {
+        // BossController.Start()에서 _ctx 초기화 대기
+        await UniTask.DelayFrame(1);
+
+        if (this == null) return;
+        if (boss == null) return;
+
+        Bind(boss);
+    }
+
+    public void Bind(BossController boss)
     {
         if (_currentBoss != null)
         {
@@ -61,13 +75,17 @@ public class BossHealthBarView : MonoBehaviour
 
         int maxHP = Mathf.Max(1, boss.MaxHP);
 
+        var innerSub = new CompositeDisposable();
+
         boss.CurrentHP
             .Subscribe(hp => _fillImage.fillAmount = (float)hp / maxHP)
-            .AddTo(_disposables);
+            .AddTo(innerSub);
 
         boss.CurrentPhaseIndex
             .Subscribe(phase => Debug.Log($"boss phase ui: {phase}"))
-            .AddTo(_disposables);
+            .AddTo(innerSub);
+
+        _bindSub.Disposable = innerSub;
 
         boss.OnBossDeath += Hide;
         _barRoot.SetActive(true);
@@ -75,8 +93,7 @@ public class BossHealthBarView : MonoBehaviour
 
     public void Hide()
     {
-        _disposables.Dispose();
-        _disposables = new CompositeDisposable();
+        _bindSub.Disposable = Disposable.Empty;
 
         if (_currentBoss != null)
         {
@@ -90,6 +107,5 @@ public class BossHealthBarView : MonoBehaviour
     private void OnDestroy()
     {
         _outerDisposables.Dispose();
-        _disposables.Dispose();
     }
 }
