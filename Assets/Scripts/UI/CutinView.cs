@@ -3,21 +3,33 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using System;
 using LitMotion;
 
 public class CutinView : MonoBehaviour, ICutinService
 {
+    [Serializable]
+    public class CutinSlot
+    {
+        public RectTransform ImageRect;
+        public Image CutinImage;
+        public CanvasGroup CanvasGroup;
+    }
+
     [Header("UI")]
     [SerializeField] private Canvas _canvas;
-    [SerializeField] private RectTransform _imageRect;
-    [SerializeField] private Image _cutinImage;
-    [SerializeField] private CanvasGroup _canvasGroup;
+
+    [Header("우상단 슬롯 (Right)")]
+    [SerializeField] private CutinSlot _rightSlot;
+
+    [Header("좌하단 슬롯 (Left)")]
+    [SerializeField] private CutinSlot _leftSlot;
 
     [Header("슬라이드 설정")]
     [SerializeField] private float _offscreenOffset = 1200f;
-    [SerializeField] private float _yOffset = 80f;
     [SerializeField] private float _maxWidth = 600f;
     [SerializeField] private float _maxHeight = 400f;
+    [SerializeField] private float _margin = 40f;
 
     private void Awake()
     {
@@ -27,36 +39,73 @@ public class CutinView : MonoBehaviour, ICutinService
             _canvas.sortingOrder = 9000;
         }
 
-        _canvasGroup.alpha = 0f;
-        _imageRect.gameObject.SetActive(false);
+        InitSlot(_rightSlot, new Vector2(1f, 1f));
+        InitSlot(_leftSlot, new Vector2(0f, 0f));
+    }
+
+    private void InitSlot(CutinSlot slot, Vector2 anchor)
+    {
+        if (slot.ImageRect == null) return;
+
+        slot.ImageRect.anchorMin = anchor;
+        slot.ImageRect.anchorMax = anchor;
+        slot.ImageRect.pivot = anchor;
+        slot.CanvasGroup.alpha = 0f;
+        slot.ImageRect.gameObject.SetActive(false);
     }
 
     public async UniTask ShowAsync(Sprite sprite, CutinDirection direction, CutinParams param, CancellationToken ct)
     {
         if (sprite == null) return;
 
-        _cutinImage.sprite = sprite;
-        FitImageSize(sprite);
-        _imageRect.gameObject.SetActive(true);
+        if (direction == CutinDirection.Right)
+        {
+            await ShowSlotAsync(_rightSlot, sprite, direction, param, ct);
+        }
+        else
+        {
+            await ShowSlotAsync(_leftSlot, sprite, direction, param, ct);
+        }
+    }
 
-        // 방향에 따른 시작 위치
-        float sign = direction == CutinDirection.Right ? 1f : -1f;
-        float startX = sign * _offscreenOffset;
-        float endX = 0f;
+    private async UniTask ShowSlotAsync(CutinSlot slot, Sprite sprite, CutinDirection direction, CutinParams param, CancellationToken ct)
+    {
+        slot.CutinImage.sprite = sprite;
+        FitImageSize(slot, sprite);
+        slot.ImageRect.gameObject.SetActive(true);
 
-        _imageRect.anchoredPosition = new Vector2(startX, _yOffset);
-        _canvasGroup.alpha = 0f;
+        float startX;
+        float endX;
+        float yPos;
+
+        if (direction == CutinDirection.Right)
+        {
+            // 우상단: 오른쪽 밖 → 안쪽으로
+            startX = _offscreenOffset;
+            endX = -_margin;
+            yPos = -_margin;
+        }
+        else
+        {
+            // 좌하단: 왼쪽 밖 → 안쪽으로
+            startX = -_offscreenOffset;
+            endX = _margin;
+            yPos = _margin;
+        }
+
+        slot.ImageRect.anchoredPosition = new Vector2(startX, yPos);
+        slot.CanvasGroup.alpha = 0f;
 
         // 슬라이드 인 + 페이드 인
         var slideInHandle = LMotion.Create(startX, endX, param.SlideInDuration)
             .WithEase(Ease.OutCubic)
             .Bind(x =>
             {
-                _imageRect.anchoredPosition = new Vector2(x, _yOffset);
+                slot.ImageRect.anchoredPosition = new Vector2(x, yPos);
             });
 
         var fadeInHandle = LMotion.Create(0f, 1f, param.SlideInDuration * 0.5f)
-            .Bind(a => _canvasGroup.alpha = a);
+            .Bind(a => slot.CanvasGroup.alpha = a);
 
         await UniTask.WaitUntil(() => !slideInHandle.IsActive(), cancellationToken: ct);
 
@@ -65,24 +114,23 @@ public class CutinView : MonoBehaviour, ICutinService
             (int)(param.HoldDuration * 1000),
             cancellationToken: ct);
 
-        // 페이드 아웃 (슬라이드 없이 제자리에서 사라짐)
+        // 제자리 페이드 아웃
         var fadeOutHandle = LMotion.Create(1f, 0f, param.SlideOutDuration)
             .WithEase(Ease.InCubic)
-            .Bind(a => _canvasGroup.alpha = a);
+            .Bind(a => slot.CanvasGroup.alpha = a);
 
         await UniTask.WaitUntil(() => !fadeOutHandle.IsActive(), cancellationToken: ct);
 
-        _imageRect.gameObject.SetActive(false);
+        slot.ImageRect.gameObject.SetActive(false);
     }
 
-    // 스프라이트를 최대 크기 내에서 비율 유지하며 맞춤
-    private void FitImageSize(Sprite sprite)
+    private void FitImageSize(CutinSlot slot, Sprite sprite)
     {
         float nativeW = sprite.rect.width;
         float nativeH = sprite.rect.height;
 
         float scale = Mathf.Min(_maxWidth / nativeW, _maxHeight / nativeH, 1f);
 
-        _imageRect.sizeDelta = new Vector2(nativeW * scale, nativeH * scale);
+        slot.ImageRect.sizeDelta = new Vector2(nativeW * scale, nativeH * scale);
     }
 }
