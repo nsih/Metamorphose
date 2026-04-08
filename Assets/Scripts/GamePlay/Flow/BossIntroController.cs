@@ -17,6 +17,7 @@ public class BossIntroController : MonoBehaviour
 
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
     private CancellationTokenSource _introCts;
+    private BossController _currentBoss;
 
     [Inject]
     public void Construct(
@@ -50,6 +51,7 @@ public class BossIntroController : MonoBehaviour
     {
         _introCts?.Cancel();
         _introCts?.Dispose();
+        UnsubscribeBoss();
         _disposables.Dispose();
     }
 
@@ -59,24 +61,42 @@ public class BossIntroController : MonoBehaviour
         _introCts?.Dispose();
         _introCts = null;
 
+        UnsubscribeBoss();
+
         if (boss == null) return;
 
         _introCts = new CancellationTokenSource();
         RunIntroAsync(boss, _introCts.Token).Forget();
     }
 
+    private void UnsubscribeBoss()
+    {
+        if (_currentBoss != null)
+        {
+            _currentBoss.OnBossDeath -= OnBossDeath;
+            _currentBoss = null;
+        }
+    }
+
+    private void OnBossDeath()
+    {
+        _audioService.StopMusic(true);
+        _audioService.PlayMusic(FMODEvents.Music.Gameplay); //나중에 승리브금이라도 넣어야지
+        UnsubscribeBoss();
+    }
+
     private async UniTaskVoid RunIntroAsync(BossController boss, CancellationToken ct)
     {
-        // 1프레임 대기 - BossController.Start() 완료 보장
         await UniTask.DelayFrame(1, cancellationToken: ct);
 
         if (boss == null) return;
 
         BossProfileSO profile = boss.Profile;
 
-        // 인트로 없으면 즉시 전투 시작
         if (!profile.HasIntro)
         {
+            _currentBoss = boss;
+            _currentBoss.OnBossDeath += OnBossDeath;
             boss.StartBattle();
             return;
         }
@@ -96,7 +116,6 @@ public class BossIntroController : MonoBehaviour
                 ct);
 
             // 4. Yarn 대화 (향후 확장, 현재 스킵)
-            // if (!string.IsNullOrEmpty(profile.IntroYarnNode)) { ... }
 
             // 5. 컷인 + BGM 변경
             if (!string.IsNullOrEmpty(profile.BossBGM))
@@ -121,13 +140,15 @@ public class BossIntroController : MonoBehaviour
             _cameraController.ReturnToPlayer();
             await UniTask.Delay(300, cancellationToken: ct);
 
-            // 7. 전투 시작
+            // 7. 사망 이벤트 구독
+            _currentBoss = boss;
+            _currentBoss.OnBossDeath += OnBossDeath;
+
+            // 8. 전투 시작
             boss.StartBattle();
 
-            // 8. 입력 복원
+            // 9. 입력 복원
             _inputService.SetEnabled(true);
-
-            Debug.Log("BossIntroController: 인트로 완료");
         }
         catch (OperationCanceledException)
         {
