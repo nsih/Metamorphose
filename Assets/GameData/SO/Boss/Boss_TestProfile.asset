@@ -26,4 +26,4 @@ MonoBehaviour:
   CameraPanDuration: 0.6
   CutinHoldDuration: 1
   IntroYarnNode: 
-  BossBGM: Events/Music/BossRoom
+  BossBGM: event:/Music/BossRoom

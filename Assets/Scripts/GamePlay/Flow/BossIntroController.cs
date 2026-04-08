@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Reflex.Attributes;
 using R3;
 using TJR.Core.Interface;
+using GamePlay;
 
 public class BossIntroController : MonoBehaviour
 {
