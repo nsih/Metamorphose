@@ -1,3 +1,4 @@
+// Assets/Scripts/GamePlay/Boss/BossProfileSO/BossProfileSO.cs
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,6 +19,18 @@ public class BossProfileSO : ScriptableObject
 
     [Header("UI")]
     public Sprite BossIcon;
+
+    [Header("인트로 연출")]
+    [Tooltip("null이면 인트로 스킵")]
+    public Sprite CutinSprite;
+    public CutinDirection CutinDirection = CutinDirection.Right;
+    public float CameraPanDuration = 0.6f;
+    public float CutinHoldDuration = 1.0f;
+
+    [Tooltip("빈 문자열이면 Yarn 대화 스킵")]
+    public string IntroYarnNode;
+
+    public bool HasIntro => CutinSprite != null;
 
     // HP 비율에 따라 현재 있어야 할 페이즈 인덱스 반환
     public int GetPhaseIndex(float hpRatio)

@@ -69,7 +69,25 @@ public class BossController : MonoBehaviour
         BossPhaseSO firstPhase = _profile.Phases[0];
         _ctx.InnerContext.Initialize(firstPhase.Brain, _target);
         _muzzleAim?.SetTarget(_target);
+
+        // 인트로 완료 전까지 무적. FSM 미시작
+        _ctx.IsInvulnerable = true;
+    }
+
+    // FSM 시작 + 무적 해제. 인트로 완료 후 호출
+    public void StartBattle()
+    {
+        if (_ctx == null)
+        {
+            Debug.LogError("BossController: StartBattle 호출 시 ctx null");
+            return;
+        }
+
+        BossPhaseSO firstPhase = _profile.Phases[0];
         _fsm.Initialize(firstPhase.Brain, _ctx.InnerContext);
+        _ctx.IsInvulnerable = false;
+
+        Debug.Log("BossController: 전투 시작");
     }
 
     private void OnEnable()
