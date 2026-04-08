@@ -1,3 +1,4 @@
+// Assets/Scripts/Installer/BossTestInstaller.cs
 using Reflex.Core;
 using UnityEngine;
 using System;
@@ -10,6 +11,10 @@ public class BossTestInstaller : MonoBehaviour, IInstaller
 {
     [SerializeField] private PlayerSpawner _playerSpawner;
     [SerializeField] private EnemyPoolManager _enemyPoolManager;
+    [SerializeField] private TopDownCameraController _cameraController;
+    [SerializeField] private BossIntroController _bossIntroController;
+    [SerializeField] private CutinView _cutinView;
+
     [SerializeField] private EventReference _bgm;
 
     public void InstallBindings(ContainerBuilder builder)
@@ -24,6 +29,15 @@ public class BossTestInstaller : MonoBehaviour, IInstaller
 
         if (_enemyPoolManager != null)
             builder.RegisterValue(_enemyPoolManager);
+
+        if (_cameraController != null)
+            builder.RegisterValue(_cameraController);
+
+        if (_bossIntroController != null)
+            builder.RegisterValue(_bossIntroController);
+
+        if (_cutinView != null)
+            builder.RegisterValue(_cutinView, new Type[] { typeof(ICutinService) });
 
         builder.OnContainerBuilt += OnBuilt;
     }

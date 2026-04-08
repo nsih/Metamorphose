@@ -7,7 +7,7 @@ using Common;
 public class MapGenerationConfig : ScriptableObject
 {
     [Header("Grid Structure")]
-    [Range(5, 30)]
+    [Range(3, 30)]
     public int LayerCount = 15;
 
     [Range(3, 10)]

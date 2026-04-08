@@ -7,6 +7,7 @@
   <Project Path="Kybernetik.Animancer.Editor.csproj" />
   <Project Path="GamePlay.csproj" />
   <Project Path="UniTask.Linq.csproj" />
+  <Project Path="UI.csproj" />
   <Project Path="Common.csproj" />
   <Project Path="Drawing.csproj" />
   <Project Path="UniTask.csproj" />
@@ -19,7 +20,6 @@
   <Project Path="BetterHierarchy.csproj" />
   <Project Path="Kybernetik.Animancer.FSM.csproj" />
   <Project Path="FMODUnityHaptics.csproj" />
-  <Project Path="UI.csproj" />
   <Project Path="andywiecko.BurstTriangulator.csproj" />
   <Project Path="FMODUnityResonance.csproj" />
   <Project Path="UniTask.Addressables.csproj" />

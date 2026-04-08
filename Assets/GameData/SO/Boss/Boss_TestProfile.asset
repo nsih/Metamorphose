@@ -21,3 +21,9 @@ MonoBehaviour:
   DeathEffect: {fileID: 11400000, guid: fc0c28d23adc3954e92f12024f098e4e, type: 2}
   DeathDelay: 1.03
   BossIcon: {fileID: -2278566297644842510, guid: d5a1d35c37b41744cb63ce4c6db854a1, type: 3}
+  CutinSprite: {fileID: -9197614001361547850, guid: 04d4bae4f5846f44f929e799286ba905, type: 3}
+  CutinDirection: 1
+  CameraPanDuration: 0.6
+  CutinHoldDuration: 1
+  IntroYarnNode: 
+  BossBGM: event:/Music/BossRoom
