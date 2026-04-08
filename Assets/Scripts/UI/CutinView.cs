@@ -15,6 +15,9 @@ public class CutinView : MonoBehaviour, ICutinService
 
     [Header("슬라이드 설정")]
     [SerializeField] private float _offscreenOffset = 1200f;
+    [SerializeField] private float _yOffset = 80f;
+    [SerializeField] private float _maxWidth = 600f;
+    [SerializeField] private float _maxHeight = 400f;
 
     private void Awake()
     {
@@ -33,16 +36,15 @@ public class CutinView : MonoBehaviour, ICutinService
         if (sprite == null) return;
 
         _cutinImage.sprite = sprite;
-        _cutinImage.SetNativeSize();
+        FitImageSize(sprite);
         _imageRect.gameObject.SetActive(true);
 
-        // 방향에 따른 시작/종료 위치
+        // 방향에 따른 시작 위치
         float sign = direction == CutinDirection.Right ? 1f : -1f;
         float startX = sign * _offscreenOffset;
         float endX = 0f;
-        float exitX = -sign * _offscreenOffset;
 
-        _imageRect.anchoredPosition = new Vector2(startX, _imageRect.anchoredPosition.y);
+        _imageRect.anchoredPosition = new Vector2(startX, _yOffset);
         _canvasGroup.alpha = 0f;
 
         // 슬라이드 인 + 페이드 인
@@ -50,9 +52,7 @@ public class CutinView : MonoBehaviour, ICutinService
             .WithEase(Ease.OutCubic)
             .Bind(x =>
             {
-                var pos = _imageRect.anchoredPosition;
-                pos.x = x;
-                _imageRect.anchoredPosition = pos;
+                _imageRect.anchoredPosition = new Vector2(x, _yOffset);
             });
 
         var fadeInHandle = LMotion.Create(0f, 1f, param.SlideInDuration * 0.5f)
@@ -65,21 +65,24 @@ public class CutinView : MonoBehaviour, ICutinService
             (int)(param.HoldDuration * 1000),
             cancellationToken: ct);
 
-        // 슬라이드 아웃 + 페이드 아웃
-        var slideOutHandle = LMotion.Create(endX, exitX, param.SlideOutDuration)
-            .WithEase(Ease.InCubic)
-            .Bind(x =>
-            {
-                var pos = _imageRect.anchoredPosition;
-                pos.x = x;
-                _imageRect.anchoredPosition = pos;
-            });
-
+        // 페이드 아웃 (슬라이드 없이 제자리에서 사라짐)
         var fadeOutHandle = LMotion.Create(1f, 0f, param.SlideOutDuration)
+            .WithEase(Ease.InCubic)
             .Bind(a => _canvasGroup.alpha = a);
 
-        await UniTask.WaitUntil(() => !slideOutHandle.IsActive(), cancellationToken: ct);
+        await UniTask.WaitUntil(() => !fadeOutHandle.IsActive(), cancellationToken: ct);
 
         _imageRect.gameObject.SetActive(false);
+    }
+
+    // 스프라이트를 최대 크기 내에서 비율 유지하며 맞춤
+    private void FitImageSize(Sprite sprite)
+    {
+        float nativeW = sprite.rect.width;
+        float nativeH = sprite.rect.height;
+
+        float scale = Mathf.Min(_maxWidth / nativeW, _maxHeight / nativeH, 1f);
+
+        _imageRect.sizeDelta = new Vector2(nativeW * scale, nativeH * scale);
     }
 }

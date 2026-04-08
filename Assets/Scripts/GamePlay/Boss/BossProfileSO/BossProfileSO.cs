@@ -30,6 +30,9 @@ public class BossProfileSO : ScriptableObject
     [Tooltip("빈 문자열이면 Yarn 대화 스킵")]
     public string IntroYarnNode;
 
+    [Tooltip("빈 문자열이면 BGM 변경 스킵")]
+    public string BossBGM;
+
     public bool HasIntro => CutinSprite != null;
 
     // HP 비율에 따라 현재 있어야 할 페이즈 인덱스 반환

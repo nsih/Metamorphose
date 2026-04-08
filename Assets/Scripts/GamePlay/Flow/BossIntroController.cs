@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Reflex.Attributes;
 using R3;
+using TJR.Core.Interface;
 
 public class BossIntroController : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class BossIntroController : MonoBehaviour
     private IInputService _inputService;
     private TopDownCameraController _cameraController;
     private ICutinService _cutinService;
+    private IAudioService _audioService;
 
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
     private CancellationTokenSource _introCts;
@@ -21,12 +23,14 @@ public class BossIntroController : MonoBehaviour
         ReactiveProperty<BossController> bossHandle,
         IInputService inputService,
         TopDownCameraController cameraController,
-        ICutinService cutinService)
+        ICutinService cutinService,
+        IAudioService audioService)
     {
         _bossHandle = bossHandle;
         _inputService = inputService;
         _cameraController = cameraController;
         _cutinService = cutinService;
+        _audioService = audioService;
     }
 
     private void Start()
@@ -51,7 +55,6 @@ public class BossIntroController : MonoBehaviour
 
     private void OnBossChanged(BossController boss)
     {
-        // 이전 인트로 취소
         _introCts?.Cancel();
         _introCts?.Dispose();
         _introCts = null;
@@ -80,16 +83,27 @@ public class BossIntroController : MonoBehaviour
 
         try
         {
-            // 1. 입력 차단
+            // 1. BGM 정지
+            _audioService.StopMusic(true);
+
+            // 2. 입력 차단
             _inputService.SetEnabled(false);
 
-            // 2. 카메라 팬
+            // 3. 카메라 팬
             await _cameraController.PanToAsync(
                 boss.transform.position,
                 profile.CameraPanDuration,
                 ct);
 
-            // 3. 컷인
+            // 4. Yarn 대화 (향후 확장, 현재 스킵)
+            // if (!string.IsNullOrEmpty(profile.IntroYarnNode)) { ... }
+
+            // 5. 컷인 + BGM 변경
+            if (!string.IsNullOrEmpty(profile.BossBGM))
+            {
+                _audioService.PlayMusic(profile.BossBGM);
+            }
+
             var cutinParams = new CutinParams
             {
                 SlideInDuration = 0.3f,
@@ -103,17 +117,14 @@ public class BossIntroController : MonoBehaviour
                 cutinParams,
                 ct);
 
-            // 4. Yarn 대화 (향후 확장, 현재 스킵)
-            // if (!string.IsNullOrEmpty(profile.IntroYarnNode)) { ... }
-
-            // 5. 카메라 복귀
+            // 6. 카메라 복귀
             _cameraController.ReturnToPlayer();
             await UniTask.Delay(300, cancellationToken: ct);
 
-            // 6. 전투 시작
+            // 7. 전투 시작
             boss.StartBattle();
 
-            // 7. 입력 복원
+            // 8. 입력 복원
             _inputService.SetEnabled(true);
 
             Debug.Log("BossIntroController: 인트로 완료");
