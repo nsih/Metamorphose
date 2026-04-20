@@ -27,18 +27,20 @@ public class EnemyContext
     public float TimeInCurrentState { get; set; }
     
     public Rigidbody2D Rigidbody { get; private set; }
+    public AreaIndicatorPool AreaPool { get; private set; }
     
     // 시야 캐싱
     private float _lastVisibilityCheckTime;
     private bool _cachedVisibility;
     private LayerMask _lastObstacleLayer;
 
-    public EnemyContext(Transform self, SpriteRenderer spriteRenderer, BulletEmitter emitter, Rigidbody2D rigidbody)
+    public EnemyContext(Transform self, SpriteRenderer spriteRenderer, BulletEmitter emitter, Rigidbody2D rigidbody, AreaIndicatorPool areaPool = null)
     {
         Self = self;
         SpriteRenderer = spriteRenderer;
         Emitter = emitter;
         Rigidbody = rigidbody;
+        AreaPool = areaPool;
         
         if (spriteRenderer != null)
             _originalColor = spriteRenderer.color;

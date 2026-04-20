@@ -37,6 +37,7 @@ public class Enemy : MonoBehaviour, IDamageable
     private Vector3 _defaultScale;
 
     [Inject] private IAudioService _audio;
+    [Inject] private AreaIndicatorPool _areaPool;
 
     private void Awake()
     {
@@ -55,7 +56,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         _defaultScale = transform.localScale;
 
-        _ctx = new EnemyContext(transform, _spriteRenderer, _emitter, _rigidbody);
+        _ctx = new EnemyContext(transform, _spriteRenderer, _emitter, _rigidbody, _areaPool);
     }
 
     private void OnEnable()

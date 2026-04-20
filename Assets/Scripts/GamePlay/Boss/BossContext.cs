@@ -14,12 +14,12 @@ public class BossContext
     public float HPRatio => (float)CurrentHP.Value / Profile.TotalMaxHP;
     public BossPhaseSO CurrentPhase => Profile.Phases[CurrentPhaseIndex.Value];
 
-    public BossContext(BossProfileSO profile, Transform self, SpriteRenderer sr, BulletEmitter emitter, Rigidbody2D rb)
+    public BossContext(BossProfileSO profile, Transform self, SpriteRenderer sr, BulletEmitter emitter, Rigidbody2D rb, AreaIndicatorPool areaPool = null)
     {
         Profile = profile;
         CurrentHP = new ReactiveProperty<int>(profile.TotalMaxHP);
         CurrentPhaseIndex = new ReactiveProperty<int>(0);
-        InnerContext = new EnemyContext(self, sr, emitter, rb);
+        InnerContext = new EnemyContext(self, sr, emitter, rb, areaPool);
     }
 
     public void Dispose()

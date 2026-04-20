@@ -4,6 +4,7 @@ using UnityEngine;
 using BulletPro;
 using Cysharp.Threading.Tasks;
 using R3;
+using Reflex.Attributes;
 
 [RequireComponent(typeof(EnemyFSM))]
 public class BossController : MonoBehaviour
@@ -20,6 +21,8 @@ public class BossController : MonoBehaviour
     private BossContext _ctx;
     private Transform _target;
     private bool _targetSetExternally = false;
+
+    [Inject] private AreaIndicatorPool _areaPool;
 
     public ReactiveProperty<int> CurrentHP => _ctx.CurrentHP;
     public ReactiveProperty<int> CurrentPhaseIndex => _ctx.CurrentPhaseIndex;
@@ -52,7 +55,7 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        _ctx = new BossContext(_profile, transform, _spriteRenderer, _emitter, _rb);
+        _ctx = new BossContext(_profile, transform, _spriteRenderer, _emitter, _rb, _areaPool);
 
         // 외부에서 타겟 미전달 시 씬 탐색 (BossTest씬 fallback)
         if (!_targetSetExternally)
