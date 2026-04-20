@@ -67,6 +67,13 @@ namespace GamePlay
             return instance;
         }
 
+        public EventInstance CreateInstance(string eventPath)
+        {
+            var instance = RuntimeManager.CreateInstance(eventPath);
+            _eventInstances.Add(instance);
+            return instance;
+        }
+
         void StopCurrentMusic()
         {
             if (!_musicEventInstance.isValid()) return;
