@@ -13,5 +13,6 @@ namespace TJR.Core.Interface
         void StopMusic(bool fadeOut = true);
         void SetMusicPitch(float pitch);
         EventInstance CreateInstance(EventReference eventReference);
+        EventInstance CreateInstance(string eventPath);
     }
 }

@@ -37,6 +37,7 @@ public class Enemy : MonoBehaviour, IDamageable
     private Vector3 _defaultScale;
 
     [Inject] private IAudioService _audio;
+    [Inject] private AreaIndicatorPool _areaPool;
 
     private void Awake()
     {
@@ -85,6 +86,7 @@ public class Enemy : MonoBehaviour, IDamageable
         ResetState();
         ApplyVisual(_currentBrain);
 
+        _ctx.AreaPool = _areaPool;
         _ctx.Initialize(_currentBrain, null);
         _ctx.SpawnAction = _spawnAction;
         _fsm.Initialize(_currentBrain, _ctx);

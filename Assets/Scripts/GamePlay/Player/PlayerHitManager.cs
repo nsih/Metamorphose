@@ -59,6 +59,7 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
         CancelBlink();
     }
 
+    // IDamageable - 장판 피격 경로에서도 호출됨
     public void TakeDamage(float dmg)
     {
         if (_model.CurrentHP.Value <= 0) return;
@@ -71,27 +72,38 @@ public class PlayerHitManager : MonoBehaviour, IDamageable
             OnDead();
     }
 
-    public void HandleBulletHit(Bullet bullet, Vector3 hitPoint)
+    // 대시/봄 무적 중 탄막 접촉 시 그레이즈 처리
+    // true: 그레이즈 발동 / false: 무적 아님
+    public bool TryGraze()
     {
-        if (_model.CurrentHP.Value <= 0) return;
-
-        // 피격 무적 중 - 무시만, graze 아님
-        if (_isPostHitInvincible) return;
-
-        // 대시/봄 무적 중 - graze 발동
         bool isDashBombInvincible =
             (_playerDash != null && _playerDash.IsDashing) ||
             (_playerBomb != null && _playerBomb.IsActive);
 
-        if (isDashBombInvincible)
-        {
-            if (_bulletTimeManager != null)
-                _bulletTimeManager.TriggerSlowMotion();
-            if (_model != null)
-                _model.Dash.RefillAllCharges();
-            _audio?.PlayOneShot(GamePlay.FMODEvents.SFX.Player.Graze, transform.position);
-            return;
-        }
+        if (!isDashBombInvincible)
+            return false;
+
+        if (_bulletTimeManager != null)
+            _bulletTimeManager.TriggerSlowMotion();
+
+        if (_model != null)
+            _model.Dash.RefillAllCharges();
+
+        _audio?.PlayOneShot(GamePlay.FMODEvents.SFX.Player.Graze, transform.position);
+
+        return true;
+    }
+
+    // BulletPro 콜백
+    public void HandleBulletHit(Bullet bullet, Vector3 hitPoint)
+    {
+        if (_model.CurrentHP.Value <= 0) return;
+
+        // 피격 무적 중 - 무시만, 그레이즈 아님
+        if (_isPostHitInvincible) return;
+
+        // 대시/봄 무적 중 - 그레이즈
+        if (TryGraze()) return;
 
         float damage = 1f;
         if (bullet != null && bullet.dynamicSolver != null)

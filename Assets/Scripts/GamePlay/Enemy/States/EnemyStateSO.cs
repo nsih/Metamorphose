@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "State_", menuName = "SO/Enemy/State")]
+[CreateAssetMenu(fileName = "State_", menuName = "SO/Enemy/State/DefaultState")]
 public class EnemyStateSO : ScriptableObject
 {
     [Header("Behaviors")]

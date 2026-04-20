@@ -28,8 +28,11 @@ namespace GamePlay
 
             public static class Enemy
             {
-                public const string Death  = "event:/SFX/Enemy/Death";
-                public const string Attack = "event:/SFX/Enemy/Attack";
+                public const string Death         = "event:/SFX/Enemy/Death";
+                public const string Attack        = "event:/SFX/Enemy/Attack";
+                public const string AreaWarning   = "event:/SFX/Enemy/AreaWarning";
+                public const string AreaWarningLoop = "event:/SFX/Enemy/AreaWarningLoop";
+                public const string AreaActivate  = "event:/SFX/Enemy/AreaActivate";
             }
 
             public static class UI

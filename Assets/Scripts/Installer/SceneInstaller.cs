@@ -18,6 +18,7 @@ public class SceneInstaller : MonoBehaviour, IInstaller
     [SerializeField] private RunEndManager _runEndManager;
     [SerializeField] private BossIntroController _bossIntroController;
     [SerializeField] private CutinView _cutinView;
+    [SerializeField] private AreaIndicatorPool _areaIndicatorPool;
 
     [SerializeField] private EventReference _gameplayBGM;
 
@@ -54,6 +55,9 @@ public class SceneInstaller : MonoBehaviour, IInstaller
 
         if (_cutinView != null)
             builder.RegisterValue(_cutinView, new Type[] { typeof(ICutinService) });
+
+        if (_areaIndicatorPool != null)
+            builder.RegisterValue(_areaIndicatorPool);
 
         builder.OnContainerBuilt += OnBuilt;
     }
