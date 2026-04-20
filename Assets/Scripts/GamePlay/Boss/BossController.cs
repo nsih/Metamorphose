@@ -55,7 +55,8 @@ public class BossController : MonoBehaviour
             return;
         }
 
-        _ctx = new BossContext(_profile, transform, _spriteRenderer, _emitter, _rb, _areaPool);
+        _ctx = new BossContext(_profile, transform, _spriteRenderer, _emitter, _rb);
+        _ctx.InnerContext.AreaPool = _areaPool;
 
         // 외부에서 타겟 미전달 시 씬 탐색 (BossTest씬 fallback)
         if (!_targetSetExternally)

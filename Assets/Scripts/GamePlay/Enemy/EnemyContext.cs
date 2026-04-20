@@ -27,21 +27,26 @@ public class EnemyContext
     public float TimeInCurrentState { get; set; }
     
     public Rigidbody2D Rigidbody { get; private set; }
-    public AreaIndicatorPool AreaPool { get; private set; }
+    public AreaIndicatorPool AreaPool { get; set; }
     
+    private System.Threading.CancellationToken _destroyCancellationToken;
+    public System.Threading.CancellationToken DestroyCancellationToken => _destroyCancellationToken;
+
     // 시야 캐싱
     private float _lastVisibilityCheckTime;
     private bool _cachedVisibility;
     private LayerMask _lastObstacleLayer;
 
-    public EnemyContext(Transform self, SpriteRenderer spriteRenderer, BulletEmitter emitter, Rigidbody2D rigidbody, AreaIndicatorPool areaPool = null)
+    public EnemyContext(Transform self, SpriteRenderer spriteRenderer, BulletEmitter emitter, Rigidbody2D rigidbody)
     {
         Self = self;
         SpriteRenderer = spriteRenderer;
         Emitter = emitter;
         Rigidbody = rigidbody;
-        AreaPool = areaPool;
-        
+
+        var mb = self != null ? self.GetComponent<MonoBehaviour>() : null;
+        _destroyCancellationToken = mb != null ? mb.destroyCancellationToken : System.Threading.CancellationToken.None;
+
         if (spriteRenderer != null)
             _originalColor = spriteRenderer.color;
     }

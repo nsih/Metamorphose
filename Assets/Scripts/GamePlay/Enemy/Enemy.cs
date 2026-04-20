@@ -56,7 +56,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         _defaultScale = transform.localScale;
 
-        _ctx = new EnemyContext(transform, _spriteRenderer, _emitter, _rigidbody, _areaPool);
+        _ctx = new EnemyContext(transform, _spriteRenderer, _emitter, _rigidbody);
     }
 
     private void OnEnable()
@@ -86,6 +86,7 @@ public class Enemy : MonoBehaviour, IDamageable
         ResetState();
         ApplyVisual(_currentBrain);
 
+        _ctx.AreaPool = _areaPool;
         _ctx.Initialize(_currentBrain, null);
         _ctx.SpawnAction = _spawnAction;
         _fsm.Initialize(_currentBrain, _ctx);
