@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: GamePlay::AreaAttackBehaviorSO
   Entries:
   - Config: {fileID: 11400000, guid: 7e649dc92c0d5ad459c0fe79b1e67c77, type: 2}
-    Delay: 1
+    Delay: 2

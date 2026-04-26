@@ -6,7 +6,6 @@ public enum AreaShape
     Circle,
     Rect
 }
-
 // 장판 위치 결정 전략
 public enum AreaPositionStrategy
 {

@@ -1,40 +1,36 @@
 // Assets/Scripts/GamePlay/AreaAttack/AreaIndicator.cs
-// 2026-04-20 장판 인디케이터 본체 구현
+// 2026-04-26
+// Rect 형태 제거. Circle 전용으로 단순화. 방향 추적 로직 폐기
+
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-using FMOD.Studio;
-using TJR.Core.Interface;
-using Reflex.Attributes;
+using FMODUnity;
 
 public class AreaIndicator : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private CircleCollider2D _circleCollider;
-    [SerializeField] private BoxCollider2D _boxCollider;
-
-    [Inject] private IAudioService _audio;
 
     private AreaAttackConfigSO _config;
     private Transform _target;
     private Transform _owner;
-    private AreaIndicatorPool _pool;
 
     private MaterialPropertyBlock _mpb;
-    private CancellationTokenSource _lifecycleCts;
     private bool _isReleased;
-    private float _lastHitTime = -999f;
+    private float _lastHitTime;
 
-    private EventInstance _warningLoopInstance;
-    private bool _warningLoopPlaying;
+    // FMOD 루프 인스턴스
+    private FMOD.Studio.EventInstance _warningLoopInstance;
+    private bool _hasWarningLoop;
 
-    private void Awake()
-    {
-        _mpb = new MaterialPropertyBlock();
-    }
+    // 강제 종료용
+    private CancellationTokenSource _lifecycleCts;
 
-    // 풀에서 꺼낸 뒤 호출
-    public void Activate(AreaAttackConfigSO config, Vector3 position, float angleDeg,
+    // 풀 참조 (Activate 시점에 저장)
+    private AreaIndicatorPool _pool;
+
+    public void Activate(AreaAttackConfigSO config, Vector3 position,
                          Transform target, Transform owner, AreaIndicatorPool pool)
     {
         _config = config;
@@ -43,24 +39,34 @@ public class AreaIndicator : MonoBehaviour
         _pool = pool;
         _isReleased = false;
         _lastHitTime = -999f;
-        _warningLoopPlaying = false;
 
         transform.position = position;
-        transform.rotation = Quaternion.Euler(0f, 0f, angleDeg);
+        transform.rotation = Quaternion.identity;
 
-        _lifecycleCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+        if (_mpb == null)
+            _mpb = new MaterialPropertyBlock();
 
-        RunLifecycleAsync(_lifecycleCts.Token).Forget();
+        _lifecycleCts?.Cancel();
+        _lifecycleCts?.Dispose();
+        _lifecycleCts = new CancellationTokenSource();
+
+        var linked = CancellationTokenSource.CreateLinkedTokenSource(
+            _lifecycleCts.Token, destroyCancellationToken);
+
+        RunLifecycleAsync(linked.Token).Forget();
     }
 
-    // 강제 중단
     public void ForceRelease()
     {
         if (_isReleased) return;
 
         _lifecycleCts?.Cancel();
+        _lifecycleCts?.Dispose();
+        _lifecycleCts = null;
+
         StopWarningLoop();
-        ReleaseToPool();
+        DisableCollider();
+        DoRelease();
     }
 
     private async UniTaskVoid RunLifecycleAsync(CancellationToken token)
@@ -70,150 +76,138 @@ public class AreaIndicator : MonoBehaviour
             SetupCollider();
             SetupVisual();
 
-            DisableCollider();
+            // -- Warning --
+            await WarningPhaseAsync(token);
 
-            // Warning 단계
-            await RunWarningPhase(token);
+            // -- Activate --
+            await ActivatePhaseAsync(token);
 
-            if (token.IsCancellationRequested) return;
-
-            // Activate 단계
-            await RunActivatePhase(token);
-
-            if (token.IsCancellationRequested) return;
-
-            // Linger 단계
+            // -- Linger --
             if (_config.LingerDuration > 0f)
             {
-                await RunLingerPhase(token);
+                await LingerPhaseAsync(token);
             }
 
-            if (token.IsCancellationRequested) return;
-
-            // Destroy 단계
-            await RunDestroyPhase(token);
+            // -- Destroy --
+            await DestroyPhaseAsync(token);
         }
-        catch (System.OperationCanceledException) { }
+        catch (System.OperationCanceledException)
+        {
+            // ForceRelease 또는 오브젝트 파괴
+        }
         finally
         {
             StopWarningLoop();
             DisableCollider();
-
-            if (!_isReleased)
-                ReleaseToPool();
+            DoRelease();
         }
     }
 
-    // Warning: 경고 비주얼 + 방향 추적
-    private async UniTask RunWarningPhase(CancellationToken token)
+    // --- Warning ---
+    private async UniTask WarningPhaseAsync(CancellationToken token)
     {
-        _spriteRenderer.enabled = true;
+        DisableCollider();
+
         _spriteRenderer.sprite = _config.WarningSprite;
+        _spriteRenderer.enabled = true;
 
         // 경고 시작 SE
         if (!string.IsNullOrEmpty(_config.WarningStartSFX))
-            _audio?.PlayOneShot(_config.WarningStartSFX, transform.position);
+            RuntimeManager.PlayOneShot(_config.WarningStartSFX, transform.position);
 
         // 경고 루프 SE
-        if (!string.IsNullOrEmpty(_config.WarningLoopSFX))
-        {
-            _warningLoopInstance = _audio != null
-                ? _audio.CreateInstance(_config.WarningLoopSFX)
-                : default;
-
-            if (_warningLoopInstance.isValid())
-            {
-                _warningLoopInstance.start();
-                _warningLoopPlaying = true;
-            }
-        }
+        StartWarningLoop();
 
         float elapsed = 0f;
         float duration = _config.WarningDuration;
+        float fadeIn = _config.FadeInDuration;
 
         while (elapsed < duration)
         {
-            await UniTask.Yield(PlayerLoopTiming.Update, token);
+            token.ThrowIfCancellationRequested();
 
-            elapsed += Time.deltaTime;
+            float progress = elapsed / duration;
+            float alpha = fadeIn > 0f ? Mathf.Clamp01(elapsed / fadeIn) : 1f;
 
-            float progress = Mathf.Clamp01(elapsed / duration);
-            float alpha = Mathf.Lerp(0f, _config.WarningColor.a, Mathf.Clamp01(elapsed / _config.FadeInDuration));
-
+            // 셰이더 갱신
             _mpb.SetFloat("_Progress", progress);
-            _mpb.SetColor("_Color", _config.WarningColor);
             _mpb.SetFloat("_Alpha", alpha);
             _mpb.SetFloat("_PulseSpeed", _config.PulseSpeed);
+            _mpb.SetColor("_Color", _config.WarningColor);
             _spriteRenderer.SetPropertyBlock(_mpb);
 
-            // 방향 추적 (LockDirectionOnWarning=false 시 매 프레임 갱신)
-            if (!_config.LockDirectionOnWarning)
-                UpdateRotation();
+            elapsed += Time.deltaTime;
+            await UniTask.Yield(PlayerLoopTiming.Update, token);
         }
-
-        StopWarningLoop();
     }
 
-    // Activate: 콜라이더 활성 + 플래시 비주얼
-    private async UniTask RunActivatePhase(CancellationToken token)
+    // --- Activate ---
+    private async UniTask ActivatePhaseAsync(CancellationToken token)
     {
-        _spriteRenderer.sprite = _config.ActivateSprite != null
-            ? _config.ActivateSprite
-            : _config.WarningSprite;
+        StopWarningLoop();
 
-        _mpb.SetColor("_Color", _config.ActivateColor);
-        _mpb.SetFloat("_Alpha", 1f);
+        // 발동 SE
+        if (!string.IsNullOrEmpty(_config.ActivateSFX))
+            RuntimeManager.PlayOneShot(_config.ActivateSFX, transform.position);
+
+        // 비주얼 플래시
+        if (_config.ActivateSprite != null)
+            _spriteRenderer.sprite = _config.ActivateSprite;
+
         _mpb.SetFloat("_Progress", 1f);
+        _mpb.SetFloat("_Alpha", 1f);
         _mpb.SetFloat("_PulseSpeed", 0f);
+        _mpb.SetColor("_Color", _config.ActivateColor);
         _spriteRenderer.SetPropertyBlock(_mpb);
 
+        // 콜라이더 활성화
         EnableCollider();
 
-        if (!string.IsNullOrEmpty(_config.ActivateSFX))
-            _audio?.PlayOneShot(_config.ActivateSFX, transform.position);
-
-        // 물리 판정 보장을 위해 1 FixedUpdate 대기
+        // 단발 판정 대기
+        _lastHitTime = Time.time;
         await UniTask.WaitForFixedUpdate(token);
     }
 
-    // Linger: 콜라이더 유지 + 지속 판정 (OnTriggerStay2D에서 처리)
-    private async UniTask RunLingerPhase(CancellationToken token)
+    // --- Linger ---
+    private async UniTask LingerPhaseAsync(CancellationToken token)
     {
         float elapsed = 0f;
-        float duration = _config.LingerDuration;
 
-        while (elapsed < duration)
+        while (elapsed < _config.LingerDuration)
         {
-            await UniTask.Yield(PlayerLoopTiming.Update, token);
+            token.ThrowIfCancellationRequested();
             elapsed += Time.deltaTime;
+            await UniTask.Yield(PlayerLoopTiming.Update, token);
         }
     }
 
-    // Destroy: 페이드아웃 후 풀 반환
-    private async UniTask RunDestroyPhase(CancellationToken token)
+    // --- Destroy ---
+    private async UniTask DestroyPhaseAsync(CancellationToken token)
     {
         DisableCollider();
 
         float elapsed = 0f;
-        float duration = _config.FadeOutDuration;
-        float startAlpha = _config.ActivateColor.a;
+        float fadeOut = _config.FadeOutDuration;
 
-        while (elapsed < duration)
+        while (elapsed < fadeOut)
         {
-            await UniTask.Yield(PlayerLoopTiming.Update, token);
-            elapsed += Time.deltaTime;
+            token.ThrowIfCancellationRequested();
 
-            float alpha = Mathf.Lerp(startAlpha, 0f, Mathf.Clamp01(elapsed / duration));
+            float alpha = 1f - Mathf.Clamp01(elapsed / fadeOut);
             _mpb.SetFloat("_Alpha", alpha);
             _spriteRenderer.SetPropertyBlock(_mpb);
+
+            elapsed += Time.deltaTime;
+            await UniTask.Yield(PlayerLoopTiming.Update, token);
         }
     }
 
+    // --- 트리거 ---
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player")) return;
 
-        PlayerHitManager hit = other.GetComponent<PlayerHitManager>();
+        var hit = other.GetComponent<PlayerHitManager>();
         if (hit == null) return;
 
         if (Time.time - _lastHitTime < _config.HitInterval) return;
@@ -233,7 +227,7 @@ public class AreaIndicator : MonoBehaviour
         if (!_config.ContinuousDamage) return;
         if (!other.CompareTag("Player")) return;
 
-        PlayerHitManager hit = other.GetComponent<PlayerHitManager>();
+        var hit = other.GetComponent<PlayerHitManager>();
         if (hit == null) return;
 
         if (Time.time - _lastHitTime < _config.HitInterval) return;
@@ -248,106 +242,71 @@ public class AreaIndicator : MonoBehaviour
         _lastHitTime = Time.time;
     }
 
+    // --- 콜라이더 ---
     private void SetupCollider()
     {
-        if (_config.Shape == AreaShape.Circle)
-        {
-            if (_circleCollider != null)
-                _circleCollider.radius = _config.Size.x;
-
-            if (_boxCollider != null)
-                _boxCollider.enabled = false;
-        }
-        else
-        {
-            if (_boxCollider != null)
-                _boxCollider.size = _config.Size;
-
-            if (_circleCollider != null)
-                _circleCollider.enabled = false;
-        }
-    }
-
-    private void SetupVisual()
-    {
-        _spriteRenderer.sprite = _config.WarningSprite;
-        _spriteRenderer.enabled = true;
-
-        _mpb.SetColor("_Color", _config.WarningColor);
-        _mpb.SetFloat("_Alpha", 0f);
-        _mpb.SetFloat("_Progress", 0f);
-        _mpb.SetFloat("_PulseSpeed", _config.PulseSpeed);
-        _spriteRenderer.SetPropertyBlock(_mpb);
+        _circleCollider.enabled = false;
+        _circleCollider.radius = _config.Radius;
+        _circleCollider.offset = Vector2.zero;
     }
 
     private void EnableCollider()
     {
-        if (_config.Shape == AreaShape.Circle && _circleCollider != null)
-            _circleCollider.enabled = true;
-        else if (_config.Shape == AreaShape.Rect && _boxCollider != null)
-            _boxCollider.enabled = true;
+        _circleCollider.enabled = true;
     }
 
     private void DisableCollider()
     {
-        if (_circleCollider != null) _circleCollider.enabled = false;
-        if (_boxCollider != null) _boxCollider.enabled = false;
+        _circleCollider.enabled = false;
     }
 
-    private void UpdateRotation()
+    // --- 비주얼 ---
+    private void SetupVisual()
     {
-        if (_config.Direction == AreaDirection.None) return;
+        _spriteRenderer.enabled = true;
+        _spriteRenderer.sprite = _config.WarningSprite;
 
-        float angle = ResolveAngle();
-        transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
+        _mpb.SetFloat("_Progress", 0f);
+        _mpb.SetFloat("_Alpha", 0f);
+        _mpb.SetFloat("_PulseSpeed", _config.PulseSpeed);
+        _mpb.SetColor("_Color", _config.WarningColor);
+        _spriteRenderer.SetPropertyBlock(_mpb);
+
+        // Circle 스케일
+        float diameter = _config.Radius * 2f;
+        transform.localScale = new Vector3(diameter, diameter, 1f);
     }
 
-    private float ResolveAngle()
+    // --- 사운드 ---
+    private void StartWarningLoop()
     {
-        switch (_config.Direction)
-        {
-            case AreaDirection.TowardTarget:
-                if (_target == null) return 0f;
-                Vector2 dir = _target.position - transform.position;
-                return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if (string.IsNullOrEmpty(_config.WarningLoopSFX)) return;
 
-            case AreaDirection.FixedAngle:
-                return _config.FixedAngleDeg;
-
-            case AreaDirection.OwnerForward:
-                if (_owner == null) return 0f;
-                return Mathf.Atan2(_owner.right.y, _owner.right.x) * Mathf.Rad2Deg;
-
-            default:
-                return 0f;
-        }
+        _warningLoopInstance = RuntimeManager.CreateInstance(_config.WarningLoopSFX);
+        _warningLoopInstance.set3DAttributes(RuntimeUtils.To3DAttributes(transform.position));
+        _warningLoopInstance.start();
+        _hasWarningLoop = true;
     }
 
     private void StopWarningLoop()
     {
-        if (!_warningLoopPlaying) return;
+        if (!_hasWarningLoop) return;
 
-        if (_warningLoopInstance.isValid())
-        {
-            _warningLoopInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-            _warningLoopInstance.release();
-            _warningLoopInstance = default;
-        }
-
-        _warningLoopPlaying = false;
+        _warningLoopInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        _warningLoopInstance.release();
+        _hasWarningLoop = false;
     }
 
-    private void ReleaseToPool()
+    // --- 풀 반환 ---
+    private void DoRelease()
     {
         if (_isReleased) return;
         _isReleased = true;
 
         _spriteRenderer.enabled = false;
-        DisableCollider();
+        transform.localScale = Vector3.one;
 
-        _lifecycleCts?.Dispose();
-        _lifecycleCts = null;
-
-        _pool?.Release(this);
+        if (_pool != null)
+            _pool.Release(this);
     }
 }

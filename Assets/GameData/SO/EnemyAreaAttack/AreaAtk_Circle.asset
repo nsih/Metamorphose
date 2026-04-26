@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 360a29f3d55031b479300695c6ac8e10, type: 3}
   m_Name: AreaAtk_Circle
   m_EditorClassIdentifier: GamePlay::AreaAttackConfigSO
-  Shape: 0
-  Size: {x: 3, y: 3}
+  Radius: 1.5
   PositionStrategy: 0
   FixedOffset: {x: 0, y: 0}
   RandomRadius: 0
@@ -24,21 +23,18 @@ MonoBehaviour:
     y: -10
     width: 20
     height: 20
-  Direction: 0
-  FixedAngleDeg: 0
-  LockDirectionOnWarning: 1
   WarningDuration: 1.5
-  LingerDuration: 0
+  LingerDuration: 1
   ContinuousDamage: 0
   HitInterval: 0.5
   Damage: 1
-  WarningSprite: {fileID: 0}
-  ActivateSprite: {fileID: 0}
+  WarningSprite: {fileID: 21300000, guid: 06e5d8f7ba9c17144b1ace83b073da17, type: 3}
+  ActivateSprite: {fileID: 21300000, guid: 06e5d8f7ba9c17144b1ace83b073da17, type: 3}
   WarningColor: {r: 1, g: 0.3, b: 0.3, a: 0.4}
   ActivateColor: {r: 1, g: 0.1, b: 0.1, a: 0.9}
-  FadeInDuration: 0.3
-  FadeOutDuration: 0.3
-  PulseSpeed: 3
+  FadeInDuration: 0.2
+  FadeOutDuration: 0.2
+  PulseSpeed: 2
   WarningStartSFX: 
   WarningLoopSFX: 
   ActivateSFX: 

@@ -1,14 +1,15 @@
 // Assets/Scripts/GamePlay/AreaAttack/AreaAttackConfigSO.cs
-// 2026-04-20 장판 설정 SO 신규
+// 2026-04-26
+// Rect 형태 제거. float Radius로 단순화. 방향 관련 필드 폐기
+
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "AreaAtk_", menuName = "SO/Enemy/AreaAttack/Config")]
 public class AreaAttackConfigSO : ScriptableObject
 {
-    [Header("형태")]
-    public AreaShape Shape = AreaShape.Circle;
-    [Tooltip("Circle: x=반지름(y무시). Rect: x=폭, y=길이")]
-    public Vector2 Size = new Vector2(3f, 3f);
+    [Header("크기")]
+    [Tooltip("장판 반지름")]
+    public float Radius = 3f;
 
     [Header("위치")]
     public AreaPositionStrategy PositionStrategy = AreaPositionStrategy.TargetPosition;
@@ -21,13 +22,6 @@ public class AreaAttackConfigSO : ScriptableObject
     [Tooltip("WorldRandom 전용")]
     public Rect RandomBounds = new Rect(-10, -10, 20, 20);
 
-    [Header("방향")]
-    public AreaDirection Direction = AreaDirection.None;
-    [Tooltip("FixedAngle 전용 (도)")]
-    public float FixedAngleDeg;
-    [Tooltip("true: 경고 시작 시 방향 고정 / false: 경고 중 추적, 발동 직전 고정")]
-    public bool LockDirectionOnWarning = true;
-
     [Header("타이밍")]
     [Tooltip("경고 단계 지속시간 (최소 1초)")]
     public float WarningDuration = 1.5f;
@@ -35,7 +29,7 @@ public class AreaAttackConfigSO : ScriptableObject
     public float LingerDuration = 0f;
     [Tooltip("Linger 중 지속 판정 여부")]
     public bool ContinuousDamage = false;
-    [Tooltip("지속 판정 간격 (초). Enter/Stay 이중 방지도 이 값 사용")]
+    [Tooltip("지속 판정 간격 (초)")]
     public float HitInterval = 0.5f;
 
     [Header("데미지")]
@@ -59,6 +53,6 @@ public class AreaAttackConfigSO : ScriptableObject
     {
         WarningDuration = Mathf.Max(1f, WarningDuration);
         HitInterval = Mathf.Max(0.1f, HitInterval);
-        Size = new Vector2(Mathf.Max(0.1f, Size.x), Mathf.Max(0.1f, Size.y));
+        Radius = Mathf.Max(0.1f, Radius);
     }
 }

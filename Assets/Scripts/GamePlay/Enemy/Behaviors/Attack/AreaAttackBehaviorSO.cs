@@ -1,8 +1,11 @@
 // Assets/Scripts/GamePlay/Enemy/Behaviors/Attack/AreaAttackBehaviorSO.cs
-// 2026-04-20 장판 공격 행동 SO 신규
+// 2026-04-26
+// Rect 형태 제거에 따라 ResolveAngle 폐기. Activate 시그니처 단순화
+
 using UnityEngine;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using System.Threading;
 
 [CreateAssetMenu(fileName = "Attack_Area", menuName = "SO/Enemy/Behaviors/Attack/AreaAttack")]
 public class AreaAttackBehaviorSO : EnemyAttackBehaviorSO
@@ -14,56 +17,57 @@ public class AreaAttackBehaviorSO : EnemyAttackBehaviorSO
         if (ctx.IsDead) return;
         if (ctx.Target == null) return;
 
-        if (Time.time - ctx.LastAttackTime < ctx.CurrentAttackCoolTime) return;
+        if (Entries == null || Entries.Count == 0) return;
+
+        if (ctx.AreaPool == null)
+        {
+            Debug.LogWarning("area pool null");
+            return;
+        }
+
+        // 쿨타임
+        float timeSinceLastAttack = Time.time - ctx.LastAttackTime;
+        if (timeSinceLastAttack < ctx.CurrentAttackCoolTime) return;
 
         // 시퀀스 진행 중
         if (ctx.GetInt(EnemyContextKeys.AreaAttackActive) == 1) return;
 
-        if (ctx.AreaPool == null)
-        {
-            Debug.LogWarning("AreaAttackBehaviorSO: AreaPool null");
-            return;
-        }
-
-        if (Entries == null || Entries.Count == 0) return;
-
         ctx.SetInt(EnemyContextKeys.AreaAttackActive, 1);
         ctx.LastAttackTime = Time.time;
 
-        FireSequenceAsync(ctx).Forget();
+        var token = ctx.DestroyCancellationToken;
+        FireSequenceAsync(ctx, token).Forget();
     }
 
-    private async UniTaskVoid FireSequenceAsync(EnemyContext ctx)
+    private async UniTaskVoid FireSequenceAsync(EnemyContext ctx, CancellationToken token)
     {
-        var token = ctx.DestroyCancellationToken;
-
         try
         {
-            foreach (var entry in Entries)
+            for (int i = 0; i < Entries.Count; i++)
             {
-                if (token.IsCancellationRequested) break;
+                var entry = Entries[i];
                 if (entry.Config == null) continue;
 
                 if (entry.Delay > 0f)
                 {
-                    float elapsed = 0f;
-                    while (elapsed < entry.Delay)
+                    float waited = 0f;
+                    while (waited < entry.Delay)
                     {
+                        token.ThrowIfCancellationRequested();
+                        waited += Time.deltaTime;
                         await UniTask.Yield(PlayerLoopTiming.Update, token);
-                        elapsed += Time.deltaTime;
                     }
                 }
 
-                if (token.IsCancellationRequested) break;
-
-                Vector3 position = ResolvePosition(entry.Config, ctx);
-                float angle = ResolveAngle(entry.Config, ctx);
-
-                AreaIndicator indicator = ctx.AreaPool.Get();
-                indicator.Activate(entry.Config, position, angle, ctx.Target, ctx.Self, ctx.AreaPool);
+                Vector3 spawnPos = ResolvePosition(entry.Config, ctx);
+                var indicator = ctx.AreaPool.Get();
+                indicator.Activate(entry.Config, spawnPos, ctx.Target, ctx.Self, ctx.AreaPool);
             }
         }
-        catch (System.OperationCanceledException) { }
+        catch (System.OperationCanceledException)
+        {
+            // 시퀀스 중단
+        }
         finally
         {
             ctx.SetInt(EnemyContextKeys.AreaAttackActive, 0);
@@ -75,7 +79,7 @@ public class AreaAttackBehaviorSO : EnemyAttackBehaviorSO
         switch (config.PositionStrategy)
         {
             case AreaPositionStrategy.TargetPosition:
-                return ctx.Target != null ? ctx.Target.position : ctx.Self.position;
+                return ctx.Target.position;
 
             case AreaPositionStrategy.OwnerPosition:
                 return ctx.Self.position;
@@ -84,54 +88,34 @@ public class AreaAttackBehaviorSO : EnemyAttackBehaviorSO
                 return ctx.Self.position + (Vector3)config.FixedOffset;
 
             case AreaPositionStrategy.OwnerRelativeRandom:
-                Vector2 random = Random.insideUnitCircle * config.RandomRadius;
-                return ctx.Self.position + (Vector3)random;
+                Vector2 randOffset = Random.insideUnitCircle * config.RandomRadius;
+                return ctx.Self.position + (Vector3)randOffset;
 
             case AreaPositionStrategy.WorldFixed:
                 return (Vector3)config.WorldPosition;
 
             case AreaPositionStrategy.WorldRandom:
-                float rx = Random.Range(config.RandomBounds.xMin, config.RandomBounds.xMax);
-                float ry = Random.Range(config.RandomBounds.yMin, config.RandomBounds.yMax);
-                return new Vector3(rx, ry, 0f);
+                float x = Random.Range(config.RandomBounds.xMin, config.RandomBounds.xMax);
+                float y = Random.Range(config.RandomBounds.yMin, config.RandomBounds.yMax);
+                return new Vector3(x, y, 0f);
 
             default:
-                return ctx.Self.position;
+                return ctx.Target.position;
         }
     }
 
-    private float ResolveAngle(AreaAttackConfigSO config, EnemyContext ctx)
-    {
-        switch (config.Direction)
-        {
-            case AreaDirection.None:
-                return 0f;
-
-            case AreaDirection.TowardTarget:
-                if (ctx.Target == null) return 0f;
-                Vector2 dir = ctx.Target.position - ctx.Self.position;
-                return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-            case AreaDirection.FixedAngle:
-                return config.FixedAngleDeg;
-
-            case AreaDirection.OwnerForward:
-                return Mathf.Atan2(ctx.Self.right.y, ctx.Self.right.x) * Mathf.Rad2Deg;
-
-            default:
-                return 0f;
-        }
-    }
-
-#if UNITY_EDITOR
     private void OnValidate()
     {
-        if (Entries == null) return;
+        if (Entries == null || Entries.Count == 0)
+        {
+            Debug.LogWarning($"{name}: Entries 비어있음");
+            return;
+        }
+
         for (int i = 0; i < Entries.Count; i++)
         {
             if (Entries[i].Config == null)
-                Debug.LogWarning($"AreaAttackBehaviorSO: Entries[{i}] Config null");
+                Debug.LogWarning($"{name}: Entries[{i}] Config null");
         }
     }
-#endif
 }
