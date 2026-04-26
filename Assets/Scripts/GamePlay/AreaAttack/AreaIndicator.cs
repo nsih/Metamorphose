@@ -163,8 +163,8 @@ public class AreaIndicator : MonoBehaviour
         // 콜라이더 활성화
         EnableCollider();
 
-        // 단발 판정 대기
-        _lastHitTime = Time.time;
+        // 첫 판정 즉시 통과 보장
+        _lastHitTime = -999f;
         await UniTask.WaitForFixedUpdate(token);
     }
 
